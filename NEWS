@@ -1,0 +1,37 @@
+Version 0.0.2
+-------------------------------------------------------------------------
+
+CHANGES
+
+* Internals of several functions have been tidied.
+* Functions calling the system now use system2 to increase portability.  (Thanks to Profs. Brian Ripley and Uwe Ligges for the suggestions.)
+* Description now has SystemRequirements statement along with INSTALL file providing a step-by-step guide for installation of LattE integrale.
+* The Description file has been updated to better to conform to CRANs standards (v. 3184, accessed 12/3/14).
+* LattEÕs count function has broader support now, see ?count and examples.
+
+
+Version 0.0.1
+-------------------------------------------------------------------------
+
+NEW FEATURES
+
+* Pathing has been updated substantially on OS-X and Windows platforms.
+* LattE's count function now works through a function called count; it is used to count lattice points.
+* A new function countTables, based on count, counts the number of tables with the same marginals as a given table.
+* LattE's latte-maximum and latte-minimum now work, allowing for the solution of linear programs (with integer coefficients) via LattE's routines.  Be careful with these as they are experimental in LattE (see examples).
+
+
+CHANGES
+
+* 4ti2 now has it's own path in options() called "markovPath" (4ti2Path was too unwieldy).  This makes it easier to point to 4ti2 functions vs LattE functions.  It is searched for differently on different operating systems but can be set manually.
+
+
+FIXES
+
+* The markov function now defaults dim to NULL to conform to conform to good coding practice (it is an early argument).
+
+
+Version 0.0.0
+-------------------------------------------------------------------------
+
+PACKAGE GENESIS
