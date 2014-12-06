@@ -72,16 +72,14 @@ m2 <- function(code, dir = tempdir(), opts = "--script"){
     invisible(code)
   }	
 
+  
+  ## write m2 code
   write_m2(code)
 
+  
+  ## switch directories, run m2 script, come back
   oldWd <- getwd()
   setwd(dir)
-  
-  #system(paste(
-  #  file.path2(getOption("m2Path"), "M2"), 
-  #  opts, 
-  #  paste(dir, "m2Code.m2", sep = "/")
-  #)) 
     
   system2(
     file.path2(getOption("m2Path"), "M2"), 
@@ -90,6 +88,8 @@ m2 <- function(code, dir = tempdir(), opts = "--script"){
     
   setwd(oldWd)
   
+  
+  ## report to user
   out <- readLines(paste(dir, "m2Out", sep = "/"))
   class(out) <- "m2"
   
