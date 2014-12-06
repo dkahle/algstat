@@ -7,7 +7,7 @@ CHANGES
 * Functions calling the system now use system2 to increase portability.  (Thanks to Profs. Brian Ripley and Uwe Ligges for the suggestions.)
 * Description now has SystemRequirements statement along with INSTALL file providing a step-by-step guide for installation of LattE integrale.
 * The Description file has been updated to better to conform to CRANs standards (v. 3184, accessed 12/3/14).
-* LattEÕs count function has broader support now, see ?count and examples.
+* LattE's count function has broader support now, see ?count and examples.
 
 
 Version 0.0.1
