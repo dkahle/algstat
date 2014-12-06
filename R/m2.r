@@ -45,7 +45,8 @@
 #'
 m2 <- function(code, dir = tempdir(), opts = "--script"){
 	
-  # define function to make the m2 file to be run later
+  
+  ## define function to make the m2 file to be run later
   write_m2 <- function(code, outFile = "m2Out", codeFile = "m2Code.m2"){
     # pull code from function body
     if(is.function(code)) code <- as.character(body(code))[-1]
