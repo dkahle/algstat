@@ -295,6 +295,17 @@ kprod <- function(...) Reduce(kronecker, list(...))
 
 
 
+timeStamp <- function(){
+  timeStamp <- as.character(Sys.time())
+  timeStamp <- chartr("-", "_", timeStamp)
+  timeStamp <- chartr(" ", "_", timeStamp)
+  timeStamp <- chartr(":", "_", timeStamp)
+  timeStamp
+}
+
+
+
+
 
 
 

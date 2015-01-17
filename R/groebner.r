@@ -118,11 +118,7 @@ groebner <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   }
   
   ## make dir to put 4ti2 files in (within the tempdir) timestamped
-  timeStamp <- as.character(Sys.time())
-  timeStamp <- chartr("-", "_", timeStamp)
-  timeStamp <- chartr(" ", "_", timeStamp)
-  timeStamp <- chartr(":", "_", timeStamp)
-  dir2 <- file.path2(dir, timeStamp)
+  dir2 <- file.path2(dir, timeStamp())
   suppressWarnings(dir.create(dir2))
   
   

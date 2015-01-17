@@ -111,11 +111,7 @@
 bertini <- function(code, dir = tempdir(), opts = "", quiet = TRUE){
 	
   ## make dir to put bertini files in (within the tempdir) timestamped
-  timeStamp <- as.character(Sys.time())
-  timeStamp <- str_replace_all(timeStamp, "-", "_")
-  timeStamp <- str_replace_all(timeStamp, " ", "_")  
-  timeStamp <- str_replace_all(timeStamp, ":", "_")  
-  dir2 <- paste(dir, timeStamp, sep = "/")
+  dir2 <- paste(dir, timeStamp(), sep = "/")
   suppressWarnings(dir.create(dir2))
 	
   

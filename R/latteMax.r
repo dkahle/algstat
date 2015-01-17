@@ -129,11 +129,7 @@ latteMax <- function(objective, constraints,
       
 	
   ## make dir to put latte files in (within the tempdir) timestamped
-  timeStamp <- as.character(Sys.time())
-  timeStamp <- chartr("-", "_", timeStamp)
-  timeStamp <- chartr(" ", "_", timeStamp)
-  timeStamp <- chartr(":", "_", timeStamp)
-  dir2 <- file.path2(dir, timeStamp)
+  dir2 <- file.path2(dir, timeStamp())
   suppressWarnings(dir.create(dir2))
 	
 
