@@ -2,10 +2,10 @@
 #'
 #' A Grobner basis of a matrix A is computed with the groebner function of 4ti2, obtained with the LattE-integrale bundle.
 #' 
-#' @param mat a matrix; for example the output of hmat
+#' @param mat a matrix; for example the output of \code{\link{hmat}}
 #' @param format how the moves should be returned (if "mat", moves are columns)
 #' @param dim the dimension to be used in vec2tab if format = "tab" is used, oftentimes a vector of the number of levels of each variable in order
-#' @param all if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given.
+#' @param all if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given
 #' @param dir directory to place the files in, without an ending /
 #' @param opts options for groebner
 #' @param quiet show 4ti2 output

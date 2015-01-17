@@ -7,13 +7,13 @@ markov(mat, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = "-parb", quiet = TRUE, dbName)
 }
 \arguments{
-\item{mat}{a matrix; for example the output of hmat}
+\item{mat}{a matrix; for example the output of \code{\link{hmat}}}
 
 \item{format}{how the moves should be returned (if "mat", moves are columns)}
 
 \item{dim}{the dimension to be used in vec2tab if format = "tab" is used, oftentimes a vector of the number of levels of each variable in order}
 
-\item{all}{if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given.}
+\item{all}{if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given}
 
 \item{dir}{directory to place the files in, without an ending /}
 
@@ -125,8 +125,5 @@ markov(diag(1, 10))
 }
 \references{
 Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
-}
-\seealso{
-\code{\link{groebner}}
 }
 

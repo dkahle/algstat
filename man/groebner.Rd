@@ -7,13 +7,13 @@ groebner(mat, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = "-parb", quiet = TRUE)
 }
 \arguments{
-\item{mat}{a matrix; for example the output of hmat}
+\item{mat}{a matrix; for example the output of \code{\link{hmat}}}
 
 \item{format}{how the moves should be returned (if "mat", moves are columns)}
 
 \item{dim}{the dimension to be used in vec2tab if format = "tab" is used, oftentimes a vector of the number of levels of each variable in order}
 
-\item{all}{if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given.}
+\item{all}{if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given}
 
 \item{dir}{directory to place the files in, without an ending /}
 
@@ -78,6 +78,7 @@ varlvls <- c(2,2,2)
 facets <- list(c(1,2), c(1,3), c(2,3))
 ( A <- hmat(varlvls, facets) )
 groebner(A)
+tableau(groebner(A), dim = varlvls)
 
 
 
