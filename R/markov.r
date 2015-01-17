@@ -27,7 +27,7 @@
 #' markov(A)
 #' markov(A, "vec")
 #' markov(A, "tab", varlvls)
-#' markov(A, "tab", varlvls, TRUE)
+#' markov(A, "tab", varlvls, all = TRUE)
 #'
 #'
 #'
@@ -113,7 +113,9 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   dbName
 ){
 	
+  ## check args
   format <- match.arg(format)
+  
   
   ## redirect with the special case of when the identity is given
   if((nrow(mat) == ncol(mat)) && all(mat == diag(1, nrow(mat)))){
@@ -123,6 +125,7 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
     if(format == "tab") return(vec2tab(matrix(0, nrow = nrow(mat), ncol = 1), dim))    
   }
 	
+  
   ## make dir to put 4ti2 files in (within the tempdir) timestamped
   timeStamp <- as.character(Sys.time())
   timeStamp <- chartr("-", "_", timeStamp)
@@ -130,27 +133,10 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   timeStamp <- chartr(":", "_", timeStamp)
   dir2 <- file.path2(dir, timeStamp)
   suppressWarnings(dir.create(dir2))
-	
-  
-  ## define a function to write the code to a file
-  formatAndWriteFile <- function(mat, codeFile = "markovCode.mat"){
-    
-    # line numbers up, e.g. 1 1 0 0
-    out <- paste(nrow(mat), ncol(mat))
-    out <- paste0(out, "\n")
-    out <- paste0(out, 
-      paste(apply(unname(mat), 1, paste, collapse = " "), 
-      collapse = "\n")
-    )    
-  
-    # write code file
-    writeLines(out, con = file.path2(dir2, codeFile))
-    invisible(out)
-  }	
   
   
   ## make 4ti2 file
-  if(!missing(mat)) formatAndWriteFile(mat)
+  if(!missing(mat)) write.latte(mat, file.path2(dir2, "markovCode.mat"))
 
 
   ## switch to temporary directory
@@ -201,13 +187,8 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   
   
   ## figure out what files to keep them, and make 4ti2 object
-  basis <- readLines(paste0("markovCode.mat", ".mar"))
-  basis <- basis[-1]
-  basis <- lapply(
-    str_split(str_trim(basis), " "), 
-    function(x) as.integer(x[nchar(x) > 0])
-  )
-  if(all) basis <- c(basis, lapply(basis, function(x) -x))
+  basis <- t(read.latte(paste0("markovCode.mat", ".mar")))
+  if(all) basis <- cbind(basis, -basis)
 
   
   ## migrate back to original working directory
@@ -217,12 +198,12 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   
   # out
   if(format == "mat"){
-    basis <- matrix(unlist(basis), ncol = length(basis[[1]]), byrow = TRUE) 
-    return(t(basis))
-  } else if(format == "vec") {
     return(basis)
-  } else { # format == "tab"
-  	return(lapply(basis, vec2tab, dim = dim))
+  } else {        
+    lbasis <- as.list(rep(NA, ncol(basis)))
+    for(k in 1:ncol(basis)) lbasis[[k]] <- basis[,k]
+    if(format == "vec") return(lbasis)     
+    if(format == "tab") return(lapply(lbasis, vec2tab, dim = dim))    
   }
 }
 
