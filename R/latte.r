@@ -15,6 +15,7 @@
 #' write.latte(mat, "foo.hrep")
 #' file.show("foo.hrep")
 #' read.latte("foo.hrep")
+#' read.latte("foo.hrep", "Ab")
 #' 
 #' attr(mat, "linearity") <- c(1, 3)
 #' attr(mat, "nonnegative") <- 2
@@ -100,6 +101,8 @@ write.latte <- function(mat, file){
 #' \code{read.latte} reads a latte-formatted file a file.
 #' 
 #' @param file the name of the file
+#' @param format the format of the read file, as a latte-style matrix [b -A] 
+#'   or as matrix A and a solution b
 #' @return an invisible form of the saved output.
 #' @export read.latte
 #' @seealso \code{\link{read.latte}}
@@ -111,6 +114,7 @@ write.latte <- function(mat, file){
 #' write.latte(mat, "foo.hrep")
 #' file.show("foo.hrep")
 #' read.latte("foo.hrep")
+#' read.latte("foo.hrep", "Ab")
 #' 
 #' attr(mat, "linearity") <- c(1, 3)
 #' attr(mat, "nonnegative") <- 2
@@ -123,7 +127,11 @@ write.latte <- function(mat, file){
 #'
 #' }
 #' 
-read.latte <- function(file){  
+read.latte <- function(file, format = c("mat", "Ab")){  
+  
+  ## check args
+  format <- match.arg(format)
+  
   
   ## read in file
   ## e.g. [1] "3 3"   "7 2 1" "6 3 4" "9 8 5"
@@ -173,8 +181,12 @@ read.latte <- function(file){
   }
   
   
-  ## return invisible output
-  mat
+  ## format
+  if(format == "mat"){
+    return(mat)
+  } else if(format == "Ab"){
+    return(list(A = -mat[,-1], b = mat[,1]))
+  }
 }
 
 
