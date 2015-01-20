@@ -185,7 +185,7 @@ read.latte <- function(file, format = c("mat", "Ab")){
   if(format == "mat"){
     return(mat)
   } else if(format == "Ab"){
-    return(list(A = -mat[,-1], b = mat[,1]))
+    return(list(A = -mat[,-1,drop=FALSE], b = mat[,1]))
   }
 }
 
