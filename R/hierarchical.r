@@ -422,7 +422,7 @@
 #' 
 #' # # the saturated model issues a warning from markov, but works :
 #' # out <- hierarchical(~ Alcohol * Cigarette * Marijuana, data = drugs)
-#' # matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE)
+#' # matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE) # = the data
 #' 
 #' 
 #' ftable(aperm(out$exp, c(3,1,2)))
@@ -539,8 +539,7 @@ hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   } else {
     stop("invalid model specification, see ?hierarchical")
   }
-    
-browser()
+  
 
   ## construct A matrix and compute moves
   ##################################################  
