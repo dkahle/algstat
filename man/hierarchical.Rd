@@ -4,11 +4,11 @@
 \alias{hierarchical}
 \title{Fitting Hierarchical Log-linear Models with Algebraic Methods}
 \usage{
-hierarchical(formula, data, iter = 10000, burn = 1000, thin = 10,
-  engine = c("Cpp", "R"), method = c("ipf", "mcmc"), moves)
+hierarchical(model, data, iter = 10000, burn = 1000, thin = 10,
+  engine = c("Cpp", "R"), method = c("ipf", "mcmc"), moves, ...)
 }
 \arguments{
-\item{formula}{formula for the hierarchical log-linear model}
+\item{model}{hierarchical log-linear model specification}
 
 \item{data}{data, typically as a table but can be in different formats.  see \code{\link{teshape}}}
 
@@ -23,6 +23,8 @@ hierarchical(formula, data, iter = 10000, burn = 1000, thin = 10,
 \item{method}{should the expected value (exp) be fit using iterative proportional fitting (via loglin) or the MCMC as the average of the steps?}
 
 \item{moves}{the markov moves for the mcmc}
+
+\item{...}{...}
 }
 \value{
 a list containing named elements
@@ -71,14 +73,22 @@ data(handy)
 
 (out <- hierarchical(~ Gender + Handedness, data = handy))
 
+# you can also specify the same model using variable indices...
+(out <- hierarchical(~ 1 + 2, data = handy))
+
+# ... or as a list of facets given by indices
+(out <- hierarchical(list(1, 2), data = handy))
+
+# ... or as a list of facets given by name.
+(out <- hierarchical(list("Gender", "Handedness"), data = handy))
+
+
+
 # hierarchical performs the same tasks as loglin and loglm,
 # but hierarchical gives the exact test p values and more statistics
-statsFit <- stats::loglin(handy, list(c(1),c(2)), fit = TRUE, param = TRUE)
+statsFit <- stats::loglin(handy, list(1, 2), fit = TRUE, param = TRUE)
 massFit <- MASS::loglm(~ Gender + Handedness, data = handy)
 # loglm is just a wrapper of loglin
-
-
-
 
 
 
@@ -244,6 +254,12 @@ c(statsFit$pearson, statsFit$lrt)
 
 
 
+# alternative model specifications :
+hierarchical(~ Personality + Party, data = politics)
+hierarchical(~ 1 + 2, data = politics)
+hierarchical(list(1, 2), data = politics)
+hierarchical(list("Personality", "Party"), data = politics)
+
 
 
 
@@ -264,17 +280,10 @@ outR <- hierarchical(~ Eye + Hair, data = eyeHairColor, engine = "R")
 # doesn't work even with workspace = 2E9 (with over 4.5Gb in memory)
 #fisher.test(eyeHairColor, hybrid = TRUE, workspace = 2E9)
 
+# you can see the markov moves used in the mcmc in tableau notation
 tableau(outC$moves, dim(eyeHairColor))
 
-
-# library(microbenchmark)
-# microbenchmark(
-#   hierarchical(~ Eye + Hair, data = eyeHairColor),
-#   hierarchical(~ Eye + Hair, data = eyeHairColor, engine = "R")
-# )
-# 5-10 times faster; much faster with increased iter
-
-
+# library(vcd)
 # mosaic(~ Eye + Hair, data = HairEyeColor, shade = TRUE, legend = TRUE)
 
 
@@ -289,13 +298,10 @@ tableau(outC$moves, dim(eyeHairColor))
 
 data(abortion)
 
-out <- hierarchical(
-  ~ Education*Abortion + Abortion*Denomination + Education*Denomination,
-  data = abortion,
+out <- hierarchical(subsets(1:3, 2), data = abortion,
   iter = 10000, burn = 50000, thin = 50
 )
 out$p.value
-
 
 vec2tab(rowMeans(out$steps), dim(abortion)) # cf. p. 380
 loglin(abortion, subsets(1:3, 2), fit = TRUE)$fit
@@ -311,7 +317,7 @@ qqplot(rchisq(1055, df = 8), out$sampsStats$X2s)
 curve(1*x, from = 0, to = 30, add = TRUE, col = "red")
 
 ( nMoves <- 2*ncol(out$moves) ) # DS uses 110
-# the markov basis is larger than it needs to be
+# (the markov basis is larger than it needs to be)
 
 
 
@@ -350,8 +356,11 @@ mod$exp
 mod$obs
 
 
-# checking the autocorrelation
+# checking the autocorrelation of mcmc
 acf(mod$sampsStats$PRs)
+
+# poor mixing is a known limitation of markov bases strategies
+# one strategy is to try to thin the mcmc
 mod <- hierarchical(~ Eye*Hair + Hair*Sex + Eye*Sex, data = HairEyeColor, thin = 100)
 acf(mod$sampsStats$PRs) # got it!
 
@@ -388,14 +397,14 @@ HairEyeColor + vec2tab(mod$moves[,50], dim(HairEyeColor))
 
 data(haberman)
 
-mod <- hierarchical(~ X1*X2 + X2*X3 + X1*X3, data = haberman)
+mod <- hierarchical(subsets(1:3, 2), data = haberman)
 
 statsFit <- loglin(haberman, subsets(1:3, 2), param = TRUE, fit = TRUE)
 statsFit$fit
 statsFit$param
 c(statsFit$pearson, statsFit$lrt)
 
-algstatFit <- hierarchical(~ X1*X2 + X2*X3 + X1*X3, data = haberman, method = "mcmc")
+algstatFit <- hierarchical(subsets(1:3, 2), data = haberman, method = "mcmc")
 algstatFit$exp
 algstatFit$param
 algstatFit$statistic
@@ -417,15 +426,15 @@ algstatFit$statistic
 data(drugs)
 ftable(aperm(drugs, c(3, 1, 2))) # = table 8.3
 
-out <- hierarchical(~Alcohol + Cigarette + Marijuana, data = drugs)
+out <- hierarchical(~ Alcohol + Cigarette + Marijuana, data = drugs)
 matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE)
 
 loglin(drugs, as.list(1:3), fit = TRUE)$fit
 loglin(drugs, as.list(1:3), param = TRUE)$param
 
 # # the saturated model issues a warning from markov, but works :
-# out <- hierarchical(~Alcohol * Cigarette * Marijuana, data = drugs)
-# matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE)
+# out <- hierarchical(~ Alcohol * Cigarette * Marijuana, data = drugs)
+# matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE) # = the data
 
 
 ftable(aperm(out$exp, c(3,1,2)))

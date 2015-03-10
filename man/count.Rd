@@ -36,9 +36,9 @@ Behind the scenes, count works by writing a latte file and running count on it. 
 
 
 spec <- c("x + y <= 10", "x >= 1", "y >= 1")
-count(spec)
-count(spec, opts = "--dilation=10")
-count(spec, opts = "--homog")
+count(spec) # 45
+count(spec, opts = "--dilation=10") # 3321
+count(spec, opts = "--homog") # 45
 
 # by default, the output from LattE is in
 list.files(tempdir())
@@ -54,8 +54,11 @@ count(spec, opts = "--ehrhart-series")
 # simplified ehrhart series - not yet implemented
 #count(spec, opts = "--simplified-ehrhart-polynomial")
 
-# first 3 terms of the ehrhart series
+# first terms of the ehrhart series
+count(spec, opts = "--ehrhart-taylor=1")
+count(spec, opts = "--ehrhart-taylor=2")
 count(spec, opts = "--ehrhart-taylor=3")
+count(spec, opts = "--ehrhart-taylor=4")
 
 # multivariate generating function
 count(spec, opts = "--multivariate-generating-function")
@@ -74,7 +77,7 @@ countTables(politics)
 
 
 # by vertices
-spec <- list(c(1,1),c(10,1),c(1,10),c(10,10))
+spec <- list(c(1,1), c(10,1), c(1,10), c(10,10))
 count(spec)
 count(spec, opts = "--vrep")
 

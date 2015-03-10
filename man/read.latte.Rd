@@ -21,8 +21,7 @@ an invisible form of the saved output.
 \examples{
 \dontrun{
 
-mat <- matrix(sample(9), 3, 3)
-mat
+(mat <- matrix(sample(9), 3, 3))
 write.latte(mat, "foo.hrep")
 file.show("foo.hrep")
 read.latte("foo.hrep")

@@ -30,6 +30,7 @@ A Grobner basis of a matrix A is computed with the groebner function of 4ti2, ob
 }
 \examples{
 \dontrun{
+# these examples require having extra software installed
 
 
 
@@ -42,79 +43,9 @@ facets <- list(1,2)
 groebner(A)
 groebner(A, "vec")
 groebner(A, "tab", varlvls)
-groebner(A, "tab", varlvls, TRUE)
+groebner(A, "tab", varlvls, all = TRUE)
+groebner(A, quiet = FALSE)
 
-
-
-
-# 3x3 independence example
-# following convention, the first index indicates rows
-varlvls <- c(3,3)
-facets <- list(1,2)
-( A <- hmat(varlvls, facets) )
-groebner(A)
-groebner(A, "vec")
-groebner(A, "tab", varlvls)
-groebner(A, "tab", varlvls, TRUE)
-
-
-
-
-# LAS example 1.2.1, p.12 (2x3 independence)
-varlvls <- c(2,3)
-facets <- list(1, 2)
-( A <- hmat(varlvls, facets) )
-groebner(A, "tab", varlvls)
-# Prop 1.2.2 says that there should be
-2*choose(2, 2)*choose(3,2) # = 6
-# moves.
-groebner(A, "tab", varlvls, TRUE)
-
-
-
-
-
-# LAS example 1.2.12, p.17  (no 3-way interaction)
-varlvls <- c(2,2,2)
-facets <- list(c(1,2), c(1,3), c(2,3))
-( A <- hmat(varlvls, facets) )
-groebner(A)
-tableau(groebner(A), dim = varlvls)
-
-
-
-
-
-
-# LAS example 1.2.12, p.16  (no 3-way interaction)
-varlvls <- c(2,2,2,2)
-facets <- list(c(1,2), c(1,4), c(2,3))
-( A <- hmat(varlvls, facets) )
-groebner(A)
-groebner(A, "tab", varlvls) # hard to understand
-tableau(groebner(A), varlvls)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-groebner(diag(1, 10))
 
 }
 }

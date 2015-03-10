@@ -32,6 +32,7 @@ A Markov basis of a matrix A is computed with the markov function of 4ti2, obtai
 }
 \examples{
 \dontrun{
+# these examples require having extra software installed
 
 
 
@@ -81,6 +82,7 @@ varlvls <- c(2,2,2)
 facets <- list(c(1,2), c(1,3), c(2,3))
 ( A <- hmat(varlvls, facets) )
 markov(A)
+tableau(markov(A), dim = varlvls)
 
 
 
@@ -121,6 +123,8 @@ B <- markov(hmat(c(3,3), list(1,2)))
 
 
 markov(diag(1, 10))
+markov(diag(1, 10), "vec")
+markov(diag(1, 10), "vec", all = TRUE)
 
 }
 }
