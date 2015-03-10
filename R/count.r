@@ -21,9 +21,9 @@
 #' 
 #' 
 #' spec <- c("x + y <= 10", "x >= 1", "y >= 1")
-#' count(spec)
-#' count(spec, opts = "--dilation=10")
-#' count(spec, opts = "--homog")
+#' count(spec) # 45
+#' count(spec, opts = "--dilation=10") # 3321
+#' count(spec, opts = "--homog") # 45
 #' 
 #' # by default, the output from LattE is in 
 #' list.files(tempdir())
@@ -39,8 +39,11 @@
 #' # simplified ehrhart series - not yet implemented
 #' #count(spec, opts = "--simplified-ehrhart-polynomial")
 #' 
-#' # first 3 terms of the ehrhart series
+#' # first terms of the ehrhart series
+#' count(spec, opts = "--ehrhart-taylor=1")
+#' count(spec, opts = "--ehrhart-taylor=2")
 #' count(spec, opts = "--ehrhart-taylor=3")
+#' count(spec, opts = "--ehrhart-taylor=4")
 #' 
 #' # multivariate generating function
 #' count(spec, opts = "--multivariate-generating-function")
@@ -59,7 +62,7 @@
 #' 
 #' 
 #' # by vertices
-#' spec <- list(c(1,1),c(10,1),c(1,10),c(10,10))
+#' spec <- list(c(1,1), c(10,1), c(1,10), c(10,10))
 #' count(spec)
 #' count(spec, opts = "--vrep")
 #' 
@@ -224,10 +227,11 @@ count <- function(spec, dir = tempdir(), opts = "",
   ## switch to temporary directory
   oldWd <- getwd()
   setwd(dir2)
+  on.exit(setwd(oldWd), add = TRUE)
   
   
   ## run count
-  if(is.unix()){ 
+  if(is.mac() || is.unix()){ 
     
     system2(
       file.path2(getOption("lattePath"), "count"),
@@ -235,7 +239,7 @@ count <- function(spec, dir = tempdir(), opts = "",
       stdout = "countOut", stderr = "countErr"
     )       
     
-  } else { # windows    	
+  } else if(is.win()){ 
     
     matFile <- file.path2(dir2, "countCode.latte")
     matFile <- chartr("\\", "/", matFile)
@@ -313,8 +317,7 @@ count <- function(spec, dir = tempdir(), opts = "",
     return(mp(outPrint))
   }  
   
-  
-  
+    
   ## read in integer and parse if small enough
   out <- readLines("numOfLatticePoints")
   if(nchar(out) < 10) out <- as.integer(out)
@@ -325,10 +328,6 @@ count <- function(spec, dir = tempdir(), opts = "",
     cat(readLines("latte_stats"), sep = "\n")
     cat("\n")
   }
-
-  
-  ## migrate back to original working directory
-  setwd(oldWd)
   
   
   ## out
