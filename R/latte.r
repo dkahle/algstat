@@ -10,8 +10,7 @@
 #' @examples
 #' \dontrun{
 #'
-#' mat <- matrix(sample(9), 3, 3)
-#' mat
+#' (mat <- matrix(sample(9), 3, 3))
 #' write.latte(mat, "foo.hrep")
 #' file.show("foo.hrep")
 #' read.latte("foo.hrep")
@@ -109,8 +108,7 @@ write.latte <- function(mat, file){
 #' @examples
 #' \dontrun{
 #'
-#' mat <- matrix(sample(9), 3, 3)
-#' mat
+#' (mat <- matrix(sample(9), 3, 3))
 #' write.latte(mat, "foo.hrep")
 #' file.show("foo.hrep")
 #' read.latte("foo.hrep")
@@ -141,6 +139,14 @@ read.latte <- function(file, format = c("mat", "Ab")){
   ## eliminate dimensions
   ## e.g. [1] "7 2 1" "6 3 4" "9 8 5"
   dim <- as.integer(str_split(str_trim(contents[1]), " ")[[1]])
+  
+  
+  ## if only one line, return empty int matrix
+  if(length(contents) == 1){
+    out <- integer(0) 
+    dim(out) <- dim
+    return(out)
+  }
   
   
   ## split and parse, result is list
