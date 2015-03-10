@@ -14,7 +14,9 @@
 #' @export groebner
 #' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 #' @examples
+#' 
 #' \dontrun{
+#' # these examples require having extra software installed
 #'
 #'
 #'
@@ -24,183 +26,100 @@
 #' varlvls <- c(2,2)
 #' facets <- list(1,2)
 #' ( A <- hmat(varlvls, facets) )
-#' groebner(A) # cf markov(A)
-#' groebner(A, "vec")
-#' groebner(A, "tab", varlvls)
-#' groebner(A, "tab", varlvls, TRUE)
-#'
-#'
-#'
-#' 
-#' # 3x3 independence example
-#' # following convention, the first index indicates rows
-#' varlvls <- c(3,3)
-#' facets <- list(1,2)
-#' ( A <- hmat(varlvls, facets) )
 #' groebner(A)
 #' groebner(A, "vec")
 #' groebner(A, "tab", varlvls)
-#' groebner(A, "tab", varlvls, TRUE)
-#' 
-#' 
-#' 
-#' 
-#' # LAS example 1.2.1, p.12 (2x3 independence)
-#' varlvls <- c(2,3)
-#' facets <- list(1, 2)
-#' ( A <- hmat(varlvls, facets) )
-#' groebner(A, "tab", varlvls)
-#' # Prop 1.2.2 says that there should be 
-#' 2*choose(2, 2)*choose(3,2) # = 6
-#' # moves.
-#' groebner(A, "tab", varlvls, TRUE)
-#' 
+#' groebner(A, "tab", varlvls, all = TRUE)
+#' groebner(A, quiet = FALSE)
 #'
-#' 
-#' 
-#' 
-#' # LAS example 1.2.12, p.17  (no 3-way interaction)
-#' varlvls <- c(2,2,2)
-#' facets <- list(c(1,2), c(1,3), c(2,3))
-#' ( A <- hmat(varlvls, facets) )
-#' groebner(A)
-#' tableau(groebner(A), dim = varlvls)
-#' 
-#'
-#' 
-#' 
-#'
-#'
-#' # LAS example 1.2.12, p.16  (no 3-way interaction)
-#' varlvls <- c(2,2,2,2)
-#' facets <- list(c(1,2), c(1,4), c(2,3))
-#' ( A <- hmat(varlvls, facets) )
-#' groebner(A)
-#' groebner(A, "tab", varlvls) # hard to understand
-#' tableau(groebner(A), varlvls)
-#' 
-#' 
-#'
-#' 
-#' 
-#'
-#' 
-#' 
-#'
-#'
-#'
-#' 
-#' 
-#'
-#' 
-#'
-#'
-#' 
-#' 
-#'
-#' 
-#' groebner(diag(1, 10))
 #'
 #' }
 #' 
 groebner <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
-                   all = FALSE, dir = tempdir(), opts = "-parb", quiet = TRUE
+  all = FALSE, dir = tempdir(), opts = "-parb", quiet = TRUE
 ){
   
+  ## check args
   format <- match.arg(format)
-  
-  ## redirect with the special case of when the identity is given
-  if((nrow(mat) == ncol(mat)) && all(mat == diag(1, nrow(mat)))){
-    warning("the identity matrix was supplied to groebner, returning 0's.")
-    if(format == "mat") return(matrix(0, nrow = nrow(mat), ncol = 1))
-    if(format == "vec") return(list(matrix(0, nrow = nrow(mat), ncol = 1)))
-    if(format == "tab") return(vec2tab(matrix(0, nrow = nrow(mat), ncol = 1), dim))    
+  if(format == "tab" && missing(dim)){
+    stop('if format = "tab" is specified, dim must be also.', call. = FALSE) 
   }
+  
   
   ## make dir to put 4ti2 files in (within the tempdir) timestamped
   dir2 <- file.path2(dir, timeStamp())
   suppressWarnings(dir.create(dir2))
   
   
-  ## define a function to write the code to a file
-  formatAndWriteFile <- function(mat, codeFile = "groebnerCode.mat"){
-    
-    # line numbers up, e.g. 1 1 0 0
-    out <- paste(nrow(mat), ncol(mat))
-    out <- paste0(out, "\n")
-    out <- paste0(out, 
-                  paste(apply(unname(mat), 1, paste, collapse = " "), 
-                        collapse = "\n")
-    )    
-    
-    # write code file
-    writeLines(out, con = file.path2(dir2, codeFile))
-    invisible(out)
-  }	
-  
-  
   ## make 4ti2 file
-  if(!missing(mat)) formatAndWriteFile(mat)
+  if(!missing(mat)) write.latte(mat, file.path2(dir2, "groebnerCode.mat"))
   
   
   ## switch to temporary directory
   oldWd <- getwd()
   setwd(dir2)
+  on.exit(setwd(oldWd), add = TRUE)
   
-  
-  ## compute basis with 4ti2
-  if(.Platform$OS.type == "unix"){
     
+  ## run 4ti2
+  if(is.mac() || is.unix()){
+      
     system2(
       file.path2(getOption("markovPath"), "groebner"),
       paste(opts, file.path2(dir2, "groebnerCode.mat")),
       stdout = "groebnerOut", stderr = FALSE
     )
-    
-  } else { # windows 
-    
+      
+  } else if(is.win()){ 
+      
     matFile <- file.path2(dir2, "groebnerCode.mat")
     matFile <- chartr("\\", "/", matFile)
     matFile <- str_c("/cygdrive/c", str_sub(matFile, 3)) 
-    
+      
     system2(
       "cmd.exe",
       paste(
         "/c env.exe", 
-        file.path(getOption("groebnerPath"), "groebner"), 
+        file.path(getOption("markovPath"), "groebner"), 
         opts, matFile
       ), stdout = "groebnerOut", stderr = FALSE
     )
+      
+  }
     
+  
+  ## print if requested
+  if(!quiet) cat(readLines("groebnerOut"), sep = "\n")
+
+  
+  ## figure out what files to keep them, and make 4ti2 object
+  basis <- t(read.latte(paste0("groebnerCode.mat", ".gro")))
+  
+  
+  ## fix case of no basis
+  basisDim <- dim(basis)
+  noBasisFlag <- FALSE
+  if(any(basisDim == 0)){
+    noBasisFlag <- TRUE
+    warning("groebner basis empty, returning 0's.", call. = FALSE)
+    basisDim[basisDim == 0] <- 1L
+    basis <- rep(0L, prod(basisDim))
+    dim(basis) <- basisDim    
   }
   
   
-  if(!quiet) cat(readLines("groebnerOut"), sep = "\n")
-  
-  
-  ## figure out what files to keep them, and make 4ti2 object
-  basis <- readLines(paste0("groebnerCode.mat", ".gro"))
-  basis <- basis[-1]
-  basis <- lapply(
-    str_split(str_trim(basis), " "), 
-    function(x) as.integer(x[nchar(x) > 0])
-  )
-  if(all) basis <- c(basis, lapply(basis, function(x) -x))
-  
-  
-  ## migrate back to original working directory
-  setwd(oldWd)
-  
+  ## format
+  if(all && !noBasisFlag) basis <- cbind(basis, -basis)
   
   
   # out
   if(format == "mat"){
-    basis <- matrix(unlist(basis), ncol = length(basis[[1]]), byrow = TRUE) 
-    return(t(basis))
-  } else if(format == "vec") {
     return(basis)
-  } else { # format == "tab"
-    return(lapply(basis, vec2tab, dim = dim))
+  } else {        
+    lbasis <- as.list(rep(NA, ncol(basis)))
+    for(k in 1:ncol(basis)) lbasis[[k]] <- basis[,k]
+    if(format == "vec") return(lbasis)     
+    if(format == "tab") return(lapply(lbasis, vec2tab, dim = dim))    
   }
 }
 
