@@ -14,7 +14,9 @@
 #' @export markov
 #' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 #' @examples
+#' 
 #' \dontrun{
+#' # these examples require having extra software installed
 #'
 #'
 #'
@@ -64,7 +66,7 @@
 #' facets <- list(c(1,2), c(1,3), c(2,3))
 #' ( A <- hmat(varlvls, facets) )
 #' markov(A)
-#  tableau(markov(A), dim = varlvls)
+#' tableau(markov(A), dim = varlvls)
 #' 
 #'
 #' 
@@ -105,6 +107,8 @@
 #'
 #' 
 #' markov(diag(1, 10))
+#' markov(diag(1, 10), "vec")
+#' markov(diag(1, 10), "vec", all = TRUE)
 #'
 #' }
 #' 
@@ -112,17 +116,11 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   all = FALSE, dir = tempdir(), opts = "-parb", quiet = TRUE,
   dbName
 ){
-	
+
   ## check args
   format <- match.arg(format)
-  
-  
-  ## redirect with the special case of when the identity is given
-  if((nrow(mat) == ncol(mat)) && all(mat == diag(1, nrow(mat)))){
-    warning("the identity matrix was supplied to markov, returning 0's.")
-    if(format == "mat") return(matrix(0, nrow = nrow(mat), ncol = 1))
-    if(format == "vec") return(list(matrix(0, nrow = nrow(mat), ncol = 1)))
-    if(format == "tab") return(vec2tab(matrix(0, nrow = nrow(mat), ncol = 1), dim))    
+  if(format == "tab" && missing(dim)){
+    stop('if format = "tab" is specified, dim must be also.', call. = FALSE) 
   }
 	
   
@@ -138,13 +136,14 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   ## switch to temporary directory
   oldWd <- getwd()
   setwd(dir2)
+  on.exit(setwd(oldWd), add = TRUE)
   
   
   ## create/retrieve markov basis
   if(missing(dbName)){
   	
     ## run 4ti2 if needed
-    if(.Platform$OS.type == "unix"){
+    if(is.mac() || is.unix()){
       
       system2(
         file.path2(getOption("markovPath"), "markov"),
@@ -152,7 +151,7 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
         stdout = "markovOut", stderr = FALSE
       )
       
-    } else { # windows 
+    } else if(is.win()){ 
       
       matFile <- file.path2(dir2, "markovCode.mat")
       matFile <- chartr("\\", "/", matFile)
@@ -184,13 +183,23 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   
   ## figure out what files to keep them, and make 4ti2 object
   basis <- t(read.latte(paste0("markovCode.mat", ".mar")))
-  if(all) basis <- cbind(basis, -basis)
-
   
-  ## migrate back to original working directory
-  setwd(oldWd)
   
-
+  ## fix case of no basis
+  basisDim <- dim(basis)
+  noBasisFlag <- FALSE
+  if(any(basisDim == 0)){
+    noBasisFlag <- TRUE
+    warning("markov basis empty, returning 0's.", call. = FALSE)
+    basisDim[basisDim == 0] <- 1L
+    basis <- rep(0L, prod(basisDim))
+    dim(basis) <- basisDim    
+  }
+  
+  
+  ## format
+  if(all && !noBasisFlag) basis <- cbind(basis, -basis)
+  
   
   # out
   if(format == "mat"){
