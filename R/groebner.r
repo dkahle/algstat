@@ -24,7 +24,7 @@
 #' varlvls <- c(2,2)
 #' facets <- list(1,2)
 #' ( A <- hmat(varlvls, facets) )
-#' groebner(A)
+#' groebner(A) # cf markov(A)
 #' groebner(A, "vec")
 #' groebner(A, "tab", varlvls)
 #' groebner(A, "tab", varlvls, TRUE)
