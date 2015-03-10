@@ -12,7 +12,7 @@
 #'
 #' Since the tests make use of Monte Carlo sampling, standard errors (SE) are reported for each statistic.  For the test statistics, this is just the standard deviation of the samples divided by the square root of the sample size, iter; they are computed and returned by the print method.  The standard errors of the p values use the CLT asymptotic approximation and, therefore, warrant greater consideration when the p value is close to 0 or 1.  
 #' 
-#' @param formula formula for the hierarchical log-linear model
+#' @param model hierarchical log-linear model specification
 #' @param data data, typically as a table but can be in different formats.  see \code{\link{teshape}}
 #' @param iter number of chain iterations
 #' @param burn burn-in
@@ -20,6 +20,7 @@
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
 #' @param method should the expected value (exp) be fit using iterative proportional fitting (via loglin) or the MCMC as the average of the steps?
 #' @param moves the markov moves for the mcmc
+#' @param ... ...
 #' @return a list containing named elements
 #' \itemize{
 #'   \item \code{steps}: an integer matrix whose columns represent individual samples from the mcmc.
@@ -60,16 +61,24 @@
 #' 
 #' (out <- hierarchical(~ Gender + Handedness, data = handy))
 #' 
+#' # you can also specify the same model using variable indices...   
+#' (out <- hierarchical(~ 1 + 2, data = handy))
+#'   
+#' # ... or as a list of facets given by indices
+#' (out <- hierarchical(list(1, 2), data = handy))
+#'
+#' # ... or as a list of facets given by name.
+#' (out <- hierarchical(list("Gender", "Handedness"), data = handy))
+#' 
+#' 
+#' 
 #' # hierarchical performs the same tasks as loglin and loglm,
 #' # but hierarchical gives the exact test p values and more statistics
-#' statsFit <- stats::loglin(handy, list(c(1),c(2)), fit = TRUE, param = TRUE)
+#' statsFit <- stats::loglin(handy, list(1, 2), fit = TRUE, param = TRUE)
 #' massFit <- MASS::loglm(~ Gender + Handedness, data = handy)
 #' # loglm is just a wrapper of loglin  
 #'   
 #'
-#'
-#' 
-#' 
 #' 
 #' 
 #' 
@@ -232,6 +241,12 @@
 #' # mosaic(~ Personality + Party, data = politics, shade = TRUE, legend = TRUE)
 #' 
 #' 
+#' 
+#' # alternative model specifications :
+#' hierarchical(~ Personality + Party, data = politics)
+#' hierarchical(~ 1 + 2, data = politics)
+#' hierarchical(list(1, 2), data = politics)
+#' hierarchical(list("Personality", "Party"), data = politics)
 #'
 #'
 #'
@@ -253,17 +268,10 @@
 #' # doesn't work even with workspace = 2E9 (with over 4.5Gb in memory)
 #' #fisher.test(eyeHairColor, hybrid = TRUE, workspace = 2E9)
 #' 
-#' tableau(outC$moves, dim(eyeHairColor))
+#' # you can see the markov moves used in the mcmc in tableau notation
+#' tableau(outC$moves, dim(eyeHairColor)) 
 #' 
-#' 
-#' # library(microbenchmark)
-#' # microbenchmark(
-#' #   hierarchical(~ Eye + Hair, data = eyeHairColor),
-#' #   hierarchical(~ Eye + Hair, data = eyeHairColor, engine = "R")
-#' # )
-#' # 5-10 times faster; much faster with increased iter
-#' 
-#' 
+#' # library(vcd)
 #' # mosaic(~ Eye + Hair, data = HairEyeColor, shade = TRUE, legend = TRUE)
 #' 
 #' 
@@ -278,13 +286,10 @@
 #' 
 #' data(abortion)
 #' 
-#' out <- hierarchical(
-#'   ~ Education*Abortion + Abortion*Denomination + Education*Denomination, 
-#'   data = abortion,
+#' out <- hierarchical(subsets(1:3, 2), data = abortion,
 #'   iter = 10000, burn = 50000, thin = 50
 #' )
 #' out$p.value
-#' 
 #' 
 #' vec2tab(rowMeans(out$steps), dim(abortion)) # cf. p. 380
 #' loglin(abortion, subsets(1:3, 2), fit = TRUE)$fit
@@ -300,7 +305,7 @@
 #' curve(1*x, from = 0, to = 30, add = TRUE, col = "red")
 #' 
 #' ( nMoves <- 2*ncol(out$moves) ) # DS uses 110
-#' # the markov basis is larger than it needs to be
+#' # (the markov basis is larger than it needs to be)
 #'
 #' 
 #' 
@@ -339,8 +344,11 @@
 #' mod$obs
 #'
 #'
-#' # checking the autocorrelation
+#' # checking the autocorrelation of mcmc
 #' acf(mod$sampsStats$PRs)
+#' 
+#' # poor mixing is a known limitation of markov bases strategies
+#' # one strategy is to try to thin the mcmc
 #' mod <- hierarchical(~ Eye*Hair + Hair*Sex + Eye*Sex, data = HairEyeColor, thin = 100)
 #' acf(mod$sampsStats$PRs) # got it!
 #'
@@ -377,14 +385,14 @@
 #'
 #' data(haberman)
 #'
-#' mod <- hierarchical(~ X1*X2 + X2*X3 + X1*X3, data = haberman)
+#' mod <- hierarchical(subsets(1:3, 2), data = haberman)
 #' 
 #' statsFit <- loglin(haberman, subsets(1:3, 2), param = TRUE, fit = TRUE) 
 #' statsFit$fit
 #' statsFit$param
 #' c(statsFit$pearson, statsFit$lrt)
 #' 
-#' algstatFit <- hierarchical(~ X1*X2 + X2*X3 + X1*X3, data = haberman, method = "mcmc")
+#' algstatFit <- hierarchical(subsets(1:3, 2), data = haberman, method = "mcmc")
 #' algstatFit$exp
 #' algstatFit$param
 #' algstatFit$statistic
@@ -406,14 +414,14 @@
 #' data(drugs) 
 #' ftable(aperm(drugs, c(3, 1, 2))) # = table 8.3
 #'
-#' out <- hierarchical(~Alcohol + Cigarette + Marijuana, data = drugs)
-#' matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE)
+#' out <- hierarchical(~ Alcohol + Cigarette + Marijuana, data = drugs)
+#' matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE) 
 #' 
 #' loglin(drugs, as.list(1:3), fit = TRUE)$fit
 #' loglin(drugs, as.list(1:3), param = TRUE)$param
 #' 
 #' # # the saturated model issues a warning from markov, but works :
-#' # out <- hierarchical(~Alcohol * Cigarette * Marijuana, data = drugs)
+#' # out <- hierarchical(~ Alcohol * Cigarette * Marijuana, data = drugs)
 #' # matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE)
 #' 
 #' 
@@ -471,44 +479,68 @@
 #' }
 #'
 #' 
-hierarchical <- function(formula, data, iter = 1E4, burn = 1000, thin = 10,
-  engine = c("Cpp","R"), method = c("ipf", "mcmc"), moves){
+hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
+  engine = c("Cpp","R"), method = c("ipf", "mcmc"), moves, ...){
 
+  ## set/check args
+  ##################################################
+  
   engine <- match.arg(engine)
   method <- match.arg(method)  
+  argList <- as.list(match.call(expand.dots = TRUE))[-1]
+  
+  if("formula" %in% names(argList)){
+    .Deprecated(msg = 
+      'the formula argument is deprecated, please use "model" instead.'
+    )
+  }
 
   
   ## reshape data
   ##################################################
   
-  data <- suppressMessages(teshape(data, "tab"))
+  data        <- suppressMessages(teshape(data, "tab"))
   varsNlevels <- dimnames(data)  
-  p <- length(varsNlevels)
+  vars        <- names(varsNlevels)
+  p           <- length(varsNlevels)
   
   
   ## check for sampling zeros
   ##################################################
-  if(any(data == 0L)) message("care ought be taken with tables with sampling zeros to ensure the MLE exists.")
+  if(any(data == 0L)) message(
+    "care ought be taken with tables with sampling zeros to ensure the MLE exists."
+  )
 
 
-  ## parse formula for vector of r_k's
+  ## parse model specification (formula for vector of r_k's)
   ##################################################
   
-  fString <- as.character(formula)
-  predString <- fString[2]
-  varsInFormula <- attr(attr(terms(formula), "factors"), "dimnames")[[1]]
-  varsNndcs <- 1:length(varsInFormula)
-  names(varsNndcs) <- varsInFormula
-  # varsNndcs = c("Survived" = 1, ...)
-
-
-  ## make list of facets
-  ##################################################
-  # attr(data, "dimnames")
-  facets <- strsplit(predString, " \\+ ")[[1]]
-  facets <- strsplit(facets, " \\* ")
-  facets <- lapply(facets, function(x) unname(varsNndcs[x]) )
-
+  # if it's a formula ~ Gender + Handedness or ~ 1 + 2, convert to list
+  if(is.formula(model)){ 
+    
+    ## parse formula
+    fString <- as.character(model)
+    predString <- fString[2]
+    
+    ## make list of facets
+    model <- strsplit(predString, " \\+ ")[[1]]
+    model <- strsplit(model, " \\* ")
+        
+  } 
+  
+  # make facets (list of index vecs); if model specified with variable
+  # names, convert them to indices
+  if(all(unlist(model) %in% vars)){ # variable names      
+    varname2index <- 1:p
+    names(varname2index) <- vars      
+    facets <- lapply(model, function(varsInFacet) varname2index[varsInFacet])
+  } else if(all(unlist(model) %in% 1:length(vars))){ # by indices
+    facets <- lapply(model, as.integer) # to fix the ~ 1 + 2 case, parsed as chars
+  } else {
+    stop("invalid model specification, see ?hierarchical")
+  }
+    
+browser()
 
   ## construct A matrix and compute moves
   ##################################################  
