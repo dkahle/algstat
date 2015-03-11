@@ -4,13 +4,13 @@
 \alias{countTables}
 \title{Count Similarly Margined Contingency Tables}
 \usage{
-countTables(table, margins = as.list(1:length(dim(table))), dir = tempdir(),
-  opts = "", quiet = TRUE)
+countTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
+  dir = tempdir(), opts = "", quiet = TRUE)
 }
 \arguments{
 \item{table}{the table of interest}
 
-\item{margins}{the margins to be fixed}
+\item{A}{the configuration/transpose design matrix}
 
 \item{dir}{directory to place the files in, without an ending /}
 
