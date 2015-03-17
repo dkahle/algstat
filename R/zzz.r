@@ -71,13 +71,6 @@
     check_for_4ti2() 
     
     
-      
-    
-    
-    
-    
-    
-    
     
     
   } else if(is.win()){ ## find the path on a pc  	
@@ -155,9 +148,6 @@
     
     
     
-    
-    
-    
   } else {  ## find the path on a unix-type machine
     # note that this is done after os-x with an else
   	
@@ -187,7 +177,9 @@
 
 
 
-
+.onUnload <- function (libpath) {
+  library.dynam.unload("algstat", libpath)
+}
 
 
 
