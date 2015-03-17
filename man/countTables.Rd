@@ -33,6 +33,8 @@ Count the number of contingency tables with the same marginals as a given table.
 
 data(politics)
 countTables(politics)
+(A <- hmat(c(2,2), list(1, 2)))
+countTables(politics, A)
 
 data(handy)
 countTables(handy)
