@@ -22,6 +22,7 @@ If kronecker is  the function that computes A x B, kprod computes A x B x C and 
 kprod(diag(2), t(ones(2)))
 kprod(t(ones(2)), diag(2))
 
+
 kprod(diag(2), t(ones(2)), t(ones(2)))
 kprod(t(ones(2)), diag(2), t(ones(2)))
 kprod(t(ones(2)), t(ones(2)), diag(2))
@@ -30,6 +31,8 @@ kprod(t(ones(2)), t(ones(2)), diag(2))
 rbind(
   kprod(diag(2), t(ones(2))),
   kprod(t(ones(2)), diag(2))
-)
+) # cf. aoki, hara, and takemura p.13
+
+hmat(c(2, 2), 1:2)
 }
 

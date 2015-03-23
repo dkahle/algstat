@@ -267,6 +267,7 @@ ones <- function(n) matrix(rep(1L, n))
 #' 
 #' kprod(diag(2), t(ones(2)))
 #' kprod(t(ones(2)), diag(2))
+#' 
 #'
 #' kprod(diag(2), t(ones(2)), t(ones(2)))
 #' kprod(t(ones(2)), diag(2), t(ones(2)))
@@ -276,8 +277,9 @@ ones <- function(n) matrix(rep(1L, n))
 #' rbind(
 #'   kprod(diag(2), t(ones(2))),
 #'   kprod(t(ones(2)), diag(2))
-#' )
+#' ) # cf. aoki, hara, and takemura p.13
 #' 
+#' hmat(c(2, 2), 1:2)
 #' 
 kprod <- function(...) Reduce(kronecker, list(...))
 
