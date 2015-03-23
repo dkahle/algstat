@@ -133,30 +133,26 @@ count <- function(spec, dir = tempdir(), opts = "",
   	geqNdcs <- which(str_detect(spec, " >= "))
   	leqNdcs <- which(str_detect(spec, " <= "))  	
   	eeqNdcs <- which(str_detect(spec, " == "))  	  	
-  	eqNdcs <- which(str_detect(spec, " = "))  	  	  	
+  	eqNdcs  <- which(str_detect(spec, " = "))  	  	  	
 
     if(length(geqNdcs) > 0){
       tmp <- strsplit(spec[geqNdcs], " >= ")
-      parsedSpec[geqNdcs] <- 
-        lapply(tmp, function(v) mp(v[2]) - mp(v[1]))
+      parsedSpec[geqNdcs] <- lapply(tmp, function(v) mp(v[2]) - mp(v[1]))
     } 
     
     if(length(leqNdcs) > 0){
       tmp <- strsplit(spec[leqNdcs], " <= ")
-      parsedSpec[leqNdcs] <- 
-        lapply(tmp, function(v) mp(v[1]) - mp(v[2]))
+      parsedSpec[leqNdcs] <- lapply(tmp, function(v) mp(v[1]) - mp(v[2]))
     }     
     
     if(length(eeqNdcs) > 0){
       tmp <- strsplit(spec[eeqNdcs], " == ")
-      parsedSpec[eeqNdcs] <- 
-        lapply(tmp, function(v) mp(v[1]) - mp(v[2]))
+      parsedSpec[eeqNdcs] <- lapply(tmp, function(v) mp(v[1]) - mp(v[2]))
     }          	
     
     if(length(eqNdcs) > 0){
       tmp <- strsplit(spec[eqNdcs], " = ")
-      parsedSpec[eqNdcs] <- 
-        lapply(tmp, function(v) mp(v[1]) - mp(v[2]))
+      parsedSpec[eqNdcs] <- lapply(tmp, function(v) mp(v[1]) - mp(v[2]))
     } 
     
     linearityNdcs <- sort(c(eeqNdcs, eqNdcs))
