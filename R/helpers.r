@@ -310,7 +310,7 @@ timeStamp <- function(){
 
 
 
-
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) abs(x - round(x)) < tol
 
 
 
@@ -336,3 +336,5 @@ is.formula <- function(x) class(x) == "formula"
 is.mac <- function() grepl("darwin", R.version$platform)
 is.win <- function() .Platform$OS.type == 'windows'
 is.unix <- function() .Platform$OS.type == "unix"
+
+
