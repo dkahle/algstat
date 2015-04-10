@@ -338,3 +338,12 @@ is.win <- function() .Platform$OS.type == 'windows'
 is.unix <- function() .Platform$OS.type == "unix"
 
 
+
+
+
+
+
+sampleIntBetween <- function(l, u){
+  if(l == u) return(l)
+  sample(l:u, 1)
+}

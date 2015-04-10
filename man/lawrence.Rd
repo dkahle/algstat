@@ -4,10 +4,12 @@
 \alias{lawrence}
 \title{Compute the Lawrence lifting of a configuration matrix}
 \usage{
-lawrence(A)
+lawrence(A, extent = c("short", "tall"))
 }
 \arguments{
 \item{A}{the configuration matrix of the model}
+
+\item{extent}{short or tall version}
 }
 \value{
 an integer matrix
@@ -18,11 +20,16 @@ Compute the Lawrence lifting of a configuration matrix
 \examples{
 A <- hmat(c(2,2), 1:2)
 lawrence(A)
+lawrence(A, extent = "tall")
+
+markov(A)
+markov(lawrence(A))
+markov(lawrence(A, extent = "tall"))
 }
 \author{
 David Kahle \email{david.kahle@gmail.com}
 }
 \seealso{
-Aoki, Hara, and Takemura (2012), p. 61
+Aoki, Hara, and Takemura (2012), pp. 61-62
 }
 
