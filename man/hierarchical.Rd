@@ -79,8 +79,13 @@ data(handy)
 # ... or as a list of facets given by indices
 (out <- hierarchical(list(1, 2), data = handy))
 
-# ... or as a list of facets given by name.
+# ... or as a list of facets given by name
 (out <- hierarchical(list("Gender", "Handedness"), data = handy))
+
+# ... and even with a matrix with no attributes
+mat <- handy
+attributes(mat)[c("class","dimnames")] <- NULL
+mat
 
 
 

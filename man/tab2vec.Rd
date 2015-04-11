@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab2vec.r
 \name{tab2vec}
 \alias{tab2vec}
-\title{Array to Vector conversion}
+\title{Array to vector conversion}
 \usage{
 tab2vec(tab)
 }

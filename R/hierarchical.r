@@ -67,8 +67,13 @@
 #' # ... or as a list of facets given by indices
 #' (out <- hierarchical(list(1, 2), data = handy))
 #'
-#' # ... or as a list of facets given by name.
+#' # ... or as a list of facets given by name
 #' (out <- hierarchical(list("Gender", "Handedness"), data = handy))
+#' 
+#' # ... and even with a matrix with no attributes
+#' mat <- handy
+#' attributes(mat)[c("class","dimnames")] <- NULL
+#' mat
 #' 
 #' 
 #' 
@@ -500,9 +505,18 @@ hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   ##################################################
   
   data        <- suppressMessages(teshape(data, "tab"))
+  p           <- length(dim(data))
+  
+  ## if a pure array is given, give names for later
+  if(is.array(data) && is.null(dimnames(data))){
+    data <- array2tab(data)
+  }
+  
+  ## other basic objects
   varsNlevels <- dimnames(data)  
   vars        <- names(varsNlevels)
-  p           <- length(varsNlevels)
+  
+  
   
   
   ## check for sampling zeros
@@ -527,7 +541,7 @@ hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
     model <- strsplit(model, " \\* ")
         
   } 
-  
+
   # make facets (list of index vecs); if model specified with variable
   # names, convert them to indices
   if(all(unlist(model) %in% vars)){ # variable names      

@@ -1,4 +1,4 @@
-#' Array to Vector conversion
+#' Array to vector conversion
 #'
 #' Convert an array into a vector.
 #'
@@ -36,7 +36,7 @@ tab2vec <- function(tab){
 
 
 
-#' Vector to Array conversion
+#' Vector to array conversion
 #'
 #' Convert a vector into an array given a set of dimensions; it therefore simply wraps \code{aperm} and \code{array}.
 #'
@@ -63,3 +63,21 @@ vec2tab <- function(vec, dim){
     length(dim):1
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

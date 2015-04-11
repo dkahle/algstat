@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab2vec.r
 \name{vec2tab}
 \alias{vec2tab}
-\title{Vector to Array conversion}
+\title{Vector to array conversion}
 \usage{
 vec2tab(vec, dim)
 }

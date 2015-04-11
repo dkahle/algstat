@@ -20,7 +20,8 @@ Imports:
     stringr,
     reshape2,
     Rcpp,
-    lpSolve
+    lpSolve,
+    parallel
 License: GPL-2
 SystemRequirements: Optionally Latte-integrale, Bertini, and Macaulay2.  Cygwin
     is required for each of the above for Windows users.  See INSTALL file for

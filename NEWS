@@ -5,7 +5,7 @@ NEW FEATURES
 
 * the 4ti2 function groebner is now implemented.
 * functions write.latte and read.latte are now implemented.  the following functions now use these: markov
-* hierarchical now takes more general model specifications, including facet specification (i.e. list(1, 2) and list("Gender", "Handedness")) and index-formula specification (i.e. ~ 1 + 2).
+* hierarchical now takes more general model specifications, including facet specification (i.e. list(1, 2) and list("Gender", "Handedness")) and index-formula specification (i.e. ~ 1 + 2).  it also accepts unnamed arrays.
 
 CHANGES
 
