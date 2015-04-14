@@ -7,7 +7,7 @@ Authors@R: c(person("David", "Kahle", email = "david.kahle@gmail.com", role = c(
   person("Luis", "Garcia-Puente", email = "lgarcia@shsu.edu", role = "aut"),
   person("Ruriko", "Yoshida", email = "ruriko.yoshida@uky.edu", role = "aut", comment = "Starting v0.0.3"))
 Maintainer: David Kahle <david.kahle@gmail.com>
-Description: algstat provides functionality for algebraic statistics in R.
+Description: Connections and tools for algebraic statistics in R.
     Current applications include exact inference in log-linear models for
     contingency table data, analysis of ranked and partially ranked data, and
     general purpose tools for multivariate polynomials, building on the mpoly
