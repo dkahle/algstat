@@ -1,6 +1,6 @@
 Package: algstat
 Type: Package
-Title: Algebraic statistics in R
+Title: Algebraic Statistics in R
 Version: 0.0.3
 Date: 2015-01-19
 Authors@R: c(person("David", "Kahle", email = "david.kahle@gmail.com", role = c("aut", "cre")),
