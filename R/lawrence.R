@@ -15,9 +15,11 @@
 #' lawrence(A)
 #' lawrence(A, extent = "tall")
 #' 
+#' \dontrun{ # requires 4ti2 installed
 #' markov(A)
 #' markov(lawrence(A))
 #' markov(lawrence(A, extent = "tall"))
+#' }
 #' 
 #' 
 lawrence <- function(A, extent = c("short", "tall")){
