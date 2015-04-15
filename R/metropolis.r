@@ -5,7 +5,7 @@
 #' See Algorithm 1.1.13 in LAS, the reference below.
 #' 
 #' @param init the initial step
-#' @param moves the markov basis (the negatives will be added).  see ?markov
+#' @param moves the moves to be used (the negatives will be added); they are arranged as the columns of a matrix.
 #' @param iter number of chain iterations
 #' @param burn burn-in
 #' @param thin thinning

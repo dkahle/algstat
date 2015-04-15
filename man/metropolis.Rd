@@ -10,7 +10,7 @@ metropolis(init, moves, iter = 1000, burn = 1000, thin = 10,
 \arguments{
 \item{init}{the initial step}
 
-\item{moves}{the markov basis (the negatives will be added).  see ?markov}
+\item{moves}{the moves to be used (the negatives will be added); they are arranged as the columns of a matrix.}
 
 \item{iter}{number of chain iterations}
 
