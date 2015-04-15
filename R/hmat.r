@@ -34,14 +34,14 @@
 #' 
 #'
 hmat <- function(varlvls, facets){
-	
+
   # set basic variables
   p <- length(varlvls) # number of variables in table (p-way)  
   numFacets <- length(facets)
   
   
   # make cells
-  varsNlvls <- lapply(as.list(varlvls), function(x) 1:x)
+  varsNlvls <- lapply(as.list(varlvls), function(x) number2Glyph(1:x))
   cellsDf   <- expand.grid(rev(varsNlvls))[,p:1]  
   
   
@@ -70,13 +70,13 @@ hmat <- function(varlvls, facets){
   
   
   # make A
-  A <- matrix(nrow = totalRows, ncol = nCells, dimnames = list(rowNames, colNames))
+  A <- matrix(0L, nrow = totalRows, ncol = nCells, dimnames = list(rowNames, colNames))
 
   
   # put in 0's and 1's
   for(k in 1:totalRows){
     ndcsToMatch   <- which(strsplit(rowNames[k],"")[[1]] != "+")
-    configToMatch <- gsub('\\+', '', rowNames[k])
+    configToMatch <- gsub('\\+', "", rowNames[k])
     A[k,] <- vapply(strsplit(colNames, ""), function(l){
       paste(l[ndcsToMatch], collapse = "") == configToMatch
     }, logical(1)) + 0
@@ -91,3 +91,21 @@ hmat <- function(varlvls, facets){
   # return
   intA
 }
+
+
+
+
+
+number2Glyph <- function(n) c(0:9, letters, LETTERS)[n+1]
+glyph2Number <- function(g){
+  x <- 0:62
+  names(x) <- c(0:9, letters, LETTERS)
+  unname(x[g])
+}
+
+
+
+
+
+
+

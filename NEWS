@@ -11,6 +11,10 @@ CHANGES
 
 * all functions now better handle zero-dimensional latte output.
 
+FIXES
+
+* hmat now properly deals with variables with more then 10 levels (new max: 61)
+
 
 
 Version 0.0.2

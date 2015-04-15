@@ -18,15 +18,19 @@ a named matrix
 Determine the A matrix associated with a hierarchical model on a contingency table.  In algebraic statistics, the A matrix of a log-linear model is the transpose of the design matrix of the (cell-means parameterized) ANOVA corresponding to the model.
 }
 \examples{
-# LAS example 1.2.11, p.16
-varlvls <- c(2,2,2,2)
-facets <- list(c(1,2), c(1,4), c(2,3))
-( A <- hmat(varlvls, facets) )
-
 # 2x2 independence example
 # following convention, the first index indicates rows
 varlvls <- c(2,2)
 facets <- list(1,2)
+( A <- hmat(varlvls, facets) )
+
+# alternatively:
+hmat(c(2, 2), 1:2)
+
+
+# LAS example 1.2.11, p.16
+varlvls <- c(2,2,2,2)
+facets <- list(c(1,2), c(1,4), c(2,3))
 ( A <- hmat(varlvls, facets) )
 
 printForMarkov <- function(A){
