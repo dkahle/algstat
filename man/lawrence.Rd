@@ -22,9 +22,11 @@ A <- hmat(c(2,2), 1:2)
 lawrence(A)
 lawrence(A, extent = "tall")
 
+\dontrun{ # requires 4ti2 installed
 markov(A)
 markov(lawrence(A))
 markov(lawrence(A, extent = "tall"))
+}
 }
 \author{
 David Kahle \email{david.kahle@gmail.com}
