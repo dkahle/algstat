@@ -20,13 +20,35 @@
 #' 
 #'
 tab2vec <- function(tab){
+  
+  # if is a vector, return
+  if(is.null(dim(tab))){
+    tab <- as.vector(tab)
+    names(tab) <- 1:length(tab)
+    return(tab)
+  }
+  
+  # if it's a vector already, short-circuit
+  if(length(dim(tab)) == 1){
+    tab <- as.vector(tab)
+    names(tab) <- 1:length(tab)
+    return(tab)
+  }
+  
+  # otherwise, rotate and class
   u <- aperm(tab, length(dim(tab)):1)
   if(class(tab[1]) == "numeric") u <- as.vector(u)
   if(class(tab[1]) == "integer") u <- as.integer(u)  
+  
+  # create cell indices
   tmpdf <- expand.grid( 
-    rev(lapply(as.list(dim(tab)), function(x) 1:x)) 
+    rev.default(lapply(dim(tab), function(x) 1:x)) 
   )[,length(dim(tab)):1]
+  
+  # assign them as names to u
   names(u) <- apply(tmpdf, 1, paste, collapse = ',')
+  
+  # return
   u
 }
 

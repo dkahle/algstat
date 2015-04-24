@@ -2,7 +2,7 @@
 % Please edit documentation in R/markov.r
 \name{markov}
 \alias{markov}
-\title{Compute a Markov Basis with 4ti2}
+\title{Compute a Markov basis with 4ti2}
 \usage{
 markov(mat, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = "-parb", quiet = TRUE, dbName)

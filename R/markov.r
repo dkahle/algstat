@@ -1,4 +1,4 @@
-#' Compute a Markov Basis with 4ti2
+#' Compute a Markov basis with 4ti2
 #'
 #' A Markov basis of a matrix A is computed with the markov function of 4ti2, obtained with the LattE-integrale bundle.
 #' 

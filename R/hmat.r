@@ -97,6 +97,7 @@ hmat <- function(varlvls, facets){
 
 
 number2Glyph <- function(n) c(0:9, letters, LETTERS)[n+1]
+
 glyph2Number <- function(g){
   x <- 0:62
   names(x) <- c(0:9, letters, LETTERS)
