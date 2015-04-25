@@ -583,9 +583,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   p    <- length(dim(data))
   
   ## if a pure array is given, give names for later
-  if(is.array(data) && is.null(dimnames(data))){
-    data <- array2tab(data)
-  }
+  if(is.array(data) && is.null(dimnames(data))) data <- array2tab(data)
   
   ## other basic objects
   varsNlevels <- dimnames(data)  
@@ -649,7 +647,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
       immediate. = TRUE
     )
     message("Computing 1000 SIS moves... ", appendLF = FALSE)    
-    moves <- rmove(n = 1000, A = A, b = A %*% tab2vec(tab), ...)
+    moves <- rmove(n = 1000, A = A, b = A %*% tab2vec(data), ...)
     message("done.", appendLF = TRUE)      
     
   } else if(is.character(moves)){
@@ -672,9 +670,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   ## run metropolis-hastings
   ##################################################  
   current <- unname(tab2vec(data)) # init
-  out <- metropolis(current, moves, 
-    iter = iter, burn = burn, thin = thin,
-    engine = engine)  
+  out <- metropolis(current, moves, iter = iter, burn = burn, thin = thin, engine = engine)  
 
 
 
@@ -812,6 +808,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   out$obs <- data  
   out$exp <- exp
   out$A <- A
+  
   out$p.value <- c(
     PR = mean(PRs <= PR),   
     X2 = mean(X2s >= X2), 
@@ -820,6 +817,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
     CR = mean(CRs >= CR),
     NM = mean(NMs >= NM)
   )
+  
   out$p.value.std.err <- c(
     PR = sqrt(mean(PRs <= PR)*(1-mean(PRs <= PR))/iter), 
     X2 = sqrt(mean(X2s >= X2)*(1-mean(X2s >= X2))/iter), 
@@ -828,6 +826,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
     CR = sqrt(mean(CRs >= CR)*(1-mean(CRs >= CR))/iter), 
     NM = sqrt(mean(NMs >= NM)*(1-mean(NMs >= NM))/iter)     
   )  
+  
   out$mid.p.value <- c(
     PR = mean(PRs < PR) + mean(PRs == PR)/2,
     X2 = mean(X2s > X2) + mean(X2s == X2)/2, 
@@ -836,6 +835,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
     CR = mean(CRs > CR) + mean(CRs == CR)/2,
     NM = mean(NMs > NM) + mean(NMs == NM)/2    
   )  
+  
   out$iter       <- iter
   out$burn       <- burn
   out$thin       <- thin
@@ -844,7 +844,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   out$cells      <- nCells
   out$method     <- method
 
-  class(out)   <- "loglinear"
+  class(out) <- "loglinear"
   out
 }
 
