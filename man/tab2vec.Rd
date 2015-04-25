@@ -10,13 +10,16 @@ tab2vec(tab)
 \item{tab}{an array of counts}
 }
 \value{
-a named integer vector.  the names correspond to the cell indices in the table.
+a named integer vector.  the names correspond to the cell indices in
+  the table.
 }
 \description{
 Convert an array into a vector.
 }
 \details{
-This function converts an array (or a multi-way contingency table) into a vector, using a consistent ordering of the cells.  The ordering of the cells is lexicographical and cannot be specified by the user.
+This function converts an array (or a multi-way contingency table) into a
+vector, using a consistent ordering of the cells.  The ordering of the cells
+is lexicographical and cannot be specified by the user.
 }
 \examples{
 a <- array(1:24, c(2,3,4))
