@@ -1,22 +1,23 @@
-#' Pretty Printing of Hierarchical's Output
+#' Pretty printing of loglinear's output
 #'
-#' Pretty printing of hierarchical's output.
+#' Pretty printing of loglinear's output.
 #' 
-#' @param x an object of class hierarchical
+#' @param x an object of class loglinear
 #' @param digits digits to round to
 #' @param ... additional parameters
-#' @usage \method{print}{hierarchical}(x, digits = 4, ...)
+#' @usage \method{print}{loglinear}(x, digits = 4, ...)
 #' @return Invisible string of the printed object.
+#' @seealso loglinear
 #' @export
 #' @examples
 #' 
-#' # see ?hierarchical
+#' # see ?loglinear
 #' 
 #' 
-print.hierarchical <- function(x, digits = 4, ...){
+print.loglinear <- function(x, digits = 4, ...){
 	
   ## argument checking and basic variable setting
-  stopifnot(class(x) == "hierarchical")
+  stopifnot(class(x) == "loglinear")
   
   ## print call
   cat("Call:\n")  

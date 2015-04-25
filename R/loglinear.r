@@ -1,189 +1,260 @@
-#' Fitting Hierarchical Log-linear Models with Algebraic Methods
-#'
-#' Run the Metropolis-Hastings algorithm using a Markov basis computed with 4ti2 to sample from the conditional distribution of the data given the sufficient statistics of a hierarchical model.
-#'
-#' Hierarchical fits and tests a hierarchical log-linear model on a contingency table.  In many ways, hierarchical is like stats::loglin or MASS::loglm; however, there are a few key differences in the functionality of hierarchical.
-#'
-#' The first difference is methodological.  The tests conducted with hierarchical are exact tests based on the conditional distribution of the data given the sufficient statistics for the model.  In other words, they are Fisher's exact test analogues for log-linear models.  These tests are made possible by advances in algebraic statistics; see the first and second references below.  In particular, hierarchical leverages Markov bases through the software 4ti2 to construct a Metropolis-Hastings algorithm to sample from the conditional distribution of the table given the sufficient statistics.
-#'
-#' A second way that hierarchical differs from stats::loglin or MASS::loglm is in generalizing the kinds of tests performed.  While those allow for the asymptotic unconditional testing using Pearson's X^2 test and the likelihood ratio test (MASS::loglm is simply a wrapper for stats::loglin), hierarchical gives several test statistics: Pearson's X^2, the likelihood ratio G^2, Freeman-Tukey, Cressie-Read (lambda = 2/3), and Neyman's modified X^2., see the last reference.  In other words, to compute the exact p-value, iter = 1e4 samples are sampled from the conditional distribution of the table given the sufficient statistics, and then the proportion of tables that have X^2, G^2, etc. values greater than or equal to that of the observed table is the p value for the (conditional) exact test.  A similar, but perhaps preferable approach, simply adds up the probabilities of the tables that have probabilities less than or equal to that of the observed table; this is the first line output in hierarchical and does not use a test statistic.
-#'
-#' Some authors (see the third reference) suggest that for discrete problems, a "mid p value" is preferable to the traditional p value, and when presented should be interepreted in the same way.  If the p value is defined to be, say, P(samps >= obs), the mid p value is defined to be P(samps > obs) + P(samps == obs)/2.  The mid p value is computed for each test.
-#'
-#' Since the tests make use of Monte Carlo sampling, standard errors (SE) are reported for each statistic.  For the test statistics, this is just the standard deviation of the samples divided by the square root of the sample size, iter; they are computed and returned by the print method.  The standard errors of the p values use the CLT asymptotic approximation and, therefore, warrant greater consideration when the p value is close to 0 or 1.  
+#' Fit a hierarchical log-linear model with algebraic methods
+#' 
+#' \code{loglinear} fits a hierarchical log-linear model to a dataset (typically
+#' a contingency table) and performs an exact conditional test on the fitted 
+#' model using various distance metrics.  The exact test, which is a 
+#' goodness-of-fit test, is performed via Monte-Carlo sampling from the 
+#' conditional distribution of the table given the sufficient statistics of the 
+#' model.  In short, inference is drawn by comparing the statistic of the 
+#' observed table (be it an unnormalized log-likelihood, a Pearson chi-squared 
+#' value, or another metric) to those of the samples.  The proportion of sampled
+#' tables with equal to or more extreme values than the observed table is the 
+#' resulting p-value.
+#' 
+#' In many ways, \code{loglinear} is like \code{\link{loglin}} or 
+#' \code{\link{loglm}}; however, there are a few key differences.
+#' 
+#' The first difference is methodological.  The tests conducted with 
+#' \code{loglinear} are exact conditional tests based on the conditional 
+#' distribution of the data given the sufficient statistics for the model.  In 
+#' other words, they are analogues of Fisher's exact test for generic log-linear
+#' models.  These tests are made possible by advances in algebraic statistics; 
+#' see references 1--3 below.
+#' 
+#' The second difference between \code{loglinear} and \code{\link{loglin}} or 
+#' \code{\link{loglm}} is that inference is made through Monte Carlo simulation.
+#' In particular, \code{loglinear} leverages Markov moves to sample from the 
+#' conditional distribution of the data given its sufficent statistics.  If the 
+#' software 4ti2 is installed on your machine, you can use \code{\link{markov}} 
+#' (or let \code{loglinear} use \code{\link{markov}}) to generate a Markov basis
+#' to use for the Markov moves. This basis is guaranteed to produce a MCMC 
+#' routine that converges to the conditional distribution of interest.  Since 
+#' \code{loglinear} uses Monte Carlo simulation to conduct inference, and since 
+#' it uses MCMC to do so, concerns typical to MCMC should be addressed.  In 
+#' particular, issues such as burn in and mixing (autocorrelation of samples) 
+#' should be addressed.  The examples illustrate some of these topics.  The 
+#' result is a p-value that is generated by Monte Carlo simulation.  Its 
+#' standard error is provided (computed as in the standard CLT confidence 
+#' interval) to give a sense of the Monte Carlo error.
+#' 
+#' A third way that \code{loglinear} differs from \code{stats::loglin} or 
+#' \code{MASS::loglm} is in generalizing the kinds of tests performed.  While 
+#' those allow for asymptotic unconditional testing using Pearson's X^2 test and
+#' the likelihood ratio test, \code{loglinear} gives several test statistics: 
+#' Pearson's X^2, the likelihood ratio G^2, Freeman-Tukey, Cressie-Read (lambda 
+#' = 2/3), and Neyman's modified X^2., see the last reference.  In other words, 
+#' to compute the exact p-value, iter = 1e4 samples are sampled from the 
+#' conditional distribution of the table given the sufficient statistics, and 
+#' then the proportion of tables that have X^2, G^2, etc. values greater than or
+#' equal to that of the observed table is the p value for the (conditional) 
+#' exact test. A similar, and perhaps preferable approach, simply adds up the 
+#' probabilities of the tables that have probabilities less than or equal to 
+#' that of the observed table; this is the first line output in hierarchical and
+#' does not use a test statistic.
+#' 
+#' Some authors (see the third reference) suggest that for discrete problems, a 
+#' "mid p value" is preferable to the traditional p value, and when presented 
+#' should be interepreted in the same way.  If the p value is defined to be 
+#' P(samps >= obs), the mid p value is defined to be P(samps > obs) + P(samps ==
+#' obs)/2.  The mid p value is computed for each test.
 #' 
 #' @param model hierarchical log-linear model specification
-#' @param data data, typically as a table but can be in different formats.  see \code{\link{teshape}}
+#' @param data data, typically as a table but can be in different formats.  see 
+#'   \code{\link{teshape}}
 #' @param iter number of chain iterations
 #' @param burn burn-in
 #' @param thin thinning
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
-#' @param method should the expected value (exp) be fit using iterative proportional fitting (via loglin) or the MCMC as the average of the steps?
-#' @param moves the markov moves for the mcmc
+#' @param method should the expected value (exp) be fit using iterative 
+#'   proportional fitting (via loglin) or the MCMC as the average of the steps?
+#' @param moves the markov moves for the mcmc (as columns of a matrix).
 #' @param ... ...
-#' @return a list containing named elements
-#' \itemize{
-#'   \item \code{steps}: an integer matrix whose columns represent individual samples from the mcmc.
-#'   \item \code{moves}: the moves used for the proposal distribution in the mcmc, computed with 4ti2 (note that only the positive moves are given).
-#'   \item \code{acceptProb}: the average acceptance probability of the moves, including the thinned moves.
-#'   \item \code{param}: the fitted parameters of the log linear model.
-#'   \item \code{df}: parameters per term in the model
-#'   \item \code{quality}: model selection statistics AIC, AICc, and BIC.
-#'   \item \code{residuals}: the (unstandardized) pearson residuals (O - E) / sqrt(E)
-#'   \item \code{call}: the call.
-#'   \item \code{obs}: the contingency table given.
-#'   \item \code{exp}: the fit contingency table as an integer array.
-#'   \item \code{A}: the sufficient statistics computing matrix (from Tmaker).
-#'   \item \code{p.value}: the exact p-values of individual tests, accurate to Monte-Carlo error.  these are computed as the proportion of samples with statistics equal to or larger than the oberved statistic.
-#'   \item \code{mid.p.value}: the mid p.values, see Agresti pp.20--21.
-#'   \item \code{statistic}: the pearson's chi-squared (X2), likelihood ratio (G2), Freeman-Tukey (FT), Cressie-Read (CR), and Neyman modified chi-squared (NM) statistics computed for the table given.
-#'   \item \code{sampsStats}: the statistics computed for each mcmc sample.
-#'   \item \code{cells}: the number of cells in the table.
-#'   \item \code{method}: the method used to estimate the table.
-#' }	
-#' @export hierarchical
+#' @return a list containing named elements \itemize{ \item \code{steps}: an 
+#'   integer matrix whose columns represent individual samples from the mcmc. 
+#'   \item \code{moves}: the moves used for the proposal distribution in the 
+#'   mcmc, computed with 4ti2 (note that only the positive moves are given). 
+#'   \item \code{acceptProb}: the average acceptance probability of the moves, 
+#'   including the thinned moves. \item \code{param}: the fitted parameters of 
+#'   the log linear model. \item \code{df}: parameters per term in the model 
+#'   \item \code{quality}: model selection statistics AIC, AICc, and BIC. \item 
+#'   \code{residuals}: the (unstandardized) pearson residuals (O - E) / sqrt(E) 
+#'   \item \code{call}: the call. \item \code{obs}: the contingency table given.
+#'   \item \code{exp}: the fit contingency table as an integer array. \item 
+#'   \code{A}: the sufficient statistics computing matrix (from Tmaker). \item 
+#'   \code{p.value}: the exact p-values of individual tests, accurate to 
+#'   Monte-Carlo error.  these are computed as the proportion of samples with 
+#'   statistics equal to or larger than the oberved statistic. \item 
+#'   \code{mid.p.value}: the mid p.values, see Agresti pp.20--21. \item 
+#'   \code{statistic}: the pearson's chi-squared (X2), likelihood ratio (G2), 
+#'   Freeman-Tukey (FT), Cressie-Read (CR), and Neyman modified chi-squared (NM)
+#'   statistics computed for the table given. \item \code{sampsStats}: the 
+#'   statistics computed for each mcmc sample. \item \code{cells}: the number of
+#'   cells in the table. \item \code{method}: the method used to estimate the 
+#'   table. }
+#' @export loglinear
 #' @author David Kahle
 #' @seealso \code{\link{loglin}}, \code{\link{loglm}}, \code{\link{metropolis}}
-#' @references Diaconis, P. and B. Sturmfels (1998). Algebraic Algorithms for Sampling from Conditional Distributions. \emph{The Annals of Statistics} 26(1), pp.363-397.
-#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
-#' @references Agresti, A. (2002). \emph{Categorical Data Analysis}, Basel: John Wiley & Sons, 2ed.
-#' @references Agresti, A. (1992). A Survey of Exact Inference for Contingency Tables \emph{Statistical Science} 7(1), pp.131-153.
-#' @references Read, T. and Cressie, N. (1998). \emph{Goodness-of-Fit Statistics for Discrete Multivariate Data}, Springer-Verlag.
+#' @references Diaconis, P. and B. Sturmfels (1998). Algebraic Algorithms for 
+#'   Sampling from Conditional Distributions. \emph{The Annals of Statistics} 
+#'   26(1), pp.363-397.
+#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures 
+#'   on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+#' @references Aoki, S., H. Hara, and A. Takemura (2012). \emph{Markov Bases in 
+#'   Algebraic Statistics}, Springer.
+#' @references Agresti, A. (2002). \emph{Categorical Data Analysis}, Basel: John
+#'   Wiley & Sons, 2ed.
+#' @references Agresti, A. (1992). A Survey of Exact Inference for Contingency 
+#'   Tables \emph{Statistical Science} 7(1), pp.131-153.
+#' @references Read, T. and Cressie, N. (1998). \emph{Goodness-of-Fit Statistics
+#'   for Discrete Multivariate Data}, Springer-Verlag.
 #' @examples
-#'
+#' 
 #' \dontrun{
-#'
+#' 
 #' 
 #' ## handedness introductory example
 #' ############################################################
 #' 
 #' data(handy)
 #' 
-#' (out <- hierarchical(~ Gender + Handedness, data = handy))
+#' (out <- loglinear(~ Gender + Handedness, data = handy))
 #' 
 #' # you can also specify the same model using variable indices...   
-#' (out <- hierarchical(~ 1 + 2, data = handy))
+#' (out <- loglinear(~ 1 + 2, data = handy))
 #'   
 #' # ... or as a list of facets given by indices
-#' (out <- hierarchical(list(1, 2), data = handy))
-#'
+#' (out <- loglinear(list(1, 2), data = handy))
+#' 
 #' # ... or as a list of facets given by name
-#' (out <- hierarchical(list("Gender", "Handedness"), data = handy))
+#' (out <- loglinear(list("Gender", "Handedness"), data = handy))
 #' 
 #' # ... and even with a matrix with no attributes
 #' mat <- handy
 #' attributes(mat)[c("class","dimnames")] <- NULL
 #' mat
+#' (out <- loglinear(list(1, 2), data = mat))
 #' 
 #' 
 #' 
-#' # hierarchical performs the same tasks as loglin and loglm,
-#' # but hierarchical gives the exact test p values and more statistics
-#' statsFit <- stats::loglin(handy, list(1, 2), fit = TRUE, param = TRUE)
-#' massFit <- MASS::loglm(~ Gender + Handedness, data = handy)
+#' # loglinear performs the same tasks as loglin and loglm,
+#' # but loglinear gives the exact test p values and more statistics
+#' loglinFit <- stats::loglin(handy, list(1, 2), fit = TRUE, param = TRUE)
+#' loglmFit <- MASS::loglm(~ Gender + Handedness, data = handy)
 #' # loglm is just a wrapper of loglin  
 #'   
-#'
 #' 
 #' 
+#' 
+#' 
+#' 
+#'   
 #' 
 #' 
 #'   
-#'
 #' 
-#'   
-#'
 #' 
-#' # comparisons between hierarchical and loglin
+#' # comparisons between loglinear, stats::loglin, and MASS::loglm
 #' ############################################################
-#'
+#' 
+#' (loglinearFit <- loglinear(~ Gender + Handedness, data = handy))
+#' (loglinFit    <- stats::loglin(handy, list(1, 2), fit = TRUE, param = TRUE))
+#' (loglmFit     <- MASS::loglm(~ Gender + Handedness, data = handy))
+#' 
+#' 
+#' 
 #' # the expected table given the sufficient statistics can be computed
 #' # via two methods, iterative proportional fitting, and the mcmc itself:
-#' out$exp # ipf
-#' hierarchical(~ Gender + Handedness, data = handy, method = "mcmc")$exp
-#' statsFit$fit # the equivalent in loglin; this is used by default in hierarchical
-#'
-#'
-#'
+#' loglinearFit$exp # ipf
+#' loglinear(~ Gender + Handedness, data = handy, method = "mcmc")$exp
+#' loglinFit$fit # the equivalent in loglin; this is used by default in loglinear
+#' 
+#' 
+#' 
 #' 
 #' # the parameter values of the loglinear model can be accessed
-#' out$param
-#' statsFit$param
-#'
-#'
-#'
-#'
-#' # the p-value for the overall model is available as well
-#' # hierarchical gives the exact conditional p-value
+#' loglinearFit$param
+#' loglinFit$param
+#' 
+#' 
+#' 
+#' 
+#' # the p-value for the goodness-of-fit of the overall model is available as well :
+#' # loglinear gives the exact conditional p-value
 #' # (conditional on the sufficient statistics)
 #' # the five numbers correspond the probability of tables that are
 #' # "more weird" than the observed table, where "more weird" is determined
 #' # by having a larger X2 value (or G2, FT, CR, or NM)
-#' out$p.value
-#' fisher.test(handy)$p.value # out$p.value["X2"] is accurate to monte carlo error
+#' loglinearFit$p.value
+#' 
+#' # in this case (a 2x2 table with the independence model, we can check that 
+#' # the above p-values are coorect up to Monte Carlo error
+#' fisher.test(handy)$p.value
 #' 
 #' 
-#' # loglin gives the p-values using the unconditional asymptotic distributions
+#' # loglin gives the p-values using the unconditional asymptotic distribution:
+#' # note that the two are quite different in this case, although the conclusion
+#' # is the same
 #' c(
-#'   "X2" = pchisq(statsFit$pearson, df = statsFit$df, lower.tail = FALSE),
-#'   "G2" = pchisq(statsFit$lrt, df = statsFit$df, lower.tail = FALSE)
+#'   "X2" = pchisq(loglinFit$pearson, df = loglinFit$df, lower.tail = FALSE),
+#'   "G2" = pchisq(loglinFit$lrt,     df = loglinFit$df, lower.tail = FALSE)
 #' ) 
-#'
-#' out$mid.p.value # the mid (exact conditional) p-value is also available
-#'
-#'
-#'
-#'
+#' 
+#' # mid p-values are available as well:
+#' loglinearFit$mid.p.value # the mid (exact conditional) p-value is also available
+#' 
+#' 
+#' 
+#' 
 #' # the test statistics based on the observed table and the expected
 #' # table under the model are available
-#' out$statistic 
-#' c(statsFit$pearson, statsFit$lrt) # loglin only gives X2 and G2
+#' loglinearFit$statistic 
+#' c(X2 = loglinFit$pearson, G2 = loglinFit$lrt) # loglin only gives X2 and G2
 #' 
 #' 
-#'
-#'
-#' # the markov basis used for the proposal distribution of the metropolis-hastings
+#' 
+#' 
+#' # the markov moves used for the proposal distribution of the metropolis-hastings
 #' # algorithm are returned. the proposal distribution is uniform on +/- 
 #' # the moves added to the current table
-#' out$moves
+#' loglinearFit$moves
 #' # they are easier understood as tables
-#' vec2tab(out$moves, dim(handy))
+#' vec2tab(loglinearFit$moves, dim(handy))
 #' # notice that the marginals stay fixed:
-#' handy + vec2tab(out$moves, dim(handy))
+#' handy + vec2tab(loglinearFit$moves, dim(handy))
 #' 
 #' 
 #' 
 #' 
 #' # these were computed as the markov basis of the integer matrix
-#' out$A
-#' markov(out$A) 
-#' out$moves
+#' loglinearFit$A
+#' markov(loglinearFit$A) 
+#' loglinearFit$moves
 #' 
 #' 
 #' 
 #' 
 #' # the moves are also sometimes written in tableau form (LAS p.13)
-#' tableau(out$moves, dim(handy))
+#' tableau(loglinearFit$moves, dim(handy))
 #' # that's +1 the the table in elements [1,1] and [2,2]
 #' # and -1 in the table in elements [1,2] and [2,1]
 #' 
-#'
-#'
-#'
+#' 
+#' 
+#' 
 #' # the acceptance probability of the MCMC is retained
-#' out$acceptProb
+#' loglinearFit$acceptProb
 #' 
 #' 
 #' 
 #' 
 #' # various model assessment measures are also available
-#' out$quality
+#' loglinearFit$quality
 #' 
 #' 
 #' 
-#'
+#' 
 #' # the number of independent parameters per term are in df
-#' out$df
+#' loglinearFit$df
 #' 
 #' 
 #' 
@@ -216,59 +287,59 @@
 #' 
 #' data(politics)
 #' 
-#' (out <- hierarchical(~ Personality + Party, data = politics))
-#' statsFit <- stats::loglin(politics, as.list(1:2), fit = TRUE, param = TRUE)
+#' (out <- loglinear(~ Personality + Party, data = politics))
+#' loglinFit <- stats::loglin(politics, as.list(1:2), fit = TRUE, param = TRUE)
 #' 
 #' out$p.value
 #' # exact without monte-carlo error
 #' sum(dhyper(c(0:3,6:9), 10, 10, 9))
 #' fisher.test(politics)$p.value
 #' round(dhyper(0:9, 10, 10, 9), 4)
-#'
+#' 
 #' 
 #' # comparisons :
 #' out$exp
-#' statsFit$fit
+#' loglinFit$fit
 #' 
 #' out$param
-#' statsFit$param
-#'
+#' loglinFit$param
+#' 
 #' out$p.value # exact
 #' c(
-#'   "X2" = pchisq(statsFit$pearson, df = statsFit$df, lower.tail = FALSE),
-#'   "G2" = pchisq(statsFit$lrt, df = statsFit$df, lower.tail = FALSE)
+#'   X2 = pchisq(loglinFit$pearson, df = loglinFit$df, lower.tail = FALSE),
+#'   G2 = pchisq(loglinFit$lrt,     df = loglinFit$df, lower.tail = FALSE)
 #' ) # asymptotic approximation
 #' fisher.test(politics)$p.value # accurate to monte carlo error
-#'
-#' out$statistic # accurate to monte carlo error
-#' c(statsFit$pearson, statsFit$lrt)
 #' 
-#' # mosaic(~ Personality + Party, data = politics, shade = TRUE, legend = TRUE)
+#' out$statistic # accurate to monte carlo error
+#' c(X2 = loglinFit$pearson, G2 = loglinFit$lrt)
+#' 
+#' # vcd::mosaic(~ Personality + Party, data = politics, shade = TRUE, legend = TRUE)
 #' 
 #' 
 #' 
 #' # alternative model specifications :
-#' hierarchical(~ Personality + Party, data = politics)
-#' hierarchical(~ 1 + 2, data = politics)
-#' hierarchical(list(1, 2), data = politics)
-#' hierarchical(list("Personality", "Party"), data = politics)
-#'
-#'
-#'
-#'
-#'
-#'
-#'
-#'
-#'
+#' loglinear(~ Personality + Party, data = politics)
+#' loglinear(~ 1 + 2, data = politics)
+#' loglinear(list(1, 2), data = politics)
+#' loglinear(list("Personality", "Party"), data = politics)
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
 #' ## eyeHairColor from the Diaconis and Sturmfels reference
 #' ############################################################
 #' 
 #' data(HairEyeColor)
 #' eyeHairColor <- margin.table(HairEyeColor, 2:1)
 #' 
-#' outC <- hierarchical(~ Eye + Hair, data = eyeHairColor)
-#' outR <- hierarchical(~ Eye + Hair, data = eyeHairColor, engine = "R")
+#' outC <- loglinear(~ Eye + Hair, data = eyeHairColor)
+#' outR <- loglinear(~ Eye + Hair, data = eyeHairColor, engine = "R")
 #' 
 #' # doesn't work even with workspace = 2E9 (with over 4.5Gb in memory)
 #' #fisher.test(eyeHairColor, hybrid = TRUE, workspace = 2E9)
@@ -281,8 +352,8 @@
 #' 
 #' 
 #' 
-#'
-#'
+#' 
+#' 
 #' 
 #' ## abortion preference example from the 
 #' ## Diaconis and Sturmfels reference pp. 379--381
@@ -291,35 +362,32 @@
 #' 
 #' data(abortion)
 #' 
-#' out <- hierarchical(subsets(1:3, 2), data = abortion,
+#' (loglinearFit <- loglinear(subsets(1:3, 2), data = abortion,
 #'   iter = 10000, burn = 50000, thin = 50
-#' )
-#' out$p.value
+#' ))
+#' loglinFit <- loglin(abortion, subsets(1:3, 2), fit = TRUE, param = TRUE)
 #' 
-#' vec2tab(rowMeans(out$steps), dim(abortion)) # cf. p. 380
-#' loglin(abortion, subsets(1:3, 2), fit = TRUE)$fit
+#' vec2tab(rowMeans(loglinearFit$steps), dim(abortion)) # cf. p. 380
+#' loglinFit$fit
 #' 
-#'
-#'
-#' out$param
-#' loglin(abortion, subsets(1:3, 2), param = TRUE)$param
-#'
-#'
-#'
+#' all.equal(loglinearFit$param, loglinFit$param)
+#' 
+#' 
+#' 
 #' qqplot(rchisq(1055, df = 8), out$sampsStats$X2s)
 #' curve(1*x, from = 0, to = 30, add = TRUE, col = "red")
 #' 
 #' ( nMoves <- 2*ncol(out$moves) ) # DS uses 110
 #' # (the markov basis is larger than it needs to be)
-#'
 #' 
 #' 
-#'
-#'
 #' 
 #' 
-#'
-#'
+#' 
+#' 
+#' 
+#' 
+#' 
 #' 
 #' ## loglin no three-way interaction model example
 #' ############################################################
@@ -329,104 +397,111 @@
 #' # a good fit:
 #' data(HairEyeColor)
 #' 
-#' fit <- loglin(HairEyeColor, subsets(1:3, 2), fit = TRUE, param = TRUE)
-#' mod <- hierarchical(~ Eye*Hair + Hair*Sex + Eye*Sex, data = HairEyeColor)
+#' loglinearFit <- loglinear(subsets(1:3, 2), data = HairEyeColor)
+#' loglinFit    <- loglin(HairEyeColor, subsets(1:3, 2), fit = TRUE, param = TRUE)
 #' 
-#'
+#' 
 #' 
 #' 
 #' # p values
-#' pchisq(fit$lrt, fit$df, lower.tail = FALSE) # see ?loglin
-#' mod$p.value
-#'
+#' loglinearFit$p.value
+#' pchisq(loglinFit$lrt, loglinFit$df, lower.tail = FALSE) # see ?loglin
+#' 
 #' # test statistics
-#' c(fit$pearson, fit$lrt)
-#' mod$statistic 
-#'
+#' loglinearFit$statistic 
+#' c(X2 = loglinFit$pearson, G2 = loglinFit$lrt)
+#' 
 #' # fits (estimated tables)
-#' fit$fit
-#' mod$exp
-#' mod$obs
-#'
-#'
+#' loglinearFit$obs
+#' round(loglinearFit$exp, 1)
+#' round(loglinFit$fit, 1)
+#' 
+#' 
 #' # checking the autocorrelation of mcmc
-#' acf(mod$sampsStats$PRs)
+#' acf(loglinearFit$sampsStats$PRs)
 #' 
 #' # poor mixing is a known limitation of markov bases strategies
 #' # one strategy is to try to thin the mcmc
-#' mod <- hierarchical(~ Eye*Hair + Hair*Sex + Eye*Sex, data = HairEyeColor, thin = 100)
-#' acf(mod$sampsStats$PRs) # got it!
-#'
+#' loglinearFit <- loglinear(subsets(1:3, 2), data = HairEyeColor, thin = 100)
+#' acf(loglinearFit$sampsStats$PRs) # got it! (overkill, actually)
 #' 
-#' # the slight differences in fit$fit and mod$exp (both done with ipf from loglin)
+#' 
+#' # the slight differences in loglinFit$fit and loglinearFit$exp (both done with ipf from loglin)
 #' # are due to differences in variable order:
 #' loglin(HairEyeColor, subsets(1:3, 2), fit = TRUE)$fit
 #' loglin(HairEyeColor, subsets(1:3, 2)[c(1,3,2)], fit = TRUE)$fit
-#'
-#' # a few model moves
-#' vec2tab(mod$moves[,1], dim(HairEyeColor))
-#' vec2tab(mod$moves[,50], dim(HairEyeColor))
-#' -vec2tab(mod$moves[,50], dim(HairEyeColor))
+#' 
+#' # let's look at a few model moves
+#' vec2tab(loglinearFit$moves[,1], dim(HairEyeColor))
+#' vec2tab(loglinearFit$moves[,50], dim(HairEyeColor))
+#' -vec2tab(loglinearFit$moves[,50], dim(HairEyeColor))
 #' 
 #' # they contribute 0 to the marginals of the table
-#' vec2tab(mod$moves[,50], dim(HairEyeColor))
-#' mod$A %*% mod$move[,50]
-#' vec2tab(mod$A %*% mod$move[,50], dim(HairEyeColor))
-#'
-#' HairEyeColor 
-#' HairEyeColor + vec2tab(mod$moves[,50], dim(HairEyeColor))
+#' # (the sufficient statistics of the model)
+#' exampleMove <- loglinearFit$moves[,50]
+#' vec2tab(exampleMove, dim(HairEyeColor))
+#' loglinearFit$A %*% exampleMove
 #' 
-#'
-#'
-#'
+#' # two tables with same sufficient statistics
+#' HairEyeColor
+#' HairEyeColor + vec2tab(exampleMove, dim(HairEyeColor))
+#' 
+#' # here are the sufficient statistics:
+#' loglinearFit$A %*% tab2vec(HairEyeColor)
+#' loglinearFit$A %*% tab2vec(HairEyeColor + vec2tab(exampleMove, dim(HairEyeColor)))
 #' 
 #' 
-#'
-#'
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
 #' ## a table with positive marginals but no MLE for
 #' ## the no-three way interaction model
 #' ############################################################
-#'
-#'
+#' 
+#' 
 #' data(haberman)
-#'
-#' mod <- hierarchical(subsets(1:3, 2), data = haberman)
 #' 
-#' statsFit <- loglin(haberman, subsets(1:3, 2), param = TRUE, fit = TRUE) 
-#' statsFit$fit
-#' statsFit$param
-#' c(statsFit$pearson, statsFit$lrt)
+#' mod <- loglinear(subsets(1:3, 2), data = haberman)
 #' 
-#' algstatFit <- hierarchical(subsets(1:3, 2), data = haberman, method = "mcmc")
-#' algstatFit$exp
-#' algstatFit$param
-#' algstatFit$statistic
+#' loglinFit <- loglin(haberman, subsets(1:3, 2), param = TRUE, fit = TRUE) 
+#' loglinFit$fit
+#' loglinFit$param
+#' c(X2 = loglinFit$pearson, G2 = loglinFit$lrt)
 #' 
-#'
-#'
-#'
+#' loglinearFit <- loglinear(subsets(1:3, 2), data = haberman, method = "mcmc")
+#' loglinearFit$exp
+#' loglinearFit$param
+#' loglinearFit$statistic
 #' 
 #' 
-#'
-#'
-#'
 #' 
 #' 
-#'
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
 #' ## an example from agresti, p.322
 #' ############################################################
 #' 
 #' data(drugs) 
 #' ftable(aperm(drugs, c(3, 1, 2))) # = table 8.3
-#'
-#' out <- hierarchical(~ Alcohol + Cigarette + Marijuana, data = drugs)
+#' 
+#' out <- loglinear(~ Alcohol + Cigarette + Marijuana, data = drugs)
 #' matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE) 
 #' 
 #' loglin(drugs, as.list(1:3), fit = TRUE)$fit
 #' loglin(drugs, as.list(1:3), param = TRUE)$param
 #' 
 #' # # the saturated model issues a warning from markov, but works :
-#' # out <- hierarchical(~ Alcohol * Cigarette * Marijuana, data = drugs)
+#' # out <- loglinear(~ Alcohol * Cigarette * Marijuana, data = drugs)
 #' # matrix(round(aperm(out$exp, c(2,1,3)), 1), byrow = FALSE) # = the data
 #' 
 #' 
@@ -434,9 +509,9 @@
 #' 
 #' stats <- loglin(drugs, as.list(1:3), fit = TRUE, param = TRUE)
 #' 
-#'
-#' # considered via glm
-#'
+#' 
+#' ## considered via glm
+#' 
 #' df <- as.data.frame(drugs)
 #' mod <- glm(Freq ~ Alcohol + Cigarette + Marijuana, data = df, family = poisson)
 #' summary(mod)
@@ -470,21 +545,21 @@
 #' matrix(round(mod$fitted.values[c(1,3,2,4,5,7,6,8)],1))
 #' 
 #' 
-#'
-#'
-#'
 #' 
 #' 
-#'
 #' 
 #' 
-#'
-#'
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
 #' 
 #' }
-#'
 #' 
-hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
+#' 
+loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   engine = c("Cpp","R"), method = c("ipf", "mcmc"), moves, ...){
 
   ## set/check args
@@ -551,7 +626,7 @@ hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   } else if(all(unlist(model) %in% 1:length(vars))){ # by indices
     facets <- lapply(model, as.integer) # to fix the ~ 1 + 2 case, parsed as chars
   } else {
-    stop("invalid model specification, see ?hierarchical")
+    stop("invalid model specification, see ?loglinear")
   }
   
 
@@ -560,10 +635,26 @@ hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   A <- hmat(dim(data), facets)
 
   if(missing(moves)){
-    message("Computing moves... ", appendLF = FALSE)  	
+    
+    message("Computing Markov moves... ", appendLF = FALSE)  	
     moves <- markov(A)
     message("done.", appendLF = TRUE)      
+    
+  } else if(is.character(moves)){
+    
+    movesMat <- NULL
+    stopifnot(all(moves %in% c("lattice", "markov", "groebner", "grobner", "graver", "sis")))
+    if("lattice"  %in% moves)  movesMat <- cbind(movesMat, zbasis(A))
+    if("markov"   %in% moves)  movesMat <- cbind(movesMat, markov(A))
+    if("groebner" %in% moves)  movesMat <- cbind(movesMat, groebner(A))
+    if("grobner"  %in% moves)  movesMat <- cbind(movesMat, groebner(A))
+    if("graver"   %in% moves)  stop("graver not yet implemented.")
+    moves <- movesMat
+    
   }
+  
+  stopifnot(is.array(moves))
+  
 
 
   ## run metropolis-hastings
@@ -733,17 +824,21 @@ hierarchical <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
     CR = mean(CRs > CR) + mean(CRs == CR)/2,
     NM = mean(NMs > NM) + mean(NMs == NM)/2    
   )  
-  out$iter <- iter
-  out$burn <- burn
-  out$thin <- thin
-  out$statistic = c(PR = PR, X2 = X2, G2 = G2, FT = FT, CR = CR, NM = NM)
-  out$sampsStats = list(PRs = PRs, X2s = X2s, G2s = G2s, FTs = FTs, CRs = CRs, NMs = NMs)
-  out$cells <- nCells
-  out$method <- method
+  out$iter       <- iter
+  out$burn       <- burn
+  out$thin       <- thin
+  out$statistic  <- c(PR = PR, X2 = X2, G2 = G2, FT = FT, CR = CR, NM = NM)
+  out$sampsStats <- list(PRs = PRs, X2s = X2s, G2s = G2s, FTs = FTs, CRs = CRs, NMs = NMs)
+  out$cells      <- nCells
+  out$method     <- method
 
-  class(out)   <- "hierarchical"
+  class(out)   <- "loglinear"
   out
 }
 
 
 
+hierarchical <- function(...){
+  .Deprecated(msg = "hierarchical is deprecated, use loglinear instead.")
+  loglinear(...)
+}
