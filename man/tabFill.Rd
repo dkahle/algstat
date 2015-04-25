@@ -22,6 +22,8 @@ Titanic
 tabFill(Titanic)
 tabFill(Titanic, 1)
 tabFill(Titanic, 0)
-tabFill(Titanic, rpois(prod(dim(Titanic)), 10))
+
+nCells <- prod(dim(Titanic))
+tabFill(Titanic, rpois(nCells, 5))
 }
 
