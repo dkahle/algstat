@@ -565,8 +565,8 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   ## set/check args
   ##################################################
   
-  engine <- match.arg(engine)
-  method <- match.arg(method)  
+  engine  <- match.arg(engine)
+  method  <- match.arg(method)  
   argList <- as.list(match.call(expand.dots = TRUE))[-1]
   
   if("formula" %in% names(argList)){
@@ -579,8 +579,8 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   ## reshape data
   ##################################################
   
-  data        <- suppressMessages(teshape(data, "tab"))
-  p           <- length(dim(data))
+  data <- suppressMessages(teshape(data, "tab"))
+  p    <- length(dim(data))
   
   ## if a pure array is given, give names for later
   if(is.array(data) && is.null(dimnames(data))){
@@ -634,10 +634,22 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   ##################################################  
   A <- hmat(dim(data), facets)
 
-  if(missing(moves)){
+  if(missing(moves) && !is.null(getOption("markovPath"))){
     
     message("Computing Markov moves... ", appendLF = FALSE)  	
     moves <- markov(A)
+    message("done.", appendLF = TRUE)      
+    
+  } else if(missing(moves) && is.null(getOption("markovPath"))){
+    
+    warning(
+      "No moves were provided and 4ti2 is not found.\n",
+      "  The resulting chain is likely not connected and strongly autocorrelated.\n",
+      "  See ?loglinear.  Consider using rmove to generate SIS moves in advance.",
+      immediate. = TRUE
+    )
+    message("Computing 1000 SIS moves... ", appendLF = FALSE)    
+    moves <- rmove(n = 1000, A = A, b = A %*% tab2vec(tab), ...)
     message("done.", appendLF = TRUE)      
     
   } else if(is.character(moves)){
