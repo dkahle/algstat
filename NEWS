@@ -9,7 +9,9 @@ NEW FEATURES
 
 CHANGES
 
+* the hierarchical function is now called loglinear.  hierarchical is deprecated.
 * all functions now better handle zero-dimensional latte output.
+* vcd is now a suggested package.
 
 FIXES
 

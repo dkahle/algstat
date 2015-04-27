@@ -92,6 +92,7 @@
 #'   cells in the table. \item \code{method}: the method used to estimate the 
 #'   table. }
 #' @export loglinear
+#' @aliases hierarchical
 #' @author David Kahle
 #' @seealso \code{\link{loglin}}, \code{\link{loglm}}, \code{\link{metropolis}}
 #' @references Diaconis, P. and B. Sturmfels (1998). Algebraic Algorithms for 
@@ -850,6 +851,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
 
 
 
+#' @export
 hierarchical <- function(...){
   .Deprecated(msg = "hierarchical is deprecated, use loglinear instead.")
   loglinear(...)
