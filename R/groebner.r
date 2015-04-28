@@ -39,6 +39,15 @@ groebner <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   all = FALSE, dir = tempdir(), opts = "-parb", quiet = TRUE
 ){
   
+  ## check for 4ti2
+  if(is.null(getOption("markovPath"))){
+    stop(
+      "algstat doesn't know where groebner is (or any other 4ti2 programs),\n",
+      "  and so can't compute a groebner basis.  see ?setMarkovPath", call. = FALSE
+    )
+  }
+  
+  
   ## check args
   format <- match.arg(format)
   if(format == "tab" && missing(dim)){

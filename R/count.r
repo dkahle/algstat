@@ -84,6 +84,15 @@ count <- function(spec, dir = tempdir(), opts = "",
   quiet = TRUE, mpoly = TRUE)
 {
 
+  
+  ## check for latte
+  if(is.null(getOption("lattePath"))){
+    stop(
+      "algstat doesn't know where count is (or any other latte programs),\n",
+      "  and so can't use the count function.  see ?setLattePath", call. = FALSE
+    )
+  }  
+  
   specification <- "unknown"
   
   

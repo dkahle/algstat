@@ -32,6 +32,14 @@ latteMax <- function(objective, constraints,
   method = c("lp","cones"), dir = tempdir(), 
   opts = "", quiet = TRUE
 ){
+  
+  ## check for latte
+  if(is.null(getOption("lattePath"))){
+    stop(
+      "algstat doesn't know where latte-maximize is (or any other latte programs),\n",
+      "  and so can't perform maximization.  see ?setLattePath", call. = FALSE
+    )
+  }    
 	
   warning("this function is experimental.", call. = FALSE)	
 	
