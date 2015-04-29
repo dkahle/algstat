@@ -6,6 +6,7 @@
 #' 
 #' @param data a data frame or array
 #' @param out the output format, see examples
+#' @param freqVar the name of the frequency variable in the dataset, if not freq
 #' @return a matrix containing the Markov basis as its columns (for easy addition to tables)
 #' @export teshape
 #' @examples
@@ -31,15 +32,29 @@
 #' teshape(TitanicRaw, "raw") 
 #' 
 #' 
+#' 
+#' # using "count" instead of "freq"
+#' TitanicFreq <- teshape(Titanic, "freq")
+#' TitanicFreq$count <- TitanicFreq$freq
+#' TitanicFreq$freq  <- NULL 
+#' teshape(TitanicFreq, "tab") 
+#' 
+#' 
+#' # a non-"freq" named frequency variable
+#' TitanicFreq <- teshape(Titanic, "freq")
+#' TitanicFreq$n <- TitanicFreq$freq
+#' TitanicFreq$freq  <- NULL 
+#' teshape(TitanicFreq, "tab", "n") 
+#' teshape(TitanicFreq, "tab", n) 
+#' 
 #'
-teshape <- function(data, out = c("freq", "tab", "raw")){
+teshape <- function(data, out = c("freq", "tab", "raw"), freqVar){
   
   if(is.array(data)){
     input <- "tab"
-  } else if(any(
-    tolower(names(data)) %in% c("freq", "count", "frequency")
-  )){
-    input <- "freq"
+  } else if(any(tolower(names(data)) %in% c("freq", "count", "frequency")) || !missing(freqVar)){
+    input   <- "freq"
+    if(!missing(freqVar) && !is.character(freqVar)) freqVar <- deparse(substitute(freqVar))
   } else if(is.data.frame(data)){
     input <- "raw"
   } else {
@@ -50,10 +65,14 @@ teshape <- function(data, out = c("freq", "tab", "raw")){
   
   out <- match.arg(out)
   
+  
+  
   if(input == out){
   	message("it's already in that format...")
   	return(data) 
   }
+  
+  
   
   ## if the input is a table...
   if(input == "tab"){
@@ -76,6 +95,8 @@ teshape <- function(data, out = c("freq", "tab", "raw")){
     return(raw_df)
   }
   
+  
+  
   ## if the input is a data frame of observations...  
   if(input == "raw"){
     if(out == "tab"){
@@ -88,11 +109,16 @@ teshape <- function(data, out = c("freq", "tab", "raw")){
     }
   }  
   
+  
+  
   ## if the input is a data frame of freqs...  
   if(input == "freq"){
-  	if(!any(c("freq","count","frequency") %in% tolower(names(data))))
-  	  stop("frequency variable not found,  please rename it freq.")
-  	
+    
+    # make sure a frequency variable is found
+  	if(!any(c("freq","count","frequency") %in% tolower(names(data))) && missing(freqVar)){
+  	  stop("frequency variable not found,  see ?teshape")
+  	}
+    
   	# move freq to end
   	if("freq" %in% tolower(names(data))){ 
   	  c <- which("freq" == tolower(names(data)))
@@ -100,6 +126,8 @@ teshape <- function(data, out = c("freq", "tab", "raw")){
   	  c <- which("count" == tolower(names(data)))
   	} else if("frequency" %in% tolower(names(data))){ 
   	  c <- which("frequency" == tolower(names(data)))
+  	} else if(!missing(freqVar) && freqVar %in% names(data)){
+      c <- which(freqVar == names(data))
   	}  	    		
   	df <- cbind(data[,(1:ncol(data))[-c]], freq = data[,c])
     p  <- ncol(data) - 1  	
@@ -121,6 +149,7 @@ teshape <- function(data, out = c("freq", "tab", "raw")){
       row.names(raw_df) <- 1:nrow(raw_df)
       return(raw_df)      
     }
+    
   }   
   
 }

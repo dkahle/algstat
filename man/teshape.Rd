@@ -4,12 +4,14 @@
 \alias{teshape}
 \title{Interconvert data structures}
 \usage{
-teshape(data, out = c("freq", "tab", "raw"))
+teshape(data, out = c("freq", "tab", "raw"), freqVar)
 }
 \arguments{
 \item{data}{a data frame or array}
 
 \item{out}{the output format, see examples}
+
+\item{freqVar}{the name of the frequency variable in the dataset, if not freq}
 }
 \value{
 a matrix containing the Markov basis as its columns (for easy addition to tables)
@@ -40,5 +42,21 @@ TitanicRaw <- teshape(Titanic, "raw")
 teshape(TitanicRaw, "freq")
 teshape(TitanicRaw, "tab")
 teshape(TitanicRaw, "raw")
+
+
+
+# using "count" instead of "freq"
+TitanicFreq <- teshape(Titanic, "freq")
+TitanicFreq$count <- TitanicFreq$freq
+TitanicFreq$freq  <- NULL
+teshape(TitanicFreq, "tab")
+
+
+# a non-"freq" named frequency variable
+TitanicFreq <- teshape(Titanic, "freq")
+TitanicFreq$n <- TitanicFreq$freq
+TitanicFreq$freq  <- NULL
+teshape(TitanicFreq, "tab", "n")
+teshape(TitanicFreq, "tab", n)
 }
 
