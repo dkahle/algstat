@@ -278,13 +278,19 @@ In addition to table counting, it can also do integer programming with LattE's `
 
 ``` r
 latteMax("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
-#> Warning: this function is experimental.
 #> $par
 #>  x  y 
 #>  0 10 
 #> 
 #> $value
 #> [1] 30
+latteMin("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
+#> $par
+#>  x  y 
+#> 10  0 
+#> 
+#> $value
+#> [1] -20
 ```
 
 We can check that the solution given above is correct, but the value is not. So, it needs some more work:

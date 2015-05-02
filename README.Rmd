@@ -166,6 +166,7 @@ In addition to table counting, it can also do integer programming with LattE's `
 
 ```{r ip}
 latteMax("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
+latteMin("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
 ```
 
 We can check that the solution given above is correct, but the value is not.  So, it needs some more work:
