@@ -187,7 +187,6 @@ latteOptim <- function(objective, constraints, type = c("max", "min"),
   write.latte(mat, "optimCode.cost")
   
 
-browser()
 
   ## run latte function
   if(is.unix()){ # includes OS-X
