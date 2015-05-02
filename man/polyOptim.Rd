@@ -19,7 +19,9 @@ polyOptim(objective, constraints, varOrder, ...)
 an object of class bertini
 }
 \description{
-Find the collection of critical points of a multivariate polynomial unconstrained or constrained to an affine variety (algebraic set; solution set of multivariate polynomials).
+Find the collection of critical points of a multivariate polynomial
+unconstrained or constrained to an affine variety (algebraic set; solution
+set of multivariate polynomials).
 }
 \examples{
 \dontrun{

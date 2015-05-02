@@ -1,6 +1,8 @@
 #' Polynomial Optimization
-#'
-#' Find the collection of critical points of a multivariate polynomial unconstrained or constrained to an affine variety (algebraic set; solution set of multivariate polynomials).
+#' 
+#' Find the collection of critical points of a multivariate polynomial
+#' unconstrained or constrained to an affine variety (algebraic set; solution
+#' set of multivariate polynomials).
 #' 
 #' @param objective the objective polynomial (as a character or mpoly)
 #' @param constraints (as a character or mpoly/mpolyList)
@@ -17,37 +19,37 @@
 #' polyOptim("-(x - 2)^2") 
 #' polyOptim("-(x^2 + y^2)") 
 #' polyOptim("-(x^2 + (y - 2)^2)") 
-#'
+#' 
 #' polyOptim("(x - 1) (x - 2) (x - 3)") # fix global labeling
-#'
-#'
+#' 
+#' 
 #' # constrained optimization over the affine varieties is also available
 #' # (affine variety = solution set of polynomial equations)
-#'
+#' 
 #' # find the critical points of the plane f(x,y) = x + y
 #' # over the unit circle x^2 + y^2 = 1
 #' polyOptim("x + y", "x^2 + y^2 = 1")
-#'
+#' 
 #' # you can specify them as a combo of mpoly, mpolyList, and characters
 #' o <- mp("x + y")
 #' c <- "x^2 + y^2 = 1"
 #' polyOptim(o, c)
-#'
+#' 
 #' c <- mp("x^2 + y^2 - 1")
 #' polyOptim(o, c)
-#'
+#' 
 #' out <- polyOptim("x + y", c)
 #' str(out)
 #' 
 #' # another example, note the solutions are computed over the complex numbers
 #' polyOptim("x^2 y", "x^2 + y^2 = 3")
 #' # solutions: (+-sqrt(2), +-1) and (0, +-sqrt(3))
-#'
-#'
 #' 
-#'
+#' 
+#' 
+#' 
 #' }
-#'
+#' 
 polyOptim <- function(objective, constraints, varOrder, ...){
 
   optimizationType <- "unconstrained"
