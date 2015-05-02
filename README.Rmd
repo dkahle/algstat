@@ -28,7 +28,11 @@ This brief intro is currently under construction.
 
 # Exact inference with log-linear models
 
+_Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and algstat has registered them._
+
 One of the most well-developed parts of the package allows users to perform (conditional) exact tests for log-linear models.  There are several great references on the math behind this, such as [Diaconis and Sturmfels' original paper](http://projecteuclid.org/euclid.aos/1030563990), the [Lectures on Algebraic Statistics](http://smile.amazon.com/Lectures-Algebraic-Statistics-Oberwolfach-Seminars/dp/3764389044/ref=sr_1_1?ie=UTF8&qid=1430536908&sr=8-1&keywords=lectures+on+algebraic+statistics), and [Markov Bases in Algebraic Statistics](http://smile.amazon.com/Markov-Bases-Algebraic-Statistics-Springer/dp/1461437180/ref=sr_1_fkmr0_1?ie=UTF8&qid=1430536933&sr=8-1-fkmr0&keywords=aoki%2C+hada%2C+and+takemura), so we'll keep the technical discussion to a minimum.
+
+### Fisher's exact test
 
 We'll begin by doing Fisher's exact test on a built-in dataset called politics.
 
@@ -48,26 +52,65 @@ loglinear(~ Personality + Party, data = politics)
 
 Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model.  Consequently, the p-values estimated are only determined up to Monte Carlo error.  The standard p-value is given under the column `p.value` in the row labeled `P(samp)`.  The analogous asymptotic test can be done in either of two ways.  
 
-The first way uses the `loglin()` function from the __stats__ package.  It outputs the likelihood ratio statistic (`Likelihood G^2` in the output above) and Pearson's chi-squared statistic (`Pearson X^2` above), and you have to calculate the p-value yourself.
+The first way uses the `loglin()` function from the __stats__ package.  It outputs the likelihood ratio statistic (`Likelihood G^2` in the output above) and Pearson's chi-squared statistic (`Pearson X^2` above), but you have to calculate the p-value yourself.
 
 ```{r loglin}
 (loglinMod <- stats::loglin(politics, list(1, 2)))
 pchisq(loglinMod$pearson, df = 1, lower.tail = FALSE)
 ```
 
-The second way is `loglm()` in the __MASS__ package, which is a nice wrapper of `loglin()` (in fact, __algstat__'s `loglinear()` function uses the IPF implementation from `loglin()`, although it doesn't need to).  It's syntax looks identical to `loglinear()`'s above, but `loglinear()` can actually take a wide range of model specification syntaxes.  Here's `loglm()`:
+The second way is the `loglm()` function in the __MASS__ package, which is a nice wrapper of `loglin()` (in fact, __algstat__'s `loglinear()` function uses the IPF implementation from `loglin()`, although it doesn't need to).  It's syntax looks identical to `loglinear()`'s above:
 
 ```{r loglm}
 MASS::loglm(~ Personality + Party, data = politics)
 ```
 
 
+### Fisher's exact test on RxC tables
+
+Doing Fisher's exact test on larger problems is a significantly more complicated problem.  The documentation for `fisher.test()` illustrates how it can be used on RxC tables in general, not just on 2x2 tables.  Here's an example from its documentation drawn from Agresti (2002, p.57):
+
+```{r bigFisher}
+Job <- matrix(
+  c(1,2,1,0, 3,3,6,1, 10,10,14,9, 6,7,12,11), nrow = 4, ncol = 4,
+  dimnames = list(
+    income = c("< 15k", "15-25k", "25-40k", "> 40k"),
+    satisfaction = c("VeryD", "LittleD", "ModerateS", "VeryS")
+  )
+)
+
+Job
+
+fisher.test(Job)
+```
+
+And the __algstat__ counterpart:
+```{r bigFisherLogLinear}
+loglinear(~ income + satisfaction, data = Job)
+```
+
+Note that the asymptotic test can be performed as well.  The chi-square approximation is actually very good here:
+```{r bigFisherLogLm}
+MASS::loglm(~ income + satisfaction, data = Job)
+```
 
 
+### Fisher's exact test on multi-way tables
 
+`fisher.test()` does not generalize to multi-way tables and is prone to crashing even in large-celled two-way tables (see `?loglinear` for an example).  Thus, the only way to do exact inference in multi-way tables (in general and in R) is to use an algebraic method.  We'll illustrate this using the drugs dataset from `loglinear()`'s documentation, taken from Agresti (2002, p.322), on which we'll test the no-three-way interaction model:
 
+```{r logLinearMultiWay}
+data(drugs)
+ftable(drugs)
 
+loglinear(subsets(1:3, 2), data = drugs)
+```
 
+Note that here we've used the more concise syntax of facet specification.  Doing the same with `loglm()` looks like this:
+
+```{r logLmMultiWay}
+MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
+```
 
 
 
