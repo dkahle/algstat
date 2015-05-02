@@ -168,7 +168,7 @@ In addition to table counting, it can also do integer programming with LattE's `
 latteMax("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
 ```
 
-It issues a warning currently because it's experimental.  For example, we can check that the solution given above is correct, but the value is not.  So, it needs some more work:
+We can check that the solution given above is correct, but the value is not.  So, it needs some more work:
 
 ```{r ipCheck, fig.height=6, dpi=200}
 points$objective <- with(points, -2*x + 3*y)
@@ -209,7 +209,7 @@ END;
 bertini(code)
 ```
 
-Even better, __algstat__ can team up with __mpoly__ (working under the hood) to solve systems of polynomial equations using `polySolve()`:
+Even better, __algstat__ can team up with [__mpoly__](http://github.com/dkahle/mpoly) (working under the hood) to solve systems of polynomial equations using `polySolve()`:
 ```{r polySolve}
 curve(x^2, from = -2, to = 2, )
 curve(2 - x^2, from = -2, to = 2, add = TRUE)

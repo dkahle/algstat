@@ -284,10 +284,10 @@ latteMax("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
 #>  0 10 
 #> 
 #> $value
-#> [1] 20
+#> [1] 30
 ```
 
-It issues a warning currently because it's experimental. For example, we can check that the solution given above is correct, but the value is not. So, it needs some more work:
+We can check that the solution given above is correct, but the value is not. So, it needs some more work:
 
 ``` r
 points$objective <- with(points, -2*x + 3*y)
@@ -326,7 +326,7 @@ bertini(code)
 #>     ( 0.707, 0.707) (R)
 ```
 
-Even better, **algstat** can team up with **mpoly** (working under the hood) to solve systems of polynomial equations using `polySolve()`:
+Even better, **algstat** can team up with [**mpoly**](http://github.com/dkahle/mpoly) (working under the hood) to solve systems of polynomial equations using `polySolve()`:
 
 ``` r
 curve(x^2, from = -2, to = 2, )
