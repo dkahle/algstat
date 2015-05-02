@@ -230,7 +230,7 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 Lattice point counting, integer programming, and more with LattE
 ================================================================
 
-*Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) installed and algstat has registered them.*
+*Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) installed and algstat has registered it.*
 
 Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in **algstat**. For example, `count()` uses LattE's `count` to determine the number of integer points in a [polytope](http://en.wikipedia.org/wiki/Polytope):
 
@@ -238,6 +238,8 @@ Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as fun
 count(c("x + y <= 10", "x >= 0", "y >= 0"))
 #> [1] 66
 ```
+
+It's easy to confirm the solution with a simple visualization:
 
 ``` r
 library(ggplot2); theme_set(theme_bw())
@@ -253,6 +255,24 @@ ggplot(aes(x = x, y = y), data = polytope) +
 ```
 
 ![](README-countExample-1.png)
+
+This can be useful for counting the number of contingency tables with fixed marginals. More generally, we can use `countTables()` to determine the number of contingency tables in the [fiber (isostatistical region)](http://en.wikipedia.org/wiki/Fiber_(mathematics)) of the table given any [exponential family model](http://en.wikipedia.org/wiki/Exponential_family).
+
+``` r
+countTables(politics) # the independence model is the default
+#> [1] 10
+```
+
+For example, we can determine the number of tables with the same row sums of `politics` as follows:
+
+``` r
+(A <- hmat(varlvls = c(2, 2), facets = 1:2)[1:2,])
+#>    11 12 21 22
+#> 1+  1  1  0  0
+#> 2+  0  0  1  1
+countTables(politics, A)
+#> [1] 121
+```
 
 Numerically solving systems of polynomial equations
 ===================================================
