@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List metropolisCpp(IntegerVector current, IntegerMatrix moves, int iter, int thin){
+IntegerMatrix walk(IntegerVector current, IntegerMatrix moves, int iter, int thin){
 
   int nTotalSamples = iter * thin;         // total number of steps
   int n = current.size();                  // number of cells
@@ -14,7 +14,6 @@ List metropolisCpp(IntegerVector current, IntegerMatrix moves, int iter, int thi
   double prob;                             // the probability of transition
   bool anyIsNegative;
   IntegerVector move(n);
-  double acceptProb = 0;
 
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -46,15 +45,12 @@ List metropolisCpp(IntegerVector current, IntegerMatrix moves, int iter, int thi
       if(anyIsNegative){
         prob = 0;
       } else {
-        prob = exp( sum(lgamma(current+1)) - sum(lgamma(proposal+1)) );
+        prob = 1;
       }
 
       if(prob > 1){
         prob = 1;
       }
-
-      // store acceptance probability
-      acceptProb = acceptProb + prob / nTotalSamples;
 
       // make move
       if(unifs[thin*i+j] < prob){
@@ -71,11 +67,5 @@ List metropolisCpp(IntegerVector current, IntegerMatrix moves, int iter, int thi
     }
   }
 
-  // create out list
-  List out = List::create(
-    Rcpp::Named("steps") = steps,
-    Rcpp::Named("acceptProb") = acceptProb
-  );
-
-  return out;
+  return steps;
 }

@@ -25,3 +25,11 @@ metropolisCpp <- function(current, moves, iter, thin) {
     .Call('algstat_metropolisCpp', PACKAGE = 'algstat', current, moves, iter, thin)
 }
 
+rfiberOne <- function(A, b) {
+    .Call('algstat_rfiberOne', PACKAGE = 'algstat', A, b)
+}
+
+walk <- function(current, moves, iter, thin) {
+    .Call('algstat_walk', PACKAGE = 'algstat', current, moves, iter, thin)
+}
+

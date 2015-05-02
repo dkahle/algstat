@@ -9,97 +9,99 @@ using namespace Rcpp;
 NumericVector computeCRsCpp(NumericMatrix x, NumericVector exp, double lambda);
 RcppExport SEXP algstat_computeCRsCpp(SEXP xSEXP, SEXP expSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP );
-        Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP );
-        NumericVector __result = computeCRsCpp(x, exp, lambda);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    __result = Rcpp::wrap(computeCRsCpp(x, exp, lambda));
+    return __result;
 END_RCPP
 }
 // computeG2sCpp
 NumericVector computeG2sCpp(NumericMatrix x, NumericVector exp);
 RcppExport SEXP algstat_computeG2sCpp(SEXP xSEXP, SEXP expSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP );
-        NumericVector __result = computeG2sCpp(x, exp);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP);
+    __result = Rcpp::wrap(computeG2sCpp(x, exp));
+    return __result;
 END_RCPP
 }
 // computeNMsCpp
 NumericVector computeNMsCpp(NumericMatrix x, NumericVector exp);
 RcppExport SEXP algstat_computeNMsCpp(SEXP xSEXP, SEXP expSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP );
-        NumericVector __result = computeNMsCpp(x, exp);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP);
+    __result = Rcpp::wrap(computeNMsCpp(x, exp));
+    return __result;
 END_RCPP
 }
 // computeUProbsCpp
 NumericVector computeUProbsCpp(NumericMatrix x);
 RcppExport SEXP algstat_computeUProbsCpp(SEXP xSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP );
-        NumericVector __result = computeUProbsCpp(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    __result = Rcpp::wrap(computeUProbsCpp(x));
+    return __result;
 END_RCPP
 }
 // computeX2sCpp
 NumericVector computeX2sCpp(NumericMatrix x, NumericVector exp);
 RcppExport SEXP algstat_computeX2sCpp(SEXP xSEXP, SEXP expSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP );
-        NumericVector __result = computeX2sCpp(x, exp);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type exp(expSEXP);
+    __result = Rcpp::wrap(computeX2sCpp(x, exp));
+    return __result;
 END_RCPP
 }
 // metropolisCpp
 List metropolisCpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
 RcppExport SEXP algstat_metropolisCpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP );
-        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
-        Rcpp::traits::input_parameter< int >::type thin(thinSEXP );
-        List __result = metropolisCpp(current, moves, iter, thin);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
+    __result = Rcpp::wrap(metropolisCpp(current, moves, iter, thin));
+    return __result;
+END_RCPP
+}
+// rfiberOne
+List rfiberOne(IntegerMatrix A, IntegerVector b);
+RcppExport SEXP algstat_rfiberOne(SEXP ASEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type b(bSEXP);
+    __result = Rcpp::wrap(rfiberOne(A, b));
+    return __result;
+END_RCPP
+}
+// walk
+IntegerMatrix walk(IntegerVector current, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP algstat_walk(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
+    __result = Rcpp::wrap(walk(current, moves, iter, thin));
+    return __result;
 END_RCPP
 }
