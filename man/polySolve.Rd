@@ -19,7 +19,8 @@ polySolve(lhs, rhs, varOrder, ...)
 an object of class bertini
 }
 \description{
-\code{polySolve} solves a system of polynomial equations, specifiable in any of several ways.
+\code{polySolve} solves a system of polynomial equations, specifiable in any
+of several ways.
 }
 \examples{
 \dontrun{

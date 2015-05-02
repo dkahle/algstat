@@ -1,6 +1,7 @@
 #' Solve a System of Polynomial Equations
-#'
-#' \code{polySolve} solves a system of polynomial equations, specifiable in any of several ways.
+#' 
+#' \code{polySolve} solves a system of polynomial equations, specifiable in any
+#' of several ways.
 #' 
 #' @param lhs a mpolyList or character vector of left hand sides
 #' @param rhs a mpolyList or character vector of right hand sides
@@ -15,7 +16,7 @@
 #' # it can solve linear systems 
 #' # (here where the line y = x intersects y = 2 - x)
 #' polySolve(c("y", "y"), c("x", "2 - x"), c("x", "y"))
-#'
+#' 
 #' # or nonlinear systems
 #' polySolve(c("y", "y"), c("x^2", "2 - x^2"), c("x", "y"))
 #' 
@@ -24,31 +25,31 @@
 #' # varOrder is used to order the solutions returned
 #' polySolve(c("y = x^2", "y = 2 - x^2"), varOrder = c("x", "y"))
 #' polySolve(c("y == x^2", "y == 2 - x^2"), varOrder = c("x", "y"))
-#'
-#'
+#' 
+#' 
 #' # mpoly objects can be given instead of character strings
 #' lhs <- mp(c("y - (2 - x)", "x y"))
 #' rhs <- mp(c("0","0"))
 #' polySolve(lhs, rhs, varOrder = c("x", "y"))
-#'
+#' 
 #' # if no default right hand side is given, and no "=" or "==" is found,
 #' # rhs is taken to be 0's.
 #' # below is where the lines y = x and y = -x intersect the unit circle
 #' polySolve(c("(y - x) (y + x)", "x^2 + y^2 - 1"))
-#'
+#' 
 #' # the output object is a bertini object
 #' out <- polySolve(c("(y - x) (y + x)", "x^2 + y^2 - 1"))
 #' str(out,1)
 #' 
 #' # here is the code that was run :
 #' cat(out$bertiniCode)
-#'
+#' 
 #' # the finite and real solutions:
 #' out$finite_solutions
 #' out$real_finite_solutions
-#'
-#'
-#'
+#' 
+#' 
+#' 
 #' 
 #' # example from Riccomagno (2008), p. 399
 #' polySolve(c(
@@ -57,9 +58,9 @@
 #'   "(y - 2) (x + y - 4)",
 #'   "(x - 3) (x + y - 4)"
 #' ))
-#'
+#' 
 #' }
-#'
+#' 
 polySolve <- function(lhs, rhs, varOrder, ...){
 
   if(missing(rhs)){
