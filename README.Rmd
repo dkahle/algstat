@@ -115,6 +115,38 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 
 
 
+# Numerically solving systems of polynomial equations
+
+_Note: this section assumes you have [Bertini](https://bertini.nd.edu) installed and algstat has registered it._
+
+__algstat__ also provides back-end connections to [Bertini](https://bertini.nd.edu) to solve systems of polynomial equations.  While this work is still being implemented, here's a peak at what it can currently do.
+
+First, __algstat__ can run raw Bertini programs using `bertini()`.  It also has a nice print method to display the results.  For example, here's how you would find the intersection of the line f(x) = x and the unit circle using Bertini:
+
+```{r rawBertini}
+code <- "
+INPUT
+
+variable_group x, y;
+function f, g;
+
+f = x^2 + y^2 - 1;
+g = y - x;
+
+END;
+"
+bertini(code)
+```
+
+Even better, __algstat__ can team up with __mpoly__ (working under the hood) to solve systems of polynomial equations using `polySolve()`:
+```{r polySolve}
+curve(x^2, from = -2, to = 2, )
+curve(2 - x^2, from = -2, to = 2, add = TRUE)
+polySolve(c("y = x^2", "y = 2 - x^2"), varOrder = c("x", "y"))
+```
+
+
+
 # Installation
 
 ## Installing algstat

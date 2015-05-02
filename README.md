@@ -227,6 +227,49 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 #> Pearson          0.5279994  1 0.4674492
 ```
 
+Numerically solving systems of polynomial equations
+===================================================
+
+*Note: this section assumes you have [Bertini](https://bertini.nd.edu) installed and algstat has registered it.*
+
+**algstat** also provides back-end connections to [Bertini](https://bertini.nd.edu) to solve systems of polynomial equations. While this work is still being implemented, here's a peak at what it can currently do.
+
+First, **algstat** can run raw Bertini programs using `bertini()`. It also has a nice print method to display the results. For example, here's how you would find the intersection of the line f(x) = x and the unit circle using Bertini:
+
+``` r
+code <- "
+INPUT
+
+variable_group x, y;
+function f, g;
+
+f = x^2 + y^2 - 1;
+g = y - x;
+
+END;
+"
+bertini(code)
+#> 2 solutions (x,y) found.  (2 real, 0 complex; 2 nonsingular, 0 singular.)
+#>     (-0.707,-0.707) (R)
+#>     ( 0.707, 0.707) (R)
+```
+
+Even better, **algstat** can team up with **mpoly** (working under the hood) to solve systems of polynomial equations using `polySolve()`:
+
+``` r
+curve(x^2, from = -2, to = 2, )
+curve(2 - x^2, from = -2, to = 2, add = TRUE)
+```
+
+![](README-polySolve-1.png)
+
+``` r
+polySolve(c("y = x^2", "y = 2 - x^2"), varOrder = c("x", "y"))
+#> 2 solutions (x,y) found.  (2 real, 0 complex; 2 nonsingular, 0 singular.)
+#>     (-1,1) (R)
+#>     ( 1,1) (R)
+```
+
 Installation
 ============
 
