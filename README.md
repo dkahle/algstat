@@ -274,6 +274,31 @@ countTables(politics, A)
 #> [1] 121
 ```
 
+In addition to table counting, it can also do integer programming with LattE's `latte-maximize` and `latte-minimize` programs. To do this, it uses tools from [**mpoly**](http://github.com/dkahle/mpoly):
+
+``` r
+latteMax("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
+#> Warning: this function is experimental.
+#> $par
+#>  x  y 
+#>  0 10 
+#> 
+#> $value
+#> [1] 20
+```
+
+It issues a warning currently because it's experimental. For example, we can check that the solution given above is correct, but the value is not. So, it needs some more work:
+
+``` r
+points$objective <- with(points, -2*x + 3*y)
+ggplot(aes(x = x, y = y), data = polytope) +
+  geom_polygon(fill = "red", alpha = .2) + 
+  geom_point(aes(size = objective), data = points) + 
+  coord_equal()
+```
+
+![](README-ipCheck-1.png)
+
 Numerically solving systems of polynomial equations
 ===================================================
 
