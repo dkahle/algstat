@@ -77,8 +77,6 @@ latteOptim <- function(objective, constraints, type = c("max", "min"),
   opts = "", quiet = TRUE
 ){
   
-  warning("this function is experimental.", call. = FALSE)    
-  
   
   ## check args
   type   <- match.arg(type)
