@@ -134,15 +134,15 @@ Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as fun
 count(c("x + y <= 10", "x >= 0", "y >= 0"))
 ```
 
-```{r countExample, fig.height=7, dev='pdf'}
-library(dplyr); library(ggplot2); theme_set(theme_bw())
+```{r countExample, fig.height=6, dpi=200}
+library(ggplot2); theme_set(theme_bw())
 polytope <- data.frame(x = c(0,10,0), y = c(0,0,10))
 points   <- expand.grid(x = 0:10, y = 0:10)
 points   <- subset(points, x + y <= 10)
 points$number <- 1:nrow(points)
 ggplot(aes(x = x, y = y), data = polytope) +
   geom_polygon(fill = "red", alpha = .2) + 
-  geom_text(aes(y = y + .25, label = number), size = 4, data = points) +
+  geom_text(aes(y = y + .25, label = number), size = 3.5, data = points) +
   geom_point(data = points) + 
   coord_equal()
 ```

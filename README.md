@@ -240,33 +240,19 @@ count(c("x + y <= 10", "x >= 0", "y >= 0"))
 ```
 
 ``` r
-library(dplyr); library(ggplot2); theme_set(theme_bw())
-#> 
-#> Attaching package: 'dplyr'
-#> 
-#> The following object is masked from 'package:algstat':
-#> 
-#>     count
-#> 
-#> The following object is masked from 'package:stats':
-#> 
-#>     filter
-#> 
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+library(ggplot2); theme_set(theme_bw())
 polytope <- data.frame(x = c(0,10,0), y = c(0,0,10))
 points   <- expand.grid(x = 0:10, y = 0:10)
 points   <- subset(points, x + y <= 10)
 points$number <- 1:nrow(points)
 ggplot(aes(x = x, y = y), data = polytope) +
   geom_polygon(fill = "red", alpha = .2) + 
-  geom_text(aes(y = y + .25, label = number), size = 4, data = points) +
+  geom_text(aes(y = y + .25, label = number), size = 3.5, data = points) +
   geom_point(data = points) + 
   coord_equal()
 ```
 
-![](README-countExample-1.pdf)
+![](README-countExample-1.png)
 
 Numerically solving systems of polynomial equations
 ===================================================
