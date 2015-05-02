@@ -1,15 +1,16 @@
-#' Write a latte file to disk
-#'
-#' \code{write.latte} writes a latte-formatted file a file.
+#' Read/write a latte file to/from disk
 #' 
-#' @param mat a matrix; for example the output of \code{\link{hmat}}
+#' \code{write.latte} writes a latte-formatted file to file, and
+#' \code{read.latte} reads a latte-formatted file from disk.
+#' 
+#' @param mat a matrix
 #' @param file the name of the file
 #' @return an invisible form of the saved output.
-#' @export write.latte
 #' @seealso \code{\link{write.latte}}
+#' @name latteFiles
 #' @examples
-#' \dontrun{
-#'
+#' \dontrun{ 
+#' 
 #' (mat <- matrix(sample(9), 3, 3))
 #' write.latte(mat, "foo.hrep")
 #' file.show("foo.hrep")
@@ -24,9 +25,21 @@
 #' read.latte("foo.hrep")
 #' 
 #' file.remove("foo.hrep")
-#'
+#' 
 #' }
 #' 
+#' 
+
+
+
+
+
+
+
+
+
+#' @rdname latteFiles
+#' @export
 write.latte <- function(mat, file){  
   
   ## construct file in latte format
@@ -88,43 +101,8 @@ write.latte <- function(mat, file){
 
 
 
-
-
-
-
-
-
-
-#' Read a latte file from disk
-#'
-#' \code{read.latte} reads a latte-formatted file a file.
-#' 
-#' @param file the name of the file
-#' @param format the format of the read file, as a latte-style matrix [b -A] 
-#'   or as matrix A and a solution b
-#' @return an invisible form of the saved output.
-#' @export read.latte
-#' @seealso \code{\link{read.latte}}
-#' @examples
-#' \dontrun{
-#'
-#' (mat <- matrix(sample(9), 3, 3))
-#' write.latte(mat, "foo.hrep")
-#' file.show("foo.hrep")
-#' read.latte("foo.hrep")
-#' read.latte("foo.hrep", "Ab")
-#' 
-#' attr(mat, "linearity") <- c(1, 3)
-#' attr(mat, "nonnegative") <- 2
-#' mat
-#' write.latte(mat, "foo.hrep")
-#' file.show("foo.hrep")
-#' read.latte("foo.hrep")
-#' 
-#' file.remove("foo.hrep")
-#'
-#' }
-#' 
+#' @rdname latteFiles
+#' @export
 read.latte <- function(file, format = c("mat", "Ab")){  
   
   ## check args
