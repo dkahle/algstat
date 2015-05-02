@@ -266,7 +266,7 @@ ggplot(aes(x = x, y = y), data = polytope) +
   coord_equal()
 ```
 
-![](README-countExample-1.png)
+![](README-countExample-1.pdf)
 
 Numerically solving systems of polynomial equations
 ===================================================
