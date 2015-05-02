@@ -55,6 +55,7 @@ df <- expand.grid(x = 0:10, y = 0:10)
 df <- subset(df, x + y <= 10)
 df$objective <- with(df, -2*x + 3*y)
 df[which.max(df$objective),]
+df[which.min(df$objective),]
 
 library(ggplot2)
 qplot(x, y, data = df, size = objective)

@@ -33,6 +33,7 @@
 #' df <- subset(df, x + y <= 10)
 #' df$objective <- with(df, -2*x + 3*y)
 #' df[which.max(df$objective),]
+#' df[which.min(df$objective),]
 #' 
 #' library(ggplot2)
 #' qplot(x, y, data = df, size = objective)
@@ -172,18 +173,17 @@ latteOptim <- function(objective, constraints, type = c("max", "min"),
 
   if(length(linearityNdcs) > 0){
     attr(mat, "linearity")   <- linearityNdcs
-    attr(mat, "nonnegative") <- setdiff(1:nConstraints, linearityNdcs)
-  } else {
-    attr(mat, "nonnegative") <- 1:nConstraints
-  }
+    
+  } 
+  # note: the nonnegative stuff is built into this
   write.latte(mat, "optimCode")
   
 
   ## convert objective to latte hrep code and write file
   mat <- cbind(
-    -matFull[1,"coef",drop=FALSE], 
-    -matFull[1,-ncol(matFull),drop=FALSE]
-  )
+    matFull[1,"coef",drop=FALSE], 
+    matFull[1,-ncol(matFull),drop=FALSE]
+  )[,-1, drop = FALSE]
   write.latte(mat, "optimCode.cost")
   
 
