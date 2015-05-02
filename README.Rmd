@@ -115,6 +115,54 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 
 
 
+
+
+
+
+
+
+
+
+
+# Lattice point counting, integer programming, and more with LattE
+
+_Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) installed and algstat has registered them._
+
+Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in __algstat__.  For example, `count()` uses LattE's `count` to determine the number of integer points in a [polytope](http://en.wikipedia.org/wiki/Polytope):
+
+```{r count}
+count(c("x + y <= 10", "x >= 0", "y >= 0"))
+```
+
+```{r countExample}
+library(dplyr); library(ggplot2); theme_set(theme_bw())
+polytope <- data.frame(x = c(0,10,0), y = c(0,0,10))
+points   <- expand.grid(x = 0:10, y = 0:10)
+points   <- subset(points, x + y <= 10)
+points$number <- 1:nrow(points)
+ggplot(aes(x = x, y = y), data = polytope) +
+  geom_polygon(fill = "red", alpha = .2) + 
+  geom_text(aes(y = y + .25, label = number), size = 4, data = points) +
+  geom_point(data = points) + 
+  coord_equal()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Numerically solving systems of polynomial equations
 
 _Note: this section assumes you have [Bertini](https://bertini.nd.edu) installed and algstat has registered it._

@@ -227,6 +227,47 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 #> Pearson          0.5279994  1 0.4674492
 ```
 
+Lattice point counting, integer programming, and more with LattE
+================================================================
+
+*Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) installed and algstat has registered them.*
+
+Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in **algstat**. For example, `count()` uses LattE's `count` to determine the number of integer points in a [polytope](http://en.wikipedia.org/wiki/Polytope):
+
+``` r
+count(c("x + y <= 10", "x >= 0", "y >= 0"))
+#> [1] 66
+```
+
+``` r
+library(dplyr); library(ggplot2); theme_set(theme_bw())
+#> 
+#> Attaching package: 'dplyr'
+#> 
+#> The following object is masked from 'package:algstat':
+#> 
+#>     count
+#> 
+#> The following object is masked from 'package:stats':
+#> 
+#>     filter
+#> 
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+polytope <- data.frame(x = c(0,10,0), y = c(0,0,10))
+points   <- expand.grid(x = 0:10, y = 0:10)
+points   <- subset(points, x + y <= 10)
+points$number <- 1:nrow(points)
+ggplot(aes(x = x, y = y), data = polytope) +
+  geom_polygon(fill = "red", alpha = .2) + 
+  geom_text(aes(y = y + .25, label = number), size = 4, data = points) +
+  geom_point(data = points) + 
+  coord_equal()
+```
+
+![](README-countExample-1.png)
+
 Numerically solving systems of polynomial equations
 ===================================================
 
