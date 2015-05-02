@@ -1,23 +1,37 @@
-#' Count Integer Points in a Polytope
-#'
-#' \code{count} uses LattE's count function to count the (integer) lattice points in a polytope and compute Ehrhart polynomials.
+#' Count integer points in a polytope
 #' 
-#' The specification should be one of the following: (1) a character string or strings containing an inequality in the mpoly expression format (see examples), (2) a list of vertices, or (3) raw code for LattE's count program.  If a character vector is supplied, (1) and (3) are distinguished by the number of strings.
-#'
-#' Behind the scenes, count works by writing a latte file and running count on it.  If a specification other than a length one character is given to it (which is considered to be the code), count attempts to convert it into LattE code and then run count on it.
+#' \code{count} uses LattE's count function to count the (integer) lattice
+#' points in a polytope and compute Ehrhart polynomials.
+#' 
+#' The specification should be one of the following: (1) a character string or
+#' strings containing an inequality in the mpoly expression format (see
+#' examples), (2) a list of vertices, or (3) raw code for LattE's count program.
+#' If a character vector is supplied, (1) and (3) are distinguished by the
+#' number of strings.
+#' 
+#' Behind the scenes, count works by writing a latte file and running count on
+#' it.  If a specification other than a length one character is given to it
+#' (which is considered to be the code), count attempts to convert it into LattE
+#' code and then run count on it.
 #' 
 #' @param spec specification, see details and examples
 #' @param dir directory to place the files in, without an ending /
-#' @param opts options for count; "" for a hyperplane representation, "--vrep" for a vertex representation; see the LattE manual at \url{http://www.math.ucdavis.edu/~latte}
+#' @param opts options for count; "" for a hyperplane representation, "--vrep"
+#'   for a vertex representation; see the LattE manual at
+#'   \url{http://www.math.ucdavis.edu/~latte}
 #' @param quiet show latte output
-#' @param mpoly when opts = "--ehrhart-polynomial", return the mpoly version of it
-#' @return the count.  if the count is a number has less than 10 digits, an integer is returned.  if the number has 10 or more digits, an integer in a character string is returned. you may want to use the gmp package's as.bigz to parse it.
+#' @param mpoly when opts = "--ehrhart-polynomial", return the mpoly version of
+#'   it
+#' @return the count.  if the count is a number has less than 10 digits, an
+#'   integer is returned.  if the number has 10 or more digits, an integer in a
+#'   character string is returned. you may want to use the gmp package's as.bigz
+#'   to parse it.
 #' @export count
 #' @examples
 #' \dontrun{
 #' 
-#'
-#'
+#' 
+#' 
 #' 
 #' 
 #' spec <- c("x + y <= 10", "x >= 1", "y >= 1")
@@ -75,9 +89,9 @@
 #' 0 0 1
 #' "
 #' count(code)
-#'
 #' 
-#'
+#' 
+#' 
 #' }
 #' 
 count <- function(spec, dir = tempdir(), opts = "", 
