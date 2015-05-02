@@ -10,6 +10,7 @@
 #' @param burn burn-in
 #' @param thin thinning
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
+#' @name metropolis
 #' @return a list
 #' @export metropolis
 #' @author David Kahle
@@ -101,10 +102,15 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
   ## preliminary checking
   ##################################################
   engine <- match.arg(engine)
+  if(thin == 0){
+    message("thin = 1 corresponds to no thinning, resetting thin = 0.")
+    thin <- 1
+  }
+  
 
-  if(engine == "R"){
   ## in R
   ##################################################
+  if(engine == "R"){
 
   nMoves <- ncol(moves)
   state  <- matrix(nrow = nrow(moves), ncol = iter)
@@ -116,22 +122,23 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
   
   message("Running chain... ", appendLF = FALSE)
   
-  for(k in 1:burn){
+  if(burn > 0) {
+    for(k in 1:burn){
 
-    move      <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
-    propState <- current + move
+      move      <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
+      propState <- current + move
     
-    if(any(propState < 0)){
-      prob <- 0
-    } else {
-      prob <- exp( sum(lfactorial(current)) - sum(lfactorial(propState)) )
+      if(any(propState < 0)){
+        prob <- 0
+      } else {
+        prob <- exp( sum(lfactorial(current)) - sum(lfactorial(propState)) )
+      }
+    
+      if(unifs[k] < prob) current <- propState # else current
+    
     }
-    
-    if(unifs[k] < prob) current <- propState # else current
-    
+    state[,1] <- current
   }
-  state[,1] <- current
-
 
   ## run main sampler
 
@@ -170,16 +177,16 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
   
   
 
-  } else if(engine == "Cpp"){
-
-
+  }
+  
   ## in Cpp
   ##################################################
+  if(engine == "Cpp"){
     
   current   <- unname(init)  
   allMoves  <- cbind(moves, -moves)  
   message("Running chain... ", appendLF = FALSE)  
-  current   <- metropolisCpp(current, allMoves, burn, 1)$steps[,burn]
+  if(burn > 0) current   <- metropolisCpp(current, allMoves, burn, 1)$steps[,burn]
   out       <- metropolisCpp(current, allMoves, iter, thin)
   out$moves <- moves
   message("done.")
@@ -193,3 +200,12 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
   out[c("steps", "moves", "acceptProb")]
 }
 
+
+
+
+
+#' @rdname metropolis
+#' @export
+rawMetropolis <- function(init, moves, iter = 1E3){
+  metropolis(init, moves, iter, thin = 1, burn = 0) 
+}
