@@ -10,7 +10,9 @@ As a rundown of which functions depend on which packages, see the following list
 
 Bertini - bertini, polyOptim, polySolve, projectOnto, variety
 
-LattE integrale/4ti2 - count, countTables, hierarchical, latteMax, latteMin, markov, spectral
+LattE integrale/4ti2 - count, countTables, hierarchical, latteMax, latteMin
+
+4ti2 - markov, spectral, groebner, zbasis
 
 Macaulay2 - m2
 
@@ -126,9 +128,9 @@ On OS-X
 Step 1: Get your compilers and so forth ready; download and unzip LattE.
 
 • Open Xcode, then go to Xcode > Preferences... under the Downloads tab, click the down arrow next to Command Line Tools to download them onto your computer.  After its done, close Xcode.
-• Download LattE integrale 1.7.2 bundle (latte-integrale-1.7.2.tar.gz)
+• Download LattE integrale 1.7.3 bundle (latte-integrale-1.7.3.tar.gz)
 • Open Terminal.app and type "echo $HOME". This is your home directory on your machine.
-• In Finder, double click the downloaded latte-integrale-1.7.2.tar.gz to unzip it and move the unzipped folder into your home directory.  Change the unzipped directory's name from "latte-integrale-1.7.2" to simply "latte".  (In what follows, you can also use "/Applications" in place of "$HOME", if you want to install it into your Applications directory.)
+• In Finder, double click the downloaded latte-integrale-1.7.3.tar.gz to unzip it and move the unzipped folder into your home directory.  Change the unzipped directory's name from "latte-integrale-1.7.3” to simply "latte".  (In what follows, you can also use "/Applications" in place of "$HOME", if you want to install it into your Applications directory.)
 • Open Terminal.app and type cd $HOME/latte
 
 
