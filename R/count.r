@@ -26,7 +26,8 @@
 #'   integer is returned.  if the number has 10 or more digits, an integer in a
 #'   character string is returned. you may want to use the gmp package's as.bigz
 #'   to parse it.
-#' @export count
+#' @export 
+#' @name count
 #' @examples
 #' \dontrun{
 #' 
@@ -369,6 +370,13 @@ count <- function(spec, dir = tempdir(), opts = "",
 
 
 
+#' @export
+#' @rdname count
+memCount <- memoise::memoise(count)
+
+
+
+
 
 
 
@@ -417,3 +425,9 @@ mpolyListToMat <- function(mpolyList){
   
   as.matrix(vecMpolyList)
 }
+
+
+
+
+
+

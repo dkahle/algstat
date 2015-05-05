@@ -2,19 +2,24 @@
 % Please edit documentation in R/groebner.r
 \name{groebner}
 \alias{groebner}
+\alias{memGroebner}
 \title{Compute a Grobner basis with 4ti2}
 \usage{
 groebner(mat, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = "-parb", quiet = TRUE)
+
+memGroebner(...)
 }
 \arguments{
 \item{mat}{a matrix; for example the output of \code{\link{hmat}}}
 
 \item{format}{how the moves should be returned (if "mat", moves are columns)}
 
-\item{dim}{the dimension to be used in vec2tab if format = "tab" is used, oftentimes a vector of the number of levels of each variable in order}
+\item{dim}{the dimension to be used in vec2tab if format = "tab" is used,
+oftentimes a vector of the number of levels of each variable in order}
 
-\item{all}{if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given}
+\item{all}{if TRUE, all moves (+ and -) are given.  if FALSE, only the +
+moves are given}
 
 \item{dir}{directory to place the files in, without an ending /}
 
@@ -23,14 +28,15 @@ groebner(mat, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
 \item{quiet}{show 4ti2 output}
 }
 \value{
-a matrix containing the Grobner basis as its columns (for easy addition to tables)
+a matrix containing the Grobner basis as its columns (for easy
+  addition to tables)
 }
 \description{
-A Grobner basis of a matrix A is computed with the groebner function of 4ti2, obtained with the LattE-integrale bundle.
+A Grobner basis of a matrix A is computed with the groebner function of 4ti2,
+obtained with the LattE bundle.
 }
 \examples{
-\dontrun{
-# these examples require having extra software installed
+\dontrun{ # these examples require having 4ti2 installed
 
 
 
@@ -47,10 +53,13 @@ groebner(A, "tab", varlvls, all = TRUE)
 groebner(A, quiet = FALSE)
 
 
+
+
 }
 }
 \references{
-Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures
+  on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 }
 \seealso{
 \code{\link{markov}}

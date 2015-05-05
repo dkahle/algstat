@@ -10,7 +10,8 @@
 #' @param opts options for markov
 #' @param quiet show 4ti2 output
 #' @return a matrix containing the Markov basis as its columns (for easy addition to tables)
-#' @export zbasis
+#' @rdname zbasis
+#' @export 
 #' @examples
 #' 
 #' \dontrun{ # these examples require having 4ti2 installed
@@ -189,6 +190,23 @@ zbasis <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
     if(format == "tab") return(lapply(lbasis, vec2tab, dim = dim))    
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+#' @export
+#' @rdname zbasis
+memZbasis <- memoise::memoise(zbasis)
+
+
 
 
 

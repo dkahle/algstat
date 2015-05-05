@@ -1,25 +1,30 @@
 #' Compute a Grobner basis with 4ti2
-#'
-#' A Grobner basis of a matrix A is computed with the groebner function of 4ti2, obtained with the LattE-integrale bundle.
+#' 
+#' A Grobner basis of a matrix A is computed with the groebner function of 4ti2,
+#' obtained with the LattE bundle.
 #' 
 #' @param mat a matrix; for example the output of \code{\link{hmat}}
 #' @param format how the moves should be returned (if "mat", moves are columns)
-#' @param dim the dimension to be used in vec2tab if format = "tab" is used, oftentimes a vector of the number of levels of each variable in order
-#' @param all if TRUE, all moves (+ and -) are given.  if FALSE, only the + moves are given
+#' @param dim the dimension to be used in vec2tab if format = "tab" is used,
+#'   oftentimes a vector of the number of levels of each variable in order
+#' @param all if TRUE, all moves (+ and -) are given.  if FALSE, only the +
+#'   moves are given
 #' @param dir directory to place the files in, without an ending /
 #' @param opts options for groebner
 #' @param quiet show 4ti2 output
-#' @return a matrix containing the Grobner basis as its columns (for easy addition to tables)
+#' @return a matrix containing the Grobner basis as its columns (for easy
+#'   addition to tables)
 #' @seealso \code{\link{markov}}
-#' @export groebner
-#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+#' @export
+#' @name groebner
+#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures
+#'   on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 #' @examples
 #' 
-#' \dontrun{
-#' # these examples require having extra software installed
-#'
-#'
-#'
+#' \dontrun{ # these examples require having 4ti2 installed
+#' 
+#' 
+#' 
 #' 
 #' # 2x2 independence example
 #' # following convention, the first index indicates rows
@@ -31,8 +36,10 @@
 #' groebner(A, "tab", varlvls)
 #' groebner(A, "tab", varlvls, all = TRUE)
 #' groebner(A, quiet = FALSE)
-#'
-#'
+#' 
+#' 
+#' 
+#' 
 #' }
 #' 
 groebner <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
@@ -134,4 +141,10 @@ groebner <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
 
 
 
+
+
+
+#' @export
+#' @rdname groebner
+memGroebner <- memoise::memoise(groebner)
 

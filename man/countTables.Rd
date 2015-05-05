@@ -2,10 +2,13 @@
 % Please edit documentation in R/countTables.r
 \name{countTables}
 \alias{countTables}
+\alias{memCountTables}
 \title{Count Similarly Margined Contingency Tables}
 \usage{
 countTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
   dir = tempdir(), opts = "", quiet = TRUE)
+
+memCountTables(...)
 }
 \arguments{
 \item{table}{the table of interest}
@@ -22,10 +25,15 @@ countTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
 an integer
 }
 \description{
-Count the number of contingency tables with the same marginals as a given table.
+Count the number of contingency tables with the same marginals as a given
+table.
 }
 \details{
-\code{countTables} uses LattE's count function (via algstat's \code{\link{count}} function) to count the tables.  In many cases, the number of such tables is enormous.  In these cases, instead of giving back an integer \code{countTables} provides a character string with the integer in it; see examples.
+\code{countTables} uses LattE's count function (via algstat's
+\code{\link{count}} function) to count the tables.  In many cases, the number
+of such tables is enormous.  In these cases, instead of giving back an
+integer \code{countTables} provides a character string with the integer in
+it; see examples.
 }
 \examples{
 \dontrun{
@@ -36,15 +44,26 @@ countTables(politics)
 (A <- hmat(c(2,2), list(1, 2)))
 countTables(politics, A)
 
+
+
 data(handy)
 countTables(handy)
+
+
 
 data(HairEyeColor)
 eyeHairColor <- margin.table(HairEyeColor, 2:1)
 countTables(eyeHairColor)
 
+system.time(countTables(eyeHairColor))
+system.time(countTables(eyeHairColor))
+system.time(memCountTables(eyeHairColor))
+system.time(memCountTables(eyeHairColor))
+
+
 library(gmp)
 as.bigz(countTables(eyeHairColor))
+
 
 
 # notice that even tables with small cells can have

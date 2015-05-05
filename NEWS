@@ -1,9 +1,12 @@
-Version 0.0.3
+Version 0.1.0
 -------------------------------------------------------------------------
 
 NEW FEATURES
 
+* algstat now has functions for sequential importance sampling of tables, see ?rfiber
+* algstat now has functions for generating random moves, see ?rmove.  Note that these are pre-computed.
 * The 4ti2 function groebner is now implemented.
+* All 4ti2 and latte functions have memoised copies that start with mem. Thus, the memoised version of markov is memMarkov, that of count is memCount, and so on.
 * Functions write.latte and read.latte are now implemented.
 * loglinear (hierarchical) now takes more general model specifications, including facet specification (i.e. list(1, 2) and list("Gender", "Handedness")) and index-formula specification (i.e. ~ 1 + 2).  it also accepts unnamed arrays.
 * teshape: when converting a frequency representation to a table or an observed data frame representation, the user can now specify the name of a frequency variable in the original dataset.  In particular, the variable needn't be called freq, count, or frequency.

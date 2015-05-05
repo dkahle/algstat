@@ -11,7 +11,8 @@
 #' @param quiet show 4ti2 output
 #' @param dbName the name of the model in the markov bases database, http://markov-bases.de, see examples
 #' @return a matrix containing the Markov basis as its columns (for easy addition to tables)
-#' @export markov
+#' @export 
+#' @name markov
 #' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 #' @examples
 #' 
@@ -85,7 +86,14 @@
 #'
 #' 
 #' 
-#'
+#' # memoising markov - faster recomputing times
+#' # (memorizing computed markov bases)
+#' A <- hmat(c(4,4,4), 1:3)
+#' system.time(markov(A))
+#' system.time(markov(A))
+#' system.time(memMarkov(A))
+#' system.time(memMarkov(A))
+#' 
 #' 
 #' 
 #'
@@ -98,7 +106,7 @@
 #'
 #' 
 #' 
-#'
+#' 
 #' 
 #'
 #'
@@ -220,6 +228,19 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
     if(format == "tab") return(lapply(lbasis, vec2tab, dim = dim))    
   }
 }
+
+
+
+
+
+
+
+#' @export
+#' @rdname markov
+memMarkov <- memoise::memoise(markov)
+
+
+
 
 
 

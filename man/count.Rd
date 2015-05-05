@@ -2,9 +2,12 @@
 % Please edit documentation in R/count.r
 \name{count}
 \alias{count}
+\alias{memCount}
 \title{Count integer points in a polytope}
 \usage{
 count(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE)
+
+memCount(...)
 }
 \arguments{
 \item{spec}{specification, see details and examples}

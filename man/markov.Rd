@@ -2,10 +2,13 @@
 % Please edit documentation in R/markov.r
 \name{markov}
 \alias{markov}
+\alias{memMarkov}
 \title{Compute a Markov basis with 4ti2}
 \usage{
 markov(mat, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = "-parb", quiet = TRUE, dbName)
+
+memMarkov(...)
 }
 \arguments{
 \item{mat}{a matrix; for example the output of \code{\link{hmat}}}
@@ -101,6 +104,13 @@ tableau(markov(A), varlvls)
 
 
 
+# memoising markov - faster recomputing times
+# (memorizing computed markov bases)
+A <- hmat(c(4,4,4), 1:3)
+system.time(markov(A))
+system.time(markov(A))
+system.time(memMarkov(A))
+system.time(memMarkov(A))
 
 
 

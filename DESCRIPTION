@@ -21,10 +21,11 @@ Imports:
     reshape2,
     Rcpp,
     lpSolve,
-    parallel
+    parallel,
+    memoise
 Suggests:
     vcd
 License: GPL-2
-SystemRequirements: Optionally Latte-integrale, Bertini, and Macaulay2.  Cygwin
+SystemRequirements: Optionally LattE, 4ti2, Bertini, and Macaulay2.  Cygwin
     is required for each of the above for Windows users.  See INSTALL file for
     details.
