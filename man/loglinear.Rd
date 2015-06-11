@@ -301,6 +301,8 @@ sum(dhyper(c(0:3,6:9), 10, 10, 9))
 fisher.test(politics)$p.value
 round(dhyper(0:9, 10, 10, 9), 4)
 
+rhyper(100, 10, 10, 9)
+
 
 # comparisons :
 out$exp
@@ -482,7 +484,8 @@ loglinearFit$exp
 loglinearFit$param
 loglinearFit$statistic
 
-
+A <- hmat(rep(2, 3), subsets(1:3, 2))
+countTables(haberman, A) # there's only one table in the fiber!
 
 
 

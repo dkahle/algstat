@@ -22,6 +22,8 @@ for a vertex representation; see the LattE manual at
 
 \item{mpoly}{when opts = "--ehrhart-polynomial", return the mpoly version of
 it}
+
+\item{...}{...}
 }
 \value{
 the count.  if the count is a number has less than 10 digits, an
@@ -36,9 +38,10 @@ points in a polytope and compute Ehrhart polynomials.
 \details{
 The specification should be one of the following: (1) a character string or
 strings containing an inequality in the mpoly expression format (see
-examples), (2) a list of vertices, or (3) raw code for LattE's count program.
-If a character vector is supplied, (1) and (3) are distinguished by the
-number of strings.
+examples), (2) a list of vertices, (3) a list of A and b for the equation Ax
+<= b (see examples), or (4) raw code for LattE's count program. If a
+character vector is supplied, (1) and (4) are distinguished by the number of
+strings.
 
 Behind the scenes, count works by writing a latte file and running count on
 it.  If a specification other than a length one character is given to it
@@ -107,6 +110,25 @@ code <- "
 0 0 1
 "
 count(code)
+
+
+# for Ax <= b, see this example from the latte manual p.10
+A <- matrix(c(
+   1,  0,
+   0,  1,
+   1,  1,
+  -1,  0,
+   0, -1
+), nrow = 5, byrow = TRUE)
+b <- c(1, 1, 1, 0, 0)
+count(list(A = A, b = b))
+
+
+
+
+
+
+
 
 
 

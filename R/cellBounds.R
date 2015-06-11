@@ -7,6 +7,7 @@
 #' @param strategy "lp" for linear programming and "ip" for integer programming.  
 #' (both use \code{\link{lp}})
 #' @param start reduce the size of the matrix A, i.e. use A[,start:ncol(A)] instead of A
+#' @param messaging TRUE for messages
 #' @return a named numeric vector
 #' @author Ruriko Yoshida \email{ruriko.yoshida@@uky.edu}, David Kahle \email{david.kahle@@gmail.com}
 #' @export 

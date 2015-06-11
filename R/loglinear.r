@@ -297,6 +297,8 @@
 #' fisher.test(politics)$p.value
 #' round(dhyper(0:9, 10, 10, 9), 4)
 #' 
+#' rhyper(100, 10, 10, 9)
+#' 
 #' 
 #' # comparisons :
 #' out$exp
@@ -478,7 +480,8 @@
 #' loglinearFit$param
 #' loglinearFit$statistic
 #' 
-#' 
+#' A <- hmat(rep(2, 3), subsets(1:3, 2))
+#' countTables(haberman, A) # there's only one table in the fiber!
 #' 
 #' 
 #' 
@@ -655,8 +658,8 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
     
     movesMat <- NULL
     stopifnot(all(moves %in% c("lattice", "markov", "groebner", "grobner", "graver", "sis")))
-    if("lattice"  %in% moves)  movesMat <- cbind(movesMat, zbasis(A))
-    if("markov"   %in% moves)  movesMat <- cbind(movesMat, markov(A))
+    if("lattice"  %in% moves)  movesMat <- cbind(movesMat,   zbasis(A))
+    if("markov"   %in% moves)  movesMat <- cbind(movesMat,   markov(A))
     if("groebner" %in% moves)  movesMat <- cbind(movesMat, groebner(A))
     if("grobner"  %in% moves)  movesMat <- cbind(movesMat, groebner(A))
     if("graver"   %in% moves)  stop("graver not yet implemented.")

@@ -1,32 +1,33 @@
 #' Count integer points in a polytope
 #' 
-#' \code{count} uses LattE's count function to count the (integer) lattice
+#' \code{count} uses LattE's count function to count the (integer) lattice 
 #' points in a polytope and compute Ehrhart polynomials.
 #' 
-#' The specification should be one of the following: (1) a character string or
-#' strings containing an inequality in the mpoly expression format (see
-#' examples), (2) a list of vertices, or (3) raw code for LattE's count program.
-#' If a character vector is supplied, (1) and (3) are distinguished by the
-#' number of strings.
+#' The specification should be one of the following: (1) a character string or 
+#' strings containing an inequality in the mpoly expression format (see 
+#' examples), (2) a list of vertices, (3) a list of A and b for the equation Ax 
+#' <= b (see examples), or (4) raw code for LattE's count program. If a
+#' character vector is supplied, (1) and (4) are distinguished by the number of
+#' strings.
 #' 
-#' Behind the scenes, count works by writing a latte file and running count on
-#' it.  If a specification other than a length one character is given to it
+#' Behind the scenes, count works by writing a latte file and running count on 
+#' it.  If a specification other than a length one character is given to it 
 #' (which is considered to be the code), count attempts to convert it into LattE
 #' code and then run count on it.
 #' 
 #' @param spec specification, see details and examples
 #' @param dir directory to place the files in, without an ending /
-#' @param opts options for count; "" for a hyperplane representation, "--vrep"
-#'   for a vertex representation; see the LattE manual at
+#' @param opts options for count; "" for a hyperplane representation, "--vrep" 
+#'   for a vertex representation; see the LattE manual at 
 #'   \url{http://www.math.ucdavis.edu/~latte}
 #' @param quiet show latte output
-#' @param mpoly when opts = "--ehrhart-polynomial", return the mpoly version of
+#' @param mpoly when opts = "--ehrhart-polynomial", return the mpoly version of 
 #'   it
-#' @return the count.  if the count is a number has less than 10 digits, an
-#'   integer is returned.  if the number has 10 or more digits, an integer in a
+#' @return the count.  if the count is a number has less than 10 digits, an 
+#'   integer is returned.  if the number has 10 or more digits, an integer in a 
 #'   character string is returned. you may want to use the gmp package's as.bigz
 #'   to parse it.
-#' @export 
+#' @export
 #' @name count
 #' @examples
 #' \dontrun{
@@ -92,12 +93,29 @@
 #' count(code)
 #' 
 #' 
+#' # for Ax <= b, see this example from the latte manual p.10
+#' A <- matrix(c(
+#'    1,  0,
+#'    0,  1,
+#'    1,  1,
+#'   -1,  0,
+#'    0, -1
+#' ), nrow = 5, byrow = TRUE)
+#' b <- c(1, 1, 1, 0, 0)
+#' count(list(A = A, b = b))
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
 #' 
 #' }
 #' 
-count <- function(spec, dir = tempdir(), opts = "", 
-  quiet = TRUE, mpoly = TRUE)
-{
+count <- function(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE){
 
   
   ## check for latte
@@ -109,6 +127,7 @@ count <- function(spec, dir = tempdir(), opts = "",
   }  
   
   specification <- "unknown"
+  
   
   
   
@@ -126,11 +145,26 @@ count <- function(spec, dir = tempdir(), opts = "",
   }
   
   
-  
     
     
   ## if the specification is pure code
   if(is.character(spec) && length(spec) == 1){ 
+    specification <- "code"
+    code <- spec
+  }
+  
+  
+  
+
+  ## if the specification is A and b
+  if(is.list(spec) && length(spec) == 2){ 
+    
+    bNegA <- unname(cbind(spec$b, -spec$A))
+    spec  <- paste(dim(bNegA), collapse = " ")
+    bNegA <- paste(apply(bNegA, 1, paste, collapse = " "), collapse = "\n")
+    spec  <- paste(spec, bNegA, sep = "\n")
+    spec  <- paste0("\n", spec)
+    
     specification <- "code"
     code <- spec
   }
@@ -147,6 +181,8 @@ count <- function(spec, dir = tempdir(), opts = "",
     
   }
    
+  
+  
   
   ## if giving a character string of equations, parse
   ## each to the poly <= 0 format
@@ -186,6 +222,8 @@ count <- function(spec, dir = tempdir(), opts = "",
   }
   
   
+  
+  
   ## convert the mpoly specification into a matrix, see 
   ## latte manual, p. 8
   if(is.mpolyList(spec)){
@@ -214,6 +252,8 @@ count <- function(spec, dir = tempdir(), opts = "",
   }  
   
   
+  
+  
   ## convert vertex specification into a matrix
   if(specification == "vertex"){
 	
@@ -235,19 +275,27 @@ count <- function(spec, dir = tempdir(), opts = "",
   }
 	
 	
+  
+  
   ## make dir to put latte files in (within the tempdir) timestamped
   dir2 <- file.path2(dir, timeStamp())
   suppressWarnings(dir.create(dir2))
 	
+  
+  
 
   ## write code file
   writeLines(code, con = file.path2(dir2, "countCode.latte"))
 
+  
+  
 
   ## switch to temporary directory
   oldWd <- getwd()
   setwd(dir2)
   on.exit(setwd(oldWd), add = TRUE)
+  
+  
   
   
   ## run count
@@ -276,10 +324,14 @@ count <- function(spec, dir = tempdir(), opts = "",
     
   }
   
+  
+  
 
   ## print count output when quiet = FALSE
   if(!quiet) message(paste(readLines("countErr"), collapse = "\n"), appendLF = TRUE)
   if(!quiet) cat(readLines("countOut"), sep = "\n")
+  
+  
   
   
   ## parse ehrhart polynomial
@@ -293,6 +345,8 @@ count <- function(spec, dir = tempdir(), opts = "",
   }
   
   
+  
+  
   ## parse ehrhart series
   if(opts == "--ehrhart-series"){
     outPrint <- readLines("countCode.latte.rat")
@@ -303,6 +357,8 @@ count <- function(spec, dir = tempdir(), opts = "",
     # return
     return(outPrint)
   }
+  
+  
   
   
   ## parse multivariate generating function
@@ -324,6 +380,8 @@ count <- function(spec, dir = tempdir(), opts = "",
   }  
   
   
+  
+  
   ## parse truncated taylor series
   if(str_detect(opts, "--ehrhart-taylor=")){
     outPrint <- readLines("countOut")
@@ -338,9 +396,13 @@ count <- function(spec, dir = tempdir(), opts = "",
   }  
   
     
+  
+  
   ## read in integer and parse if small enough
   out <- readLines("numOfLatticePoints")
   if(nchar(out) < 10) out <- as.integer(out)
+  
+  
   
   
   ## print out stats
@@ -348,6 +410,8 @@ count <- function(spec, dir = tempdir(), opts = "",
     cat(readLines("latte_stats"), sep = "\n")
     cat("\n")
   }
+  
+  
   
   
   ## out
@@ -369,7 +433,7 @@ count <- function(spec, dir = tempdir(), opts = "",
 
 
 
-
+#' @param ... ...
 #' @export
 #' @rdname count
 memCount <- memoise::memoise(count)

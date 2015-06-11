@@ -26,6 +26,8 @@ memMarkov(...)
 \item{quiet}{show 4ti2 output}
 
 \item{dbName}{the name of the model in the markov bases database, http://markov-bases.de, see examples}
+
+\item{...}{...}
 }
 \value{
 a matrix containing the Markov basis as its columns (for easy addition to tables)

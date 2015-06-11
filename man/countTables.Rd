@@ -20,6 +20,8 @@ memCountTables(...)
 \item{opts}{options for count}
 
 \item{quiet}{show latte output}
+
+\item{...}{...}
 }
 \value{
 an integer

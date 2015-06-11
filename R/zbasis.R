@@ -201,7 +201,7 @@ zbasis <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
 
 
 
-
+#' @param ... ...
 #' @export
 #' @rdname zbasis
 memZbasis <- memoise::memoise(zbasis)

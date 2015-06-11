@@ -5,6 +5,7 @@
 #' 
 #' @param mat a matrix
 #' @param file the name of the file
+#' @param format "mat" or "Ab"
 #' @return an invisible form of the saved output.
 #' @seealso \code{\link{write.latte}}
 #' @name latteFiles

@@ -234,7 +234,7 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
 
 
 
-
+#' @param ... ...
 #' @export
 #' @rdname markov
 memMarkov <- memoise::memoise(markov)

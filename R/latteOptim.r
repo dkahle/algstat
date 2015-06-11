@@ -5,7 +5,6 @@
 #' objective function over the integers points in a polytope (i.e. satisfying 
 #' linearity constraints). This makes use of the digging algorithm; see the 
 #' LattE manual at \url{http://www.math.ucdavis.edu/~latte} for details.
-#' 
 #' @param objective a linear polynomial to pass to \code{\link{mp}}, see 
 #'   examples
 #' @param constraints a collection of linear polynomial (in)equalities that 
@@ -15,6 +14,7 @@
 #' @param opts options; see the LattE manual at 
 #'   \url{http://www.math.ucdavis.edu/~latte}
 #' @param quiet show latte output
+#' @param type "max" or "min"
 #' @return a named list with components \code{par}, a named-vector of optimizing
 #'   arguments, and \code{value}, the value of the objective function at the
 #'   optimial point

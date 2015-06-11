@@ -14,6 +14,8 @@ read.latte(file, format = c("mat", "Ab"))
 \item{mat}{a matrix}
 
 \item{file}{the name of the file}
+
+\item{format}{"mat" or "Ab"}
 }
 \value{
 an invisible form of the saved output.

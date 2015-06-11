@@ -30,6 +30,8 @@ initialization point for the "walk" method}
 \item{includeRejections}{should rejections be returned? (note: rejection
 tables aren't completed in the SIS procedure.)}
 
+\item{thin}{thinning argument (if using walk method)}
+
 \item{format}{format of the returned moves, "mat", "vec", or "tab"}
 
 \item{dim}{the dimensions of the table if "tab" is used, see
@@ -54,14 +56,15 @@ set.seed(1)
 x <- tab2vec(tab)
 rfiber(100, A = A, x = x, method = "walk")
 
+
+
+\dontrun{ # save R CMD check time and requires additional software
+
 library(microbenchmark)
 microbenchmark(
   rfiber(100, A = A, b = b),
   rfiber(100, A = A, x = x, method = "walk")
 )
-
-
-\dontrun{ # save R CMD check time
 
 # the distribution of the samples is seemingly near-uniform
 tabs <- rfiber(1e4, A, b, format = "vec", parallel = TRUE)

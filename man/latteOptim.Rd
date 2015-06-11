@@ -22,6 +22,8 @@ examples}
 \item{constraints}{a collection of linear polynomial (in)equalities that
 define the feasibility region, the integers in the polytope}
 
+\item{type}{"max" or "min"}
+
 \item{method}{method LP or cones}
 
 \item{dir}{directory to place the files in, without an ending /}

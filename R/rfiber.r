@@ -15,6 +15,7 @@
 #' @param format format of the returned moves, "mat", "vec", or "tab"
 #' @param dim the dimensions of the table if "tab" is used, see 
 #'   \code{\link{vec2tab}}
+#' @param thin thinning argument (if using walk method)
 #' @param ... ...
 #' @return a named numeric vector
 #' @author David Kahle \email{david.kahle@@gmail.com}, Ruriko Yoshida 
@@ -35,14 +36,15 @@
 #' x <- tab2vec(tab)
 #' rfiber(100, A = A, x = x, method = "walk")
 #' 
+#' 
+#' 
+#' \dontrun{ # save R CMD check time and requires additional software
+#' 
 #' library(microbenchmark)
 #' microbenchmark(
 #'   rfiber(100, A = A, b = b),
 #'   rfiber(100, A = A, x = x, method = "walk")
 #' )
-#' 
-#' 
-#' \dontrun{ # save R CMD check time
 #' 
 #' # the distribution of the samples is seemingly near-uniform
 #' tabs <- rfiber(1e4, A, b, format = "vec", parallel = TRUE)
@@ -113,7 +115,7 @@ rfiber <- function(n, ..., A, b, x,
   ## 
   if(method == "sis"){
     if(!missing(x) && missing(b)) b <- A %*% tab2vec(x)
-    samps <- rfiber_sis(n, A, b, parallel, includeRejections = includeRejections, ...)
+    samps <- rfiber_sis(n, A = A, b = b, parallel = parallel, includeRejections = includeRejections, ...)
     if(format == "vec"){
       return(samps)
     } else if(format == "mat"){

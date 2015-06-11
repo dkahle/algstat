@@ -49,11 +49,7 @@ b <- A \%*\% x # vector of sufficient statistics
 rmove(10, A = A, b = b)
 rmove(10, A = A, x = x, method = "walk")
 
-library(microbenchmark)
-microbenchmark(
-  rmove(100, A = A, b = b),
-  rmove(100, A = A, x = x, method = "walk")
-)
+
 
 
 moves <- rmove(10000, A = A, x = x, method = "walk")
@@ -65,14 +61,23 @@ A <- hmat(c(2,2), 1:2)
 x <- c(1, 3, 3, 1)
 b <- rep.int(4, 4)
 
-rfiber(10, A, b)
-(tabs <- rfiber(10, A, b, format = "vec"))
+rfiber(10, A = A, b = b)
+(tabs <- rfiber(10, A = A, b = b, format = "vec"))
 unique(tabs)
 lapply(unique(tabs), vec2tab, dim = c(2, 2))
 
 
 
-\dontrun{ # save R CMD check time
+\dontrun{ # save R CMD check time and requires outside software
+
+
+library(microbenchmark)
+microbenchmark(
+  rmove(100, A = A, b = b),
+  rmove(100, A = A, x = x, method = "walk")
+)
+
+
 
 markov(A)
 markov(A, "vec")
@@ -90,7 +95,7 @@ data(politics)
 politics
 tab2vec(politics)
 b <- A \%*\% tab2vec(politics)
-tabs <- rfiber(1000, A, b, format = "vec")
+tabs <- rfiber(1000, A = A, b = b, format = "vec")
 lapply(unique(tabs), vec2tab, dim = c(2, 2))
 
 rmove(5, A, b)

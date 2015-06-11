@@ -10,6 +10,7 @@ NEW FEATURES
 * Functions write.latte and read.latte are now implemented.
 * loglinear (hierarchical) now takes more general model specifications, including facet specification (i.e. list(1, 2) and list("Gender", "Handedness")) and index-formula specification (i.e. ~ 1 + 2).  it also accepts unnamed arrays.
 * teshape: when converting a frequency representation to a table or an observed data frame representation, the user can now specify the name of a frequency variable in the original dataset.  In particular, the variable needn't be called freq, count, or frequency.
+* The new function countFiber uses LattE's count function to count the elements of a fiber; that is, the number of nonnegative integer x's such that Ax = b for a given A and b. (Thanks to tobias windisch for the suggestion.)
 
 CHANGES
 

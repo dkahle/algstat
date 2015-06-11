@@ -57,6 +57,5 @@ TitanicFreq <- teshape(Titanic, "freq")
 TitanicFreq$n <- TitanicFreq$freq
 TitanicFreq$freq  <- NULL
 teshape(TitanicFreq, "tab", "n")
-teshape(TitanicFreq, "tab", n)
 }
 

@@ -24,6 +24,8 @@ memZbasis(...)
 \item{opts}{options for markov}
 
 \item{quiet}{show 4ti2 output}
+
+\item{...}{...}
 }
 \value{
 a matrix containing the Markov basis as its columns (for easy addition to tables)

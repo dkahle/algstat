@@ -15,6 +15,8 @@ cellBounds(A, b, strategy = c("lp", "ip"), start = 1, messaging = FALSE)
 (both use \code{\link{lp}})}
 
 \item{start}{reduce the size of the matrix A, i.e. use A[,start:ncol(A)] instead of A}
+
+\item{messaging}{TRUE for messages}
 }
 \value{
 a named numeric vector

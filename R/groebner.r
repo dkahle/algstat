@@ -143,7 +143,7 @@ groebner <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
 
 
 
-
+#' @param ... ...
 #' @export
 #' @rdname groebner
 memGroebner <- memoise::memoise(groebner)

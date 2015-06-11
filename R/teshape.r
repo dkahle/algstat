@@ -10,6 +10,7 @@
 #' @return a matrix containing the Markov basis as its columns (for easy addition to tables)
 #' @export teshape
 #' @examples
+#' 
 #'
 #' data(Titanic) 
 #'
@@ -45,7 +46,6 @@
 #' TitanicFreq$n <- TitanicFreq$freq
 #' TitanicFreq$freq  <- NULL 
 #' teshape(TitanicFreq, "tab", "n") 
-#' teshape(TitanicFreq, "tab", n) 
 #' 
 #'
 teshape <- function(data, out = c("freq", "tab", "raw"), freqVar){

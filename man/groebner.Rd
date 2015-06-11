@@ -26,6 +26,8 @@ moves are given}
 \item{opts}{options for groebner}
 
 \item{quiet}{show 4ti2 output}
+
+\item{...}{...}
 }
 \value{
 a matrix containing the Grobner basis as its columns (for easy
