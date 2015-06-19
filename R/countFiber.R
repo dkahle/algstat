@@ -35,18 +35,18 @@
 #' 
 countFiber <- function(A, b, dir = tempdir(), opts = "", quiet = TRUE){
   
-  # basic quantities
+  ## basic quantities
   m <- nrow(A); n <- ncol(A)
   
-  # turn into latte format
+  ## turn into latte format
   bNegA <- unname(cbind(b, -A))
-  dim   <- paste(dim(bNegA), collapse = " ")
-  bNegA <- paste(apply(bNegA, 1, paste, collapse = " "), collapse = "\n")
-  code  <- paste(dim, bNegA, sep = "\n")
-  code  <- paste0(code, "\n")
-  lin   <- paste0("linearity ", m, " ", paste(1:m, collapse = " "), "\n")
-  nonneg <- paste0("nonnegative ", n, " ", paste(1:n, collapse = " "), "\n")
-  code <- paste0(code, lin, nonneg)
+  
+  ## add linearity and nonnegative attributes
+  attr(bNegA, "linearity") <- 1:m
+  attr(bNegA, "nonnegative") <- 1:n
+  
+  ## make code
+  code <- write.latte(bNegA)
   
   ## count
   count(spec = code, dir = dir, opts = opts, quiet = quiet)  

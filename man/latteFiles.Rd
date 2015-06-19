@@ -13,7 +13,7 @@ read.latte(file, format = c("mat", "Ab"))
 \arguments{
 \item{mat}{a matrix}
 
-\item{file}{the name of the file}
+\item{file}{the name of the file; if missing, print code}
 
 \item{format}{"mat" or "Ab"}
 }

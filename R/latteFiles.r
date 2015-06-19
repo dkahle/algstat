@@ -4,7 +4,7 @@
 #' \code{read.latte} reads a latte-formatted file from disk.
 #' 
 #' @param mat a matrix
-#' @param file the name of the file
+#' @param file the name of the file; if missing, print code
 #' @param format "mat" or "Ab"
 #' @return an invisible form of the saved output.
 #' @seealso \code{\link{write.latte}}
@@ -38,7 +38,6 @@
 
 
 
-
 #' @rdname latteFiles
 #' @export
 write.latte <- function(mat, file){  
@@ -46,7 +45,12 @@ write.latte <- function(mat, file){
   ## construct file in latte format
   ## e.g. "3 3\n5 6 8\n7 3 4\n2 9 1"
   ## and cat("3 3\n5 6 8\n7 3 4\n2 9 1")
-  out <- paste(nrow(mat), ncol(mat))
+  r <- nrow(mat)
+  c <- ncol(mat)
+  a <- attributes(mat)
+  mat <- apply(mat, 2, format, scientific = FALSE)
+  attributes(mat) <- a
+  out <- paste(r, c)
   out <- paste0(out, "\n")
   out <- paste0(out, 
     paste(
@@ -80,11 +84,11 @@ write.latte <- function(mat, file){
   }
   
   
-  ## save it to disk
-  writeLines(out, con = file)
+  ## save it to disk and return
+  if(!missing(file)) writeLines(out, con = file)
   
   
-  ## return invisible output
+  ## invisibly return code
   invisible(out)
 }
 
