@@ -69,9 +69,15 @@
 #' markov(A)
 #' tableau(markov(A), dim = varlvls)
 #' 
-#'
 #' 
-#' 
+#' # markov basis vs graver basis
+#' varlvls <- c(3,3,3)
+#' facets <- list(c(1,2), c(1,3), c(2,3))
+#' ( A <- hmat(varlvls, facets) )
+#' str(zbasis(A)) #   8 elements
+#' str(markov(A)) #  81 elements
+#' str(graver(A)) # 795 elements
+#' tableau(markov(A), dim = varlvls) 
 #'
 #'
 #' # LAS example 1.2.12, p.16  (no 3-way interaction)
@@ -147,7 +153,7 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   
   
   ## make 4ti2 file
-  if(!missing(mat)) write.latte(mat, file.path2(dir2, "markovCode.mat"))
+  if(!missing(mat)) write.latte(mat, file.path2(dir2, "PROJECT.mat"))
 
 
   ## switch to temporary directory
@@ -164,13 +170,13 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
       
       system2(
         file.path2(getOption("markovPath"), "markov"),
-        paste(opts, file.path2(dir2, "markovCode.mat")),
+        paste(opts, file.path2(dir2, "PROJECT")),
         stdout = "markovOut", stderr = FALSE
       )
       
     } else if(is.win()){ 
       
-      matFile <- file.path2(dir2, "markovCode.mat")
+      matFile <- file.path2(dir2, "PROJECT") # formerly "markovCode.mat"
       matFile <- chartr("\\", "/", matFile)
       matFile <- str_c("/cygdrive/c", str_sub(matFile, 3)) 
       
@@ -192,14 +198,14 @@ markov <- function(mat, format = c("mat", "vec", "tab"), dim = NULL,
   	
     download.file(
       paste0("http://markov-bases.de/data/", dbName, "/", dbName, ".mar"),
-      destfile = "markovCode.mat.mar" # already in tempdir
+      destfile = "PROJECT.mar" # already in tempdir
     )
     
   }
   
   
   ## figure out what files to keep them, and make 4ti2 object
-  basis <- t(read.latte(paste0("markovCode.mat", ".mar")))
+  basis <- t(read.latte("PROJECT.mar"))
   
   
   ## fix case of no basis

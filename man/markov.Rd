@@ -90,8 +90,14 @@ markov(A)
 tableau(markov(A), dim = varlvls)
 
 
-
-
+# markov basis vs graver basis
+varlvls <- c(3,3,3)
+facets <- list(c(1,2), c(1,3), c(2,3))
+( A <- hmat(varlvls, facets) )
+str(zbasis(A)) #   8 elements
+str(markov(A)) #  81 elements
+str(graver(A)) # 795 elements
+tableau(markov(A), dim = varlvls)
 
 
 # LAS example 1.2.12, p.16  (no 3-way interaction)

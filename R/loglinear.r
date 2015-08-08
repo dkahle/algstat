@@ -138,9 +138,9 @@
 #' 
 #' 
 #' # loglinear performs the same tasks as loglin and loglm,
-#' # but loglinear gives the exact test p values and more statistics
-#' loglinFit <- stats::loglin(handy, list(1, 2), fit = TRUE, param = TRUE)
-#' loglmFit <- MASS::loglm(~ Gender + Handedness, data = handy)
+#' # but loglinear gives the exact test p values and more goodness-of-fit statistics
+#' stats::loglin(handy, list(1, 2))
+#' MASS::loglm(~ Gender + Handedness, data = handy)
 #' # loglm is just a wrapper of loglin  
 #'   
 #' 
@@ -182,12 +182,12 @@
 #' # the p-value for the goodness-of-fit of the overall model is available as well :
 #' # loglinear gives the exact conditional p-value
 #' # (conditional on the sufficient statistics)
-#' # the five numbers correspond the probability of tables that are
+#' # the five numbers correspond the probability of observering a table that is
 #' # "more weird" than the observed table, where "more weird" is determined
 #' # by having a larger X2 value (or G2, FT, CR, or NM)
 #' loglinearFit$p.value
 #' 
-#' # in this case (a 2x2 table with the independence model, we can check that 
+#' # in this case (a 2x2 table with the independence model), we can check that 
 #' # the above p-values are coorect up to Monte Carlo error
 #' fisher.test(handy)$p.value
 #' 
@@ -210,7 +210,7 @@
 #' # table under the model are available
 #' loglinearFit$statistic 
 #' c(X2 = loglinFit$pearson, G2 = loglinFit$lrt) # loglin only gives X2 and G2
-#' 
+#' # note that PR is un-normalized log-probability
 #' 
 #' 
 #' 
@@ -227,6 +227,7 @@
 #' 
 #' 
 #' # these were computed as the markov basis of the integer matrix
+#' # (for different models, different schemes may be employed)
 #' loglinearFit$A
 #' markov(loglinearFit$A) 
 #' loglinearFit$moves
@@ -261,9 +262,9 @@
 #' 
 #' 
 #' # as an added help, you may find the visuals in vcd useful:
-#' # library(vcd)
-#' # mosaic(~ Gender + Handedness, data = handy, shade = TRUE, legend = TRUE)
-#' 
+#' library(vcd)
+#' mosaic(~ Gender + Handedness, data = handy, shade = TRUE, legend = TRUE)
+#' # note mosaic's use of the asymptotic X^2 test
 #' 
 #' 
 #' 
@@ -297,6 +298,8 @@
 #' fisher.test(politics)$p.value
 #' round(dhyper(0:9, 10, 10, 9), 4)
 #' 
+#' # we can sample from the hypergeometric distribution on the fiber using
+#' # rhyper
 #' rhyper(100, 10, 10, 9)
 #' 
 #' 
@@ -312,12 +315,12 @@
 #'   X2 = pchisq(loglinFit$pearson, df = loglinFit$df, lower.tail = FALSE),
 #'   G2 = pchisq(loglinFit$lrt,     df = loglinFit$df, lower.tail = FALSE)
 #' ) # asymptotic approximation
-#' fisher.test(politics)$p.value # accurate to monte carlo error
+#' fisher.test(politics)$p.value # the exact conditional p-value
 #' 
 #' out$statistic # accurate to monte carlo error
 #' c(X2 = loglinFit$pearson, G2 = loglinFit$lrt)
 #' 
-#' # vcd::mosaic(~ Personality + Party, data = politics, shade = TRUE, legend = TRUE)
+#' vcd::mosaic(~ Personality + Party, data = politics, shade = TRUE, legend = TRUE)
 #' 
 #' 
 #' 
@@ -341,14 +344,17 @@
 #' data(HairEyeColor)
 #' eyeHairColor <- margin.table(HairEyeColor, 2:1)
 #' 
-#' outC <- loglinear(~ Eye + Hair, data = eyeHairColor)
-#' outR <- loglinear(~ Eye + Hair, data = eyeHairColor, engine = "R")
+#' out <- loglinear(~ Eye + Hair, data = eyeHairColor)
 #' 
-#' # doesn't work even with workspace = 2E9 (with over 4.5Gb in memory)
-#' #fisher.test(eyeHairColor, hybrid = TRUE, workspace = 2E9)
+#' # the default fisher.test doesn't work even with workspace = 2E9
+#' # (with over 4.5Gb in memory) because it is trying to enumerate the fiber.
+#' #fisher.test(eyeHairColor, workspace = 2E9)
+#' # it can, however, compute Monte Carlo p-values for RxC tables, like loglinear
+#' fisher.test(eyeHairColor, simulate.p.value = TRUE, B = 1e6)
+#' out$p.value
 #' 
 #' # you can see the markov moves used in the mcmc in tableau notation
-#' tableau(outC$moves, dim(eyeHairColor)) 
+#' tableau(out$moves, dim(eyeHairColor)) 
 #' 
 #' # library(vcd)
 #' # mosaic(~ Eye + Hair, data = HairEyeColor, shade = TRUE, legend = TRUE)
@@ -599,7 +605,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   ## check for sampling zeros
   ##################################################
   if(any(data == 0L)) message(
-    "care ought be taken with tables with sampling zeros to ensure the MLE exists."
+    "Care ought be taken with tables with sampling zeros to ensure the MLE exists."
   )
 
 
@@ -628,7 +634,7 @@ loglinear <- function(model, data, iter = 1E4, burn = 1000, thin = 10,
   } else if(all(unlist(model) %in% 1:length(vars))){ # by indices
     facets <- lapply(model, as.integer) # to fix the ~ 1 + 2 case, parsed as chars
   } else {
-    stop("invalid model specification, see ?loglinear")
+    stop("Invalid model specification, see ?loglinear")
   }
   
 
