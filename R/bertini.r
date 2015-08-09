@@ -112,12 +112,7 @@ bertini <- function(code, dir = tempdir(), opts = "", quiet = TRUE){
   
 
   ## check for bertini
-  if(is.null(getOption("bertiniPath"))){
-    stop(
-      "algstat doesn't know where bertini is,\n",
-      "  and so can't use its functionality.  see ?setBertiniPath", call. = FALSE
-    )
-  }
+  program_not_found_stop("bertini")
   
 	
   ## make dir to put bertini files in (within the tempdir) timestamped
@@ -153,7 +148,7 @@ bertini <- function(code, dir = tempdir(), opts = "", quiet = TRUE){
   
   ## run bertini  
   system2(
-    paste(getOption("bertiniPath"), "bertini", sep = "/"),
+    paste(getOption("bertini"), "bertini", sep = "/"),
     paste(opts, paste(dir2, "bertiniCode", sep = "/")),
     stdout = "bertiniOut"
   )

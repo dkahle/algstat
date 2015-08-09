@@ -45,6 +45,9 @@
 #'
 m2 <- function(code, dir = tempdir(), opts = "--script"){
 	
+  ## check for macaulay2
+  program_not_found_stop("m2")
+  
   
   ## define function to make the m2 file to be run later
   write_m2 <- function(code, outFile = "m2Out", codeFile = "m2Code.m2"){
@@ -83,7 +86,7 @@ m2 <- function(code, dir = tempdir(), opts = "--script"){
   setwd(dir)
     
   system2(
-    file.path2(getOption("m2Path"), "M2"), 
+    file.path2(getOption("m2"), "M2"), 
     paste(opts, paste(dir, "m2Code.m2", sep = "/"))
   )   
     

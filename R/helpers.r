@@ -347,3 +347,34 @@ sampleIntBetween <- function(l, u){
   if(l == u) return(l)
   sample(l:u, 1)
 }
+
+
+
+
+
+capitalize <- function(s){
+  if(length(s) > 1) return(vapply(s, capitalize, character(1)))  
+  str_c(toupper(str_sub(s, 1, 1)), str_sub(s, 2))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+`%notin%` <- function(elem, set){
+  if(length(elem) > 1) return(vapply(elem, `%notin%`, logical(1), set = set))
+  !(elem %in% set)
+}
+
+
+
+
+
+

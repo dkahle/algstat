@@ -119,16 +119,11 @@ count <- function(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE){
 
   
   ## check for latte
-  if(is.null(getOption("lattePath"))){
-    stop(
-      "algstat doesn't know where count is (or any other latte programs),\n",
-      "  and so can't use the count function.  see ?setLattePath", call. = FALSE
-    )
-  }  
+  program_not_found_stop("latte")
   
+  
+  ## initialize specification
   specification <- "unknown"
-  
-  
   
   
   ## look at opts
@@ -258,7 +253,11 @@ count <- function(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE){
   if(specification == "vertex"){
 	
   	if(any(!sapply(spec, function(v) length(v) != 1))){
-  	  stop("if providing a vertex specification,\n each point must have the same number of coordinates.", call. = FALSE)
+  	  stop(
+  	    "if providing a vertex specification,\n",
+        "  each point must have the same number of coordinates.", 
+  	    call. = FALSE
+  	  )
   	}
   	  	
     mat <- matrix(unlist(spec), ncol = 2, byrow = TRUE)
@@ -302,7 +301,7 @@ count <- function(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE){
   if(is.mac() || is.unix()){ 
     
     system2(
-      file.path2(getOption("lattePath"), "count"),
+      file.path2(getOption("latte"), "count"),
       paste(opts, file.path2(dir2, "countCode.latte")),
       stdout = "countOut", stderr = "countErr"
     )       
@@ -317,7 +316,7 @@ count <- function(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE){
       "cmd.exe",
       paste(
         "/c env.exe", 
-        file.path(getOption("lattePath"), "count"), 
+        file.path(getOption("latte"), "count"), 
         opts, matFile
       ), stdout = "countOut", stderr = "countErr"
     )
