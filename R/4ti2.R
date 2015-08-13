@@ -27,7 +27,7 @@
 #' 
 #' 
 #' # basic input and output for the 2x2 independence example
-#' varlvls <- c(2,2)
+#' varlvls <- c(3,3)
 #' facets <- list(1,2)
 #' ( A <- hmat(varlvls, facets) )
 #' markov(A)
@@ -53,7 +53,7 @@
 #' 
 #' # comparing the bases for the 3x3x3 no-three-way interaction model
 #' ( A <- hmat(c(3,3,3), subsets(1:3, 2)) )
-#' str(zbasis(A))   #    8 elements
+#' str(zbasis(A))   #    8 elements = ncol(A) - qr(A)$rank
 #' str(markov(A))   #   81 elements
 #' str(groebner(A)) #  110 elements
 #' str(graver(A))   #  795 elements
@@ -146,6 +146,7 @@ basis <- function(exec){
   extension <- switch(exec,
     markov = ".mar",
     groebner = ".gro",
+    hilbert = ".hil",
     graver = ".gra",
     zbasis = ".lat"
   )
@@ -153,6 +154,7 @@ basis <- function(exec){
   commonName = switch(exec,
     markov = "markov",
     groebner = "grobner",
+    hilbert = "hilbert",
     graver = "graver",
     zbasis = "lattice"
   ) 
@@ -160,7 +162,8 @@ basis <- function(exec){
   defaultOpts = switch(exec,
     markov = "-parb",
     groebner = "-parb",
-    graver = "",
+    hilbert = "-p=gmp",
+    graver = "-p=gmp",
     zbasis = "-parb"
   ) 
   
@@ -300,6 +303,10 @@ groebner <- basis("groebner")
 
 #' @export
 #' @rdname fourTiTwo
+hilbert <- basis("hilbert")
+
+#' @export
+#' @rdname fourTiTwo
 graver <- basis("graver")
 
 
@@ -322,6 +329,11 @@ memMarkov <- memoise::memoise(markov)
 #' @export
 #' @rdname fourTiTwo
 memGroebner <- memoise::memoise(groebner)
+
+#' @param ... ...
+#' @export
+#' @rdname fourTiTwo
+memHilbert <- memoise::memoise(hilbert)
 
 #' @param ... ...
 #' @export

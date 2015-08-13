@@ -4,9 +4,11 @@
 \alias{basis}
 \alias{graver}
 \alias{groebner}
+\alias{hilbert}
 \alias{markov}
 \alias{memGraver}
 \alias{memGroebner}
+\alias{memHilbert}
 \alias{memMarkov}
 \alias{memZbasis}
 \alias{zbasis}
@@ -23,6 +25,9 @@ markov(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
 groebner(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
+hilbert(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+
 graver(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
@@ -31,6 +36,8 @@ memZbasis(...)
 memMarkov(...)
 
 memGroebner(...)
+
+memHilbert(...)
 
 memGraver(...)
 }
@@ -63,6 +70,8 @@ http://markov-bases.de, see examples}
 \item{...}{...}
 
 \item{...}{...}
+
+\item{...}{...}
 }
 \value{
 a matrix containing the Markov basis as its columns (for easy
@@ -77,7 +86,7 @@ configuration matrix A.  See the references for details.
 
 
 # basic input and output for the 2x2 independence example
-varlvls <- c(2,2)
+varlvls <- c(3,3)
 facets <- list(1,2)
 ( A <- hmat(varlvls, facets) )
 markov(A)
@@ -103,7 +112,7 @@ markov(A, "tab", varlvls, TRUE)
 
 # comparing the bases for the 3x3x3 no-three-way interaction model
 ( A <- hmat(c(3,3,3), subsets(1:3, 2)) )
-str(zbasis(A))   #    8 elements
+str(zbasis(A))   #    8 elements = ncol(A) - qr(A)$rank
 str(markov(A))   #   81 elements
 str(groebner(A)) #  110 elements
 str(graver(A))   #  795 elements
