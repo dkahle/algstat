@@ -5,14 +5,18 @@
 \alias{loglinear}
 \title{Fit a hierarchical log-linear model with algebraic methods}
 \usage{
-loglinear(model, data, iter = 10000, burn = 1000, thin = 10,
-  engine = c("Cpp", "R"), method = c("ipf", "mcmc"), moves, ...)
+loglinear(model, data, init = tab2vec(data), iter = 10000, burn = 1000,
+  thin = 10, engine = c("Cpp", "R"), method = c("ipf", "mcmc"), moves,
+  ...)
 }
 \arguments{
 \item{model}{hierarchical log-linear model specification}
 
-\item{data}{data, typically as a table but can be in different formats.  see
-\code{\link{teshape}}}
+\item{data}{data, typically as a table but can be in different
+formats.  see \code{\link{teshape}}}
+
+\item{init}{the initialization of the chain. by default, this is
+the observed table}
 
 \item{iter}{number of chain iterations}
 
@@ -22,96 +26,111 @@ loglinear(model, data, iter = 10000, burn = 1000, thin = 10,
 
 \item{engine}{C++ or R? (C++ yields roughly a 20-25x speedup)}
 
-\item{method}{should the expected value (exp) be fit using iterative
-proportional fitting (via loglin) or the MCMC as the average of the steps?}
+\item{method}{should the expected value (exp) be fit using
+iterative proportional fitting (via loglin) or the MCMC as the
+average of the steps?}
 
-\item{moves}{the markov moves for the mcmc (as columns of a matrix).}
+\item{moves}{the markov moves for the mcmc (as columns of a
+matrix).}
 
 \item{...}{...}
 }
 \value{
-a list containing named elements \itemize{ \item \code{steps}: an
-  integer matrix whose columns represent individual samples from the mcmc.
-  \item \code{moves}: the moves used for the proposal distribution in the
-  mcmc, computed with 4ti2 (note that only the positive moves are given).
-  \item \code{acceptProb}: the average acceptance probability of the moves,
-  including the thinned moves. \item \code{param}: the fitted parameters of
-  the log linear model. \item \code{df}: parameters per term in the model
-  \item \code{quality}: model selection statistics AIC, AICc, and BIC. \item
-  \code{residuals}: the (unstandardized) pearson residuals (O - E) / sqrt(E)
-  \item \code{call}: the call. \item \code{obs}: the contingency table given.
-  \item \code{exp}: the fit contingency table as an integer array. \item
-  \code{A}: the sufficient statistics computing matrix (from Tmaker). \item
-  \code{p.value}: the exact p-values of individual tests, accurate to
-  Monte-Carlo error.  these are computed as the proportion of samples with
-  statistics equal to or larger than the oberved statistic. \item
-  \code{mid.p.value}: the mid p.values, see Agresti pp.20--21. \item
-  \code{statistic}: the pearson's chi-squared (X2), likelihood ratio (G2),
-  Freeman-Tukey (FT), Cressie-Read (CR), and Neyman modified chi-squared (NM)
-  statistics computed for the table given. \item \code{sampsStats}: the
-  statistics computed for each mcmc sample. \item \code{cells}: the number of
-  cells in the table. \item \code{method}: the method used to estimate the
-  table. }
+a list containing named elements \itemize{ \item
+  \code{steps}: an integer matrix whose columns represent
+  individual samples from the mcmc. \item \code{moves}: the moves
+  used for the proposal distribution in the mcmc, computed with
+  4ti2 (note that only the positive moves are given). \item
+  \code{acceptProb}: the average acceptance probability of the
+  moves, including the thinned moves. \item \code{param}: the
+  fitted parameters of the log linear model. \item \code{df}:
+  parameters per term in the model \item \code{quality}: model
+  selection statistics AIC, AICc, and BIC. \item
+  \code{residuals}: the (unstandardized) pearson residuals (O -
+  E) / sqrt(E) \item \code{call}: the call. \item \code{obs}: the
+  contingency table given. \item \code{exp}: the fit contingency
+  table as an integer array. \item \code{A}: the sufficient
+  statistics computing matrix (from Tmaker). \item
+  \code{p.value}: the exact p-values of individual tests,
+  accurate to Monte-Carlo error.  these are computed as the
+  proportion of samples with statistics equal to or larger than
+  the oberved statistic. \item \code{mid.p.value}: the mid
+  p.values, see Agresti pp.20--21. \item \code{statistic}: the
+  pearson's chi-squared (X2), likelihood ratio (G2),
+  Freeman-Tukey (FT), Cressie-Read (CR), and Neyman modified
+  chi-squared (NM) statistics computed for the table given. \item
+  \code{sampsStats}: the statistics computed for each mcmc
+  sample. \item \code{cells}: the number of cells in the table.
+  \item \code{method}: the method used to estimate the table. }
 }
 \description{
-\code{loglinear} fits a hierarchical log-linear model to a dataset (typically
-a contingency table) and performs an exact conditional test on the fitted
-model using various distance metrics.  The exact test, which is a
-goodness-of-fit test, is performed via Monte-Carlo sampling from the
-conditional distribution of the table given the sufficient statistics of the
-model.  In short, inference is drawn by comparing the statistic of the
-observed table (be it an unnormalized log-likelihood, a Pearson chi-squared
-value, or another metric) to those of the samples.  The proportion of sampled
-tables with equal to or more extreme values than the observed table is the
-resulting p-value.
+\code{loglinear} fits a hierarchical log-linear model to a
+dataset (typically a contingency table) and performs an exact
+conditional test on the fitted model using various distance
+metrics.  The exact test, which is a goodness-of-fit test, is
+performed via Monte-Carlo sampling from the conditional
+distribution of the table given the sufficient statistics of the
+model.  In short, inference is drawn by comparing the statistic
+of the observed table (be it an unnormalized log-likelihood, a
+Pearson chi-squared value, or another metric) to those of the
+samples.  The proportion of sampled tables with equal to or more
+extreme values than the observed table is the resulting p-value.
 }
 \details{
 In many ways, \code{loglinear} is like \code{\link{loglin}} or
 \code{\link{loglm}}; however, there are a few key differences.
 
 The first difference is methodological.  The tests conducted with
-\code{loglinear} are exact conditional tests based on the conditional
-distribution of the data given the sufficient statistics for the model.  In
-other words, they are analogues of Fisher's exact test for generic log-linear
-models.  These tests are made possible by advances in algebraic statistics;
-see references 1--3 below.
+\code{loglinear} are exact conditional tests based on the
+conditional distribution of the data given the sufficient
+statistics for the model.  In other words, they are analogues of
+Fisher's exact test for generic log-linear models.  These tests
+are made possible by advances in algebraic statistics; see
+references 1--3 below.
 
-The second difference between \code{loglinear} and \code{\link{loglin}} or
-\code{\link{loglm}} is that inference is made through Monte Carlo simulation.
-In particular, \code{loglinear} leverages Markov moves to sample from the
-conditional distribution of the data given its sufficent statistics.  If the
-software 4ti2 is installed on your machine, you can use \code{\link{markov}}
-(or let \code{loglinear} use \code{\link{markov}}) to generate a Markov basis
-to use for the Markov moves. This basis is guaranteed to produce a MCMC
-routine that converges to the conditional distribution of interest.  Since
-\code{loglinear} uses Monte Carlo simulation to conduct inference, and since
-it uses MCMC to do so, concerns typical to MCMC should be addressed.  In
-particular, issues such as burn in and mixing (autocorrelation of samples)
-should be addressed.  The examples illustrate some of these topics.  The
-result is a p-value that is generated by Monte Carlo simulation.  Its
-standard error is provided (computed as in the standard CLT confidence
-interval) to give a sense of the Monte Carlo error.
+The second difference between \code{loglinear} and
+\code{\link{loglin}} or \code{\link{loglm}} is that inference is
+made through Monte Carlo simulation. In particular,
+\code{loglinear} leverages Markov moves to sample from the
+conditional distribution of the data given its sufficent
+statistics.  If the software 4ti2 is installed on your machine,
+you can use \code{\link{markov}} (or let \code{loglinear} use
+\code{\link{markov}}) to generate a Markov basis to use for the
+Markov moves. This basis is guaranteed to produce a MCMC routine
+that converges to the conditional distribution of interest.
+Since \code{loglinear} uses Monte Carlo simulation to conduct
+inference, and since it uses MCMC to do so, concerns typical to
+MCMC should be addressed.  In particular, issues such as burn in
+and mixing (autocorrelation of samples) should be addressed.  The
+examples illustrate some of these topics.  The result is a
+p-value that is generated by Monte Carlo simulation.  Its
+standard error is provided (computed as in the standard CLT
+confidence interval) to give a sense of the Monte Carlo error.
 
-A third way that \code{loglinear} differs from \code{stats::loglin} or
-\code{MASS::loglm} is in generalizing the kinds of tests performed.  While
-those allow for asymptotic unconditional testing using Pearson's X^2 test and
-the likelihood ratio test, \code{loglinear} gives several test statistics:
-Pearson's X^2, the likelihood ratio G^2, Freeman-Tukey, Cressie-Read (lambda
-= 2/3), and Neyman's modified X^2., see the last reference.  In other words,
-to compute the exact p-value, iter = 1e4 samples are sampled from the
-conditional distribution of the table given the sufficient statistics, and
-then the proportion of tables that have X^2, G^2, etc. values greater than or
-equal to that of the observed table is the p value for the (conditional)
-exact test. A similar, and perhaps preferable approach, simply adds up the
-probabilities of the tables that have probabilities less than or equal to
-that of the observed table; this is the first line output in hierarchical and
-does not use a test statistic.
+A third way that \code{loglinear} differs from
+\code{stats::loglin} or \code{MASS::loglm} is in generalizing the
+kinds of tests performed.  While those allow for asymptotic
+unconditional testing using Pearson's X^2 test and the likelihood
+ratio test, \code{loglinear} gives several test statistics:
+Pearson's X^2, the likelihood ratio G^2, Freeman-Tukey,
+Cressie-Read (lambda = 2/3), and Neyman's modified X^2., see the
+last reference.  In other words, to compute the exact p-value,
+iter = 1e4 samples are sampled from the conditional distribution
+of the table given the sufficient statistics, and then the
+proportion of tables that have X^2, G^2, etc. values greater than
+or equal to that of the observed table is the p value for the
+(conditional) exact test. A similar, and perhaps preferable
+approach, simply adds up the probabilities of the tables that
+have probabilities less than or equal to that of the observed
+table; this is the first line output in hierarchical and does not
+use a test statistic.
 
-Some authors (see the third reference) suggest that for discrete problems, a
-"mid p value" is preferable to the traditional p value, and when presented
-should be interepreted in the same way.  If the p value is defined to be
-P(samps >= obs), the mid p value is defined to be P(samps > obs) + P(samps ==
-obs)/2.  The mid p value is computed for each test.
+Some authors (see the third reference) suggest that for discrete
+problems, a "mid p value" is preferable to the traditional p
+value, and when presented should be interepreted in the same way.
+If the p value is defined to be P(samps >= obs), the mid p value
+is defined to be P(samps > obs) + P(samps == obs)/2.  The mid p
+value is computed for each test.
 }
 \examples{
 \dontrun{
@@ -133,11 +152,10 @@ data(handy)
 # ... or as a list of facets given by name
 (out <- loglinear(list("Gender", "Handedness"), data = handy))
 
-# ... and even with a matrix with no attributes
-mat <- handy
-attributes(mat)[c("class","dimnames")] <- NULL
-mat
-(out <- loglinear(list(1, 2), data = mat))
+# ... and even via a pre-computed configuration matrix
+# this method does come with somewhat reduced output
+A <- hmat(c(2, 2), 1:2)
+(out <- loglinear(A, data = handy))
 
 
 
@@ -147,7 +165,8 @@ stats::loglin(handy, list(1, 2))
 MASS::loglm(~ Gender + Handedness, data = handy)
 # loglm is just a wrapper of loglin
 
-
+# we can check loglinear's output with
+fisher.test(handy)$p.value
 
 
 
@@ -576,26 +595,29 @@ matrix(round(mod$fitted.values[c(1,3,2,4,5,7,6,8)],1))
 David Kahle
 }
 \references{
-Diaconis, P. and B. Sturmfels (1998). Algebraic Algorithms for
-  Sampling from Conditional Distributions. \emph{The Annals of Statistics}
-  26(1), pp.363-397.
+Diaconis, P. and B. Sturmfels (1998). Algebraic
+  Algorithms for Sampling from Conditional Distributions.
+  \emph{The Annals of Statistics} 26(1), pp.363-397.
 
-Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures
-  on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+Drton, M., B. Sturmfels, and S. Sullivant (2009).
+  \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+  Verlag AG.
 
-Aoki, S., H. Hara, and A. Takemura (2012). \emph{Markov Bases in
-  Algebraic Statistics}, Springer.
+Aoki, S., H. Hara, and A. Takemura (2012).
+  \emph{Markov Bases in Algebraic Statistics}, Springer.
 
-Agresti, A. (2002). \emph{Categorical Data Analysis}, Basel: John
-  Wiley & Sons, 2ed.
+Agresti, A. (2002). \emph{Categorical Data Analysis},
+  Basel: John Wiley & Sons, 2ed.
 
-Agresti, A. (1992). A Survey of Exact Inference for Contingency
-  Tables \emph{Statistical Science} 7(1), pp.131-153.
+Agresti, A. (1992). A Survey of Exact Inference for
+  Contingency Tables \emph{Statistical Science} 7(1), pp.131-153.
 
-Read, T. and Cressie, N. (1998). \emph{Goodness-of-Fit Statistics
-  for Discrete Multivariate Data}, Springer-Verlag.
+Read, T. and Cressie, N. (1998).
+  \emph{Goodness-of-Fit Statistics for Discrete Multivariate
+  Data}, Springer-Verlag.
 }
 \seealso{
-\code{\link{loglin}}, \code{\link{loglm}}, \code{\link{metropolis}}
+\code{\link{loglin}}, \code{\link{loglm}},
+  \code{\link{metropolis}}
 }
 
