@@ -26,7 +26,7 @@ print.loglinear <- function(x, digits = 4, ...){
   
   ## print method
   cat("Fitting method:\n")  
-  if(x$method == "mcmc") cat("Metropolis-Hastings using Markov basis for proposals\n")
+  if(x$method == "mcmc") cat("Metropolis-Hastings using Markov moves\n")
   if(x$method == "ipf") cat("Iterative proportional fitting (with stats::loglin)\n")
   cat("\n")
   
