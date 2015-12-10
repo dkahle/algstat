@@ -3,6 +3,9 @@ Version 0.1.0
 
 NEW FEATURES
 
+* algstat now has a function called plotMatrix that is a variant of Matlab's 
+  spy function.
+
 * algstat now has functions for sequential importance sampling of tables, 
   see ?rfiber
   
@@ -30,6 +33,8 @@ NEW FEATURES
   for a given A and b. (Thanks to Tobias Windisch for the suggestion.)
 
 CHANGES
+
+* algstat now imports tidyr and ggplot2 for the plotMatrix function.
 
 * The path for markov (or any 4ti2 functions) is now called "4ti2" in options.
   Similarly, "lattePath" has changed to "latte", "bertiniPath" to "bertini", 
