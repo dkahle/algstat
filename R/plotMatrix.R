@@ -14,6 +14,9 @@
 #' plotMatrix(markov(A))
 #' 
 plotMatrix <- function(A){
+  x <- NULL; rm(x)
+  y <- NULL; rm(y)
+  
   low <- if(any(A < 0)){
     low <- "blue"; high <- "red"
     fillScale <- scale_fill_gradient2(
