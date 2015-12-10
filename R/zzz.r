@@ -83,22 +83,28 @@
 
 longName <- function(optionName){
   switch(optionName,
-    m2 = "Macaulay2", bertini = "Bertini", 
-    "4ti2" = "4ti2", latte = "LattE"
+    m2 = "Macaulay2", 
+    bertini = "Bertini", 
+    "4ti2" = "4ti2", 
+    latte = "LattE"
   )
 }
 
 execName <- function(optionName){
   switch(optionName,
-    m2 = "m2", bertini = "bertini", 
-    "4ti2" = "markov", latte = "count"
+    m2 = "m2", 
+    bertini = "bertini", 
+    "4ti2" = "markov", 
+    latte = "count"
   )
 }
 
 setFun <- function(optionName){
   switch(optionName,
-    m2 = "setM2Path()", bertini = "setBertiniPath()", 
-    "4ti2" = "set4ti2Path()", latte = "setLattePath()"
+    m2 = "setM2Path()", 
+    bertini = "setBertiniPath()", 
+    "4ti2" = "set4ti2Path()", 
+    latte = "setLattePath()"
   )
 }
 
@@ -128,7 +134,7 @@ startup_check_for_program <- function(optionName){
     
   if(length(list.files(getOption(optionName))) == 0){
     psms("%s appears to be installed, but it's not where it was expected.", longName)
-    psms("  Suggestion : run %s", fun)
+    psms("  Suggestion : run %s", setFun)
     return(invisible(FALSE))    
   }	
     
