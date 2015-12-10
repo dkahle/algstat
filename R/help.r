@@ -6,7 +6,7 @@
 #' multivariate polynomials, building on the mpoly package.  To aid in the
 #' process, algstat has ports to Macaulay2, Bertini, LattE and 4ti2.
 #' 
-#' @import stringr mpoly reshape2 Rcpp lpSolve parallel memoise
+#' @import stringr mpoly reshape2 Rcpp lpSolve parallel memoise ggplot2
 #' @useDynLib algstat
 #' @docType package
 #' @name algstat

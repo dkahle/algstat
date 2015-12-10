@@ -23,7 +23,6 @@ Imports:
     lpSolve,
     parallel,
     memoise,
-    tidyr,
     ggplot2
 Suggests:
     vcd,
