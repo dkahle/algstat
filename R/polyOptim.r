@@ -39,7 +39,8 @@
 #' polyOptim(o, c)
 #' 
 #' out <- polyOptim("x + y", c)
-#' str(out)
+#' str(out, 1, give.attr = FALSE)
+#' cat(out$bertiniCode)
 #' 
 #' # another example, note the solutions are computed over the complex numbers
 #' polyOptim("x^2 y", "x^2 + y^2 = 3")
@@ -61,13 +62,13 @@ polyOptim <- function(objective, constraints, varOrder, ...){
     if(is.character(constraints)){
       if(all(str_detect(constraints, "=="))){
         split <- strsplit(constraints, " == ")
-        lhs <- sapply(split, function(x) x[1])
-        rhs <- sapply(split, function(x) x[2])
+        lhs   <- vapply(split, function(x) x[1], character(1))
+        rhs   <- vapply(split, function(x) x[2], character(1))
         constraints <- mp(lhs) - mp(rhs)
       } else if(all(str_detect(constraints, "="))){
         split <- strsplit(constraints, " = ")      
-        lhs <- sapply(split, function(x) x[1])
-        rhs <- sapply(split, function(x) x[2])                
+        lhs   <- vapply(split, function(x) x[1], character(1))
+        rhs   <- vapply(split, function(x) x[2], character(1))
         constraints <- mp(lhs) - mp(rhs)      
       } else {
         constraints <- mp(constraints)
@@ -105,16 +106,11 @@ polyOptim <- function(objective, constraints, varOrder, ...){
   if(!missing(varOrder) && 
     !all(sort(objectiveVars) == sort(varOrder))
   ){
-    stop(
-      "if varOrder is provided, it must contain all of the variables.", 
-      call.=F
-    )
+    stop("if varOrder is provided, it must contain all of the variables.", call. = FALSE    )
   }
   if(!missing(varOrder)) vars <- varOrder
 
-  if(optimizationType == "unconstrained"){
-  	grad <- deriv(objective, var = vars)
-  }
+  if(optimizationType == "unconstrained") grad <- deriv(objective, var = vars)
   
   if(optimizationType == "constrained"){
     lagrangian <- objective + Reduce("+", lagrangeConstraints)
