@@ -191,7 +191,7 @@ win_find <- function(s){
 win_search_and_set <- function(optionName){
   
   # search
-  x <- whereis(execName(optionName))
+  x <- win_find(execName(optionName))
   if(str_detect(x, "/")) setOption(optionName, dirname(x))
 
 }
