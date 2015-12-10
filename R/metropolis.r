@@ -120,7 +120,7 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
   current <- unname(init)
   unifs <- runif(burn)
   
-  message("Running chain... ", appendLF = FALSE)
+  message("Running chain (R)... ", appendLF = FALSE)
   
   if(burn > 0) {
     for(k in 1:burn){
@@ -185,7 +185,7 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
     
   current   <- unname(init)  
   allMoves  <- cbind(moves, -moves)  
-  message("Running chain... ", appendLF = FALSE)  
+  message("Running chain (C++)... ", appendLF = FALSE)  
   if(burn > 0) current   <- metropolisCpp(current, allMoves, burn, 1)$steps[,burn]
   out       <- metropolisCpp(current, allMoves, iter, thin)
   out$moves <- moves
