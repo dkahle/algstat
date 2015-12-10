@@ -92,7 +92,7 @@ latteOptim <- function(objective, constraints, type = c("max", "min"),
   
   
   ## check for latte
-  if(is.null(getOption("lattePath"))){
+  if(is.null(getOption("latte"))){
     stop(
       "algstat doesn't know where ", latteProgram, " is (or any other latte programs),\n",
       "  and so can't perform maximization.  see ?setLattePath", call. = FALSE
@@ -191,7 +191,7 @@ latteOptim <- function(objective, constraints, type = c("max", "min"),
   	# bizarrely, latte-maximize returns its output as stderr
     system(
       paste(
-        file.path2(getOption("lattePath"), latteProgram), 
+        file.path2(getOption("latte"), latteProgram), 
         opts, 
         file.path2(dir2, "optimCode 2> out.txt")
       ),
@@ -205,7 +205,7 @@ latteOptim <- function(objective, constraints, type = c("max", "min"),
     system(
       paste(
         paste0("cmd.exe /c env.exe"),
-        file.path(getOption("lattePath"), latteProgram), 
+        file.path(getOption("latte"), latteProgram), 
         opts, 
         matFile
       ),
