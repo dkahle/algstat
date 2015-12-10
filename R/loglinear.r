@@ -677,7 +677,7 @@ loglinear <- function(model, data,
   
   if(missing(moves) && !is.null(getOption("4ti2"))){
    
-    message("Computing Markov moves... ", appendLF = FALSE)  	
+    message("Computing Markov moves (4ti2)... ", appendLF = FALSE)  	
     moves <- markov(A)
     message("done.", appendLF = TRUE)      
     
