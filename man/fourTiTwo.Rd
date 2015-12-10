@@ -49,6 +49,8 @@ memHilbert(...)
 memGraver(...)
 }
 \arguments{
+\item{exec}{(temporary, don't use)}
+
 \item{A}{a configuration matrix; for example the output of \code{\link{hmat}}}
 
 \item{format}{how the basis (moves) should be returned.  if "mat", the moves 
@@ -69,16 +71,6 @@ for graver)}
 
 \item{dbName}{the name of the model in the markov bases database, 
 http://markov-bases.de, see examples}
-
-\item{...}{...}
-
-\item{...}{...}
-
-\item{...}{...}
-
-\item{...}{...}
-
-\item{...}{...}
 
 \item{...}{...}
 }

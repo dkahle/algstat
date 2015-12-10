@@ -16,6 +16,8 @@
 #' @param quiet if FALSE, messages the 4ti2 output
 #' @param dbName the name of the model in the markov bases database, 
 #'   http://markov-bases.de, see examples
+#' @param ... ...
+#' @param exec (temporary, don't use)
 #' @return a matrix containing the Markov basis as its columns (for easy 
 #'   addition to tables)
 #' @rdname fourTiTwo
@@ -148,7 +150,8 @@ basis <- function(exec){
     groebner = ".gro",
     hilbert = ".hil",
     graver = ".gra",
-    zbasis = ".lat"
+    zbasis = ".lat",
+    zsolve = ".zfree"
   )
   
   commonName = switch(exec,
@@ -156,7 +159,8 @@ basis <- function(exec){
     groebner = "grobner",
     hilbert = "hilbert",
     graver = "graver",
-    zbasis = "lattice"
+    zbasis = "lattice",
+    zsolve = "solve"
   ) 
   
   defaultOpts = switch(exec,
@@ -164,7 +168,8 @@ basis <- function(exec){
     groebner = "-parb",
     hilbert = "-p=gmp",
     graver = "-p=gmp",
-    zbasis = "-parb"
+    zbasis = "-parb",
+    zsolve = "-p=gmp"
   ) 
   
   
@@ -286,8 +291,9 @@ basis <- function(exec){
 
 
 
-
-
+#' @export
+#' @rdname fourTiTwo
+zsolve <- basis("zsolve")
 
 #' @export
 #' @rdname fourTiTwo
@@ -314,28 +320,26 @@ graver <- basis("graver")
 
 
 
-#' @param ... ...
+#' @export
+#' @rdname fourTiTwo
+zsolveMem <- memoise::memoise(zsolveMem)
+
 #' @export
 #' @rdname fourTiTwo
 memZbasis <- memoise::memoise(zbasis)
-
-
-#' @param ... ...
+ 
 #' @export
 #' @rdname fourTiTwo
 memMarkov <- memoise::memoise(markov)
 
-#' @param ... ...
 #' @export
 #' @rdname fourTiTwo
 memGroebner <- memoise::memoise(groebner)
 
-#' @param ... ...
 #' @export
 #' @rdname fourTiTwo
 memHilbert <- memoise::memoise(hilbert)
 
-#' @param ... ...
 #' @export
 #' @rdname fourTiTwo
 memGraver <- memoise::memoise(graver)
