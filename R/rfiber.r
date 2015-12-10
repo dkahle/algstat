@@ -188,7 +188,7 @@ rfiber_sis <- function(n, A, b, parallel, cluster, includeRejections = FALSE, ..
   } else {
     
     warning("parallel is not implemented for this system.")
-    return(replicate(n, rfiber_sis_one(A, b)$x, FALSE, ...)  )
+    return(replicate(n, rfiberOne(A, b)$x, FALSE, ...)  )
     
   }  
   
