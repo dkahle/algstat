@@ -240,12 +240,13 @@ mac_search_and_set <- function(exec, baseName, optionName){
   ndxHome  <- which(str_detect(tolower(home), baseName))   
   
   if(length(ndxApps) == 0 && length(ndxHome) == 0){
-    path <- NULL
+    return(NULL)
   } else if(length(ndxApps) != 0){
     path <- mac_find(exec, paste0("/Applications/", apps[ndxApps]))
   } else if(length(ndxHome) != 0){
     path <- mac_find(exec, paste0("~/", apps[ndxApps]))
   }  
+  
   setOption(optionName, dirname(path))
   
 }
