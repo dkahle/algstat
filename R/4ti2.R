@@ -176,7 +176,7 @@ basis <- function(exec){
   ## create the function to return
   function(A, format = c("mat", "vec", "tab"), dim = NULL,
     all = FALSE, dir = tempdir(), opts = defaultOpts, quiet = TRUE,
-    dbName
+    dbName = NULL
   ){
     
     ## check for 4ti2
@@ -206,7 +206,7 @@ basis <- function(exec){
     
     
     ## create/retrieve markov basis
-    if(missing(dbName)){
+    if(is.null(dbName)){
       
       ## run 4ti2 if needed
       if(is.mac() || is.unix()){

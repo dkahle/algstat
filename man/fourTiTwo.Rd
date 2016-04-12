@@ -19,40 +19,40 @@
 basis(exec)
 
 zsolve(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 zbasis(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 markov(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 groebner(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 hilbert(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 graver(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 memZsolve(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 memZbasis(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 memMarkov(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 memGroebner(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 memHilbert(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 
 memGraver(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
-  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName = NULL)
 }
 \arguments{
 \item{exec}{(temporary, don't use)}
