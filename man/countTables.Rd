@@ -8,7 +8,8 @@
 countTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
   dir = tempdir(), opts = "", quiet = TRUE)
 
-memCountTables(...)
+memCountTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
+  dir = tempdir(), opts = "", quiet = TRUE)
 }
 \arguments{
 \item{table}{the table of interest}

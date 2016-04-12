@@ -7,7 +7,8 @@
 #' @param ... additional parameters
 #' @usage \method{print}{spectral}(x, digits = 3, ...)
 #' @return Invisible string of the printed object.
-#' @export print.spectral
+#' @seealso \code{\link{spectral}}
+#' @export 
 #' @examples
 #' 
 #' # see ?spectral

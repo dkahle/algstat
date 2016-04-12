@@ -26,6 +26,6 @@ Pretty printing of loglinear's output.
 
 }
 \seealso{
-loglinear
+\code{\link{loglinear}}
 }
 

@@ -7,7 +7,7 @@
 \usage{
 countFiber(A, b, dir = tempdir(), opts = "", quiet = TRUE)
 
-memCountFiber(...)
+memCountFiber(A, b, dir = tempdir(), opts = "", quiet = TRUE)
 }
 \arguments{
 \item{A}{the A matrix of Ax = b}

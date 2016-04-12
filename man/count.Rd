@@ -7,7 +7,7 @@
 \usage{
 count(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE)
 
-memCount(...)
+memCount(spec, dir = tempdir(), opts = "", quiet = TRUE, mpoly = TRUE)
 }
 \arguments{
 \item{spec}{specification, see details and examples}
