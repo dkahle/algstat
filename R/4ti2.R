@@ -322,7 +322,7 @@ graver <- basis("graver")
 
 #' @export
 #' @rdname fourTiTwo
-zsolveMem <- memoise::memoise(zsolveMem)
+memZsolve <- memoise::memoise(zsolve)
 
 #' @export
 #' @rdname fourTiTwo

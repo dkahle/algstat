@@ -11,9 +11,9 @@
 \alias{memHilbert}
 \alias{memMarkov}
 \alias{memZbasis}
+\alias{memZsolve}
 \alias{zbasis}
 \alias{zsolve}
-\alias{zsolveMem}
 \title{Compute a basis with 4ti2}
 \usage{
 basis(exec)
@@ -36,17 +36,23 @@ hilbert(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
 graver(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
   dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
-zsolveMem(...)
+memZsolve(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
-memZbasis(...)
+memZbasis(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
-memMarkov(...)
+memMarkov(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
-memGroebner(...)
+memGroebner(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
-memHilbert(...)
+memHilbert(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 
-memGraver(...)
+memGraver(A, format = c("mat", "vec", "tab"), dim = NULL, all = FALSE,
+  dir = tempdir(), opts = defaultOpts, quiet = TRUE, dbName)
 }
 \arguments{
 \item{exec}{(temporary, don't use)}

@@ -7,6 +7,9 @@
 #' process, algstat has ports to Macaulay2, Bertini, LattE and 4ti2.
 #' 
 #' @import stringr mpoly reshape2 Rcpp lpSolve parallel memoise ggplot2
+#' @importFrom stats deriv dmultinom loglin runif sd
+#' @importFrom utils combn download.file
+#' 
 #' @useDynLib algstat
 #' @docType package
 #' @name algstat
