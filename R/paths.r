@@ -158,26 +158,27 @@ setLattEPath <- setLattePath
 
 #' @rdname setPaths
 #' @export 
-setMarkovPath <- function(path){
+set4ti2Path <- function(path){
 
   if(missing(path) && interactive()){
-  	
-    markovPath <- dirname(file.choose())
-    if(is.win() && str_detect(markovPath,"C:/")){
-      markovPath <- str_replace(markovPath, "C:/", "/cygdrive/c/")
-    }        
-    options(markov = markovPath)
-    return(invisible(markovPath))
-    
+
+    `4ti2_path` <- dirname(file.choose())
+    if(is.win() && str_detect(`4ti2_path`,"C:/")){
+      `4ti2_path` <- str_replace(`4ti2_path`, "C:/", "/cygdrive/c/")
+    }
+    options(`4ti2` = `4ti2_path`)
+    return(invisible(`4ti2_path`))
+
   } else if(!missing(path)){
-  	
-    options(markov = path)
-    return(invisible(path))    
-    
+
+    options(`4ti2` = path)
+    return(invisible(path))
+
   } else {
     stop(
-      "If the session is not interactive, a path must be specified.", 
+      "If the session is not interactive, a path must be specified.",
       call. = FALSE
     )
   }
+  
 }
