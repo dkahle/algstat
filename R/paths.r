@@ -57,12 +57,12 @@ setM2Path <- function(path){
     if(is.win() && str_detect(m2Path,"C:/")){
       m2Path <- str_replace(m2Path, "C:/", "/cygdrive/c/")
     }
-    options(m2Path = m2Path)
+    options(m2 = m2Path)
     return(invisible(m2Path))
     
   } else if(!missing(path)){
   	
-    options(m2Path = path)
+    options(m2 = path)
     return(invisible(path))
     
   } else {
@@ -89,12 +89,12 @@ setBertiniPath <- function(path){
     if(is.win() && str_detect(bertiniPath,"C:/")){
       bertiniPath <- str_replace(bertiniPath, "C:/", "/cygdrive/c/")
     }    
-    options(bertiniPath = bertiniPath)
+    options(bertini = bertiniPath)
     return(invisible(bertiniPath))
     
   } else if(!missing(path)){
   	
-    options(bertiniPath = path)
+    options(bertini = path)
     return(invisible(path))    
     
   } else {
@@ -126,12 +126,12 @@ setLattePath <- function(path){
     if(is.win() && str_detect(lattePath,"C:/")){
       lattePath <- str_replace(dirname(lattePath), "C:/", "/cygdrive/c/")
     }    
-    options(lattePath = lattePath)
+    options(latte = lattePath)
     return(invisible(lattePath))
     
   } else if(!missing(path)){
   	
-    options(lattePath = path)
+    options(latte = path)
     return(invisible(path))    
     
   } else {
@@ -166,12 +166,12 @@ setMarkovPath <- function(path){
     if(is.win() && str_detect(markovPath,"C:/")){
       markovPath <- str_replace(markovPath, "C:/", "/cygdrive/c/")
     }        
-    options(markovPath = markovPath)
+    options(markov = markovPath)
     return(invisible(markovPath))
     
   } else if(!missing(path)){
   	
-    options(markovPath = path)
+    options(markov = path)
     return(invisible(path))    
     
   } else {
