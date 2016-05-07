@@ -28,15 +28,15 @@ memCountTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
 an integer
 }
 \description{
-Count the number of contingency tables with the same marginals as a given
-table.
+Count the number of contingency tables with the same marginals as
+a given table.
 }
 \details{
-\code{countTables} uses LattE's count function (via algstat's
-\code{\link{count}} function) to count the tables.  In many cases, the number
-of such tables is enormous.  In these cases, instead of giving back an
-integer \code{countTables} provides a character string with the integer in
-it; see examples.
+\code{countTables} uses LattE's count function (via algstat's 
+\code{\link{count}} function) to count the tables.  In many
+cases, the number of such tables is enormous.  In these cases,
+instead of giving back an integer \code{countTables} provides a
+character string with the integer in it; see examples.
 }
 \examples{
 \dontrun{ 
