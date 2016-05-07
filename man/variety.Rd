@@ -7,7 +7,8 @@
 variety(mpolyList, varOrder, ...)
 }
 \arguments{
-\item{mpolyList}{Bertini code as either a character string or function; see examples}
+\item{mpolyList}{Bertini code as either a character string or
+function; see examples}
 
 \item{varOrder}{variable order (see examples)}
 
@@ -17,7 +18,10 @@ variety(mpolyList, varOrder, ...)
 an object of class bertini
 }
 \description{
-The variety of a collection of multivariate polynomials is the collection of points at which those polynomials are (simultaneously) equal to 0.  \code{variety} uses Bertini to find this set.
+The variety of a collection of multivariate polynomials is the
+collection of points at which those polynomials are
+(simultaneously) equal to 0.  \code{variety} uses Bertini to find
+this set.
 }
 \examples{
 \dontrun{
