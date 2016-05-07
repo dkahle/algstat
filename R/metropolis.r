@@ -1,11 +1,14 @@
 #' Markov Basis Metropolis-Hastings Algorithm
-#'
-#' Given a starting table (as a vector) and a loglinear model matrix A, compute the Markov basis of A with 4ti2 and then run the Metropolis-Hastings algorithm starting with the starting table.  
-#'
+#' 
+#' Given a starting table (as a vector) and a loglinear model matrix
+#' A, compute the Markov basis of A with 4ti2 and then run the
+#' Metropolis-Hastings algorithm starting with the starting table.
+#' 
 #' See Algorithm 1.1.13 in LAS, the reference below.
 #' 
 #' @param init the initial step
-#' @param moves the moves to be used (the negatives will be added); they are arranged as the columns of a matrix.
+#' @param moves the moves to be used (the negatives will be added);
+#'   they are arranged as the columns of a matrix.
 #' @param iter number of chain iterations
 #' @param burn burn-in
 #' @param thin thinning
@@ -14,22 +17,22 @@
 #' @return a list
 #' @export metropolis
 #' @author David Kahle
-#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009).
+#'   \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+#'   Verlag AG.
 #' @examples
-#'
-#' \dontrun{
-#'
 #' 
+#' \dontrun{
 #' 
 #' data(handy)
 #' 
 #' exp   <- loglin(handy, as.list(1:2), fit = TRUE)$fit
 #' e <- unname(tab2vec(exp))
 #' h <- t(t(unname(tab2vec(handy))))
-#' chisq <- algstat:::computeChisqsCpp(h, e)
+#' chisq <- algstat:::computeX2sCpp(h, e)
 #' 
-#' out <- hierarchical(~ Gender + Handedness, data = handy)
-#' chisqs <- algstat:::computeChisqsCpp(out$steps, e)
+#' out <- loglinear(~ Gender + Handedness, data = handy)
+#' chisqs <- algstat:::computeX2sCpp(out$steps, e)
 #' 
 #' mean(chisqs >= chisq)
 #' fisher.test(handy)$p.value
@@ -89,11 +92,11 @@
 #' 
 #' 
 #' 
-#'
-#'
+#' 
+#' 
 #' 
 #' }
-#'
+#' 
 #' 
 metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
   engine = c("Cpp","R")

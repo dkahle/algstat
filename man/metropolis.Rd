@@ -13,7 +13,8 @@ rawMetropolis(init, moves, iter = 1000)
 \arguments{
 \item{init}{the initial step}
 
-\item{moves}{the moves to be used (the negatives will be added); they are arranged as the columns of a matrix.}
+\item{moves}{the moves to be used (the negatives will be added);
+they are arranged as the columns of a matrix.}
 
 \item{iter}{number of chain iterations}
 
@@ -27,7 +28,9 @@ rawMetropolis(init, moves, iter = 1000)
 a list
 }
 \description{
-Given a starting table (as a vector) and a loglinear model matrix A, compute the Markov basis of A with 4ti2 and then run the Metropolis-Hastings algorithm starting with the starting table.
+Given a starting table (as a vector) and a loglinear model matrix
+A, compute the Markov basis of A with 4ti2 and then run the
+Metropolis-Hastings algorithm starting with the starting table.
 }
 \details{
 See Algorithm 1.1.13 in LAS, the reference below.
@@ -36,17 +39,15 @@ See Algorithm 1.1.13 in LAS, the reference below.
 
 \dontrun{
 
-
-
 data(handy)
 
 exp   <- loglin(handy, as.list(1:2), fit = TRUE)$fit
 e <- unname(tab2vec(exp))
 h <- t(t(unname(tab2vec(handy))))
-chisq <- algstat:::computeChisqsCpp(h, e)
+chisq <- algstat:::computeX2sCpp(h, e)
 
-out <- hierarchical(~ Gender + Handedness, data = handy)
-chisqs <- algstat:::computeChisqsCpp(out$steps, e)
+out <- loglinear(~ Gender + Handedness, data = handy)
+chisqs <- algstat:::computeX2sCpp(out$steps, e)
 
 mean(chisqs >= chisq)
 fisher.test(handy)$p.value
@@ -117,6 +118,8 @@ showSteps <- function(steps){
 David Kahle
 }
 \references{
-Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+Drton, M., B. Sturmfels, and S. Sullivant (2009).
+  \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+  Verlag AG.
 }
 
