@@ -1,12 +1,19 @@
 #' Construct a Hierarchical Model Matrix
-#'
-#' Determine the A matrix associated with a hierarchical model on a contingency table.  In algebraic statistics, the A matrix of a log-linear model is the transpose of the design matrix of the (cell-means parameterized) ANOVA corresponding to the model.
 #' 
-#' @param varlvls a vector containing the number of levels of each variable
-#' @param facets the facets generating the hierarchical model, a list of vectors of variable indices
+#' Determine the A matrix associated with a hierarchical model on a
+#' contingency table.  In algebraic statistics, the A matrix of a
+#' log-linear model is the transpose of the design matrix of the
+#' (cell-means parameterized) ANOVA corresponding to the model.
+#' 
+#' @param varlvls a vector containing the number of levels of each
+#'   variable
+#' @param facets the facets generating the hierarchical model, a
+#'   list of vectors of variable indices
 #' @return a named matrix
 #' @export hmat
-#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009).
+#'   \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+#'   Verlag AG.
 #' @examples
 #' 
 #' # 2x2 independence example
@@ -32,7 +39,7 @@
 #' }
 #' printForMarkov(A)
 #' 
-#'
+#' 
 hmat <- function(varlvls, facets){
 
   # set basic variables

@@ -7,15 +7,20 @@
 hmat(varlvls, facets)
 }
 \arguments{
-\item{varlvls}{a vector containing the number of levels of each variable}
+\item{varlvls}{a vector containing the number of levels of each
+variable}
 
-\item{facets}{the facets generating the hierarchical model, a list of vectors of variable indices}
+\item{facets}{the facets generating the hierarchical model, a
+list of vectors of variable indices}
 }
 \value{
 a named matrix
 }
 \description{
-Determine the A matrix associated with a hierarchical model on a contingency table.  In algebraic statistics, the A matrix of a log-linear model is the transpose of the design matrix of the (cell-means parameterized) ANOVA corresponding to the model.
+Determine the A matrix associated with a hierarchical model on a
+contingency table.  In algebraic statistics, the A matrix of a
+log-linear model is the transpose of the design matrix of the
+(cell-means parameterized) ANOVA corresponding to the model.
 }
 \examples{
 
@@ -45,6 +50,8 @@ printForMarkov(A)
 
 }
 \references{
-Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+Drton, M., B. Sturmfels, and S. Sullivant (2009).
+  \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+  Verlag AG.
 }
 
