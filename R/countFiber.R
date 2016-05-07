@@ -1,12 +1,12 @@
 #' Count the elements of a fiber Ax = b
 #' 
 #' Count the elements of a fiber Ax = b
-#'  
-#' \code{countFiber} uses LattE's count function (via algstat's
-#' \code{\link{count}} function) to count the fiber  In many cases, the number
-#' of such tables is enormous.  In these cases, instead of giving back an
-#' integer \code{countFiber} provides a character string with the integer in
-#' it; see examples.
+#' 
+#' \code{countFiber} uses LattE's count function (via algstat's 
+#' \code{\link{count}} function) to count the fiber  In many cases,
+#' the number of such tables is enormous.  In these cases, instead
+#' of giving back an integer \code{countFiber} provides a character
+#' string with the integer in it; see examples.
 #' 
 #' @param A the A matrix of Ax = b
 #' @param b the b vector of Ax = b

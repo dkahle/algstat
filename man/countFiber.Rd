@@ -27,12 +27,13 @@ an integer
 }
 \description{
 Count the elements of a fiber Ax = b
- 
-\code{countFiber} uses LattE's count function (via algstat's
-\code{\link{count}} function) to count the fiber  In many cases, the number
-of such tables is enormous.  In these cases, instead of giving back an
-integer \code{countFiber} provides a character string with the integer in
-it; see examples.
+}
+\details{
+\code{countFiber} uses LattE's count function (via algstat's 
+\code{\link{count}} function) to count the fiber  In many cases,
+the number of such tables is enormous.  In these cases, instead
+of giving back an integer \code{countFiber} provides a character
+string with the integer in it; see examples.
 }
 \examples{
 
