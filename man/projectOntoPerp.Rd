@@ -15,7 +15,8 @@ projectOntoPerp(A, x)
 ...
 }
 \description{
-Project a vector onto the orthogonal complement of the column space of a matrix; the null space of A transpose
+Project a vector onto the orthogonal complement of the column
+space of a matrix; the null space of A transpose
 }
 \examples{
 

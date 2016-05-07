@@ -18,7 +18,10 @@ mchoose(n, x)
 Compute the multinomial coefficient.
 }
 \details{
-This function computes the multinomial coefficient by computing the factorial of each number on a log scale, differencing log(n!) - sum(log(x!)), and then exponentiating.  It then checks to see if this is an integer; if it's not, it issues a warning.
+This function computes the multinomial coefficient by computing
+the factorial of each number on a log scale, differencing log(n!)
+- sum(log(x!)), and then exponentiating.  It then checks to see
+if this is an integer; if it's not, it issues a warning.
 }
 \examples{
 

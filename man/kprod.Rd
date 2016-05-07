@@ -10,13 +10,15 @@ kprod(...)
 \item{...}{a listing of matrices}
 }
 \value{
-... a matrix that is the kronecker product of those matrices (from left to right)
+... a matrix that is the kronecker product of those
+  matrices (from left to right)
 }
 \description{
 Compute the Kronecker product of several matrices.
 }
 \details{
-If kronecker is  the function that computes A x B, kprod computes A x B x C and so on; it's a wrapper of Reduce and kronecker.
+If kronecker is  the function that computes A x B, kprod computes
+A x B x C and so on; it's a wrapper of Reduce and kronecker.
 }
 \examples{
 

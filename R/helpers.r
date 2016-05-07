@@ -1,5 +1,5 @@
 #' Lp Norm
-#'
+#' 
 #' Compute the Lp norm of a vector.
 #' 
 #' @param x x
@@ -7,23 +7,23 @@
 #' @return ...
 #' @export lpnorm
 #' @examples
-#'
+#' 
 #' lpnorm(1:10)
 #' lpnorm(matrix(1:25, 5, 5))
 #' lpnorm(split(1:25, rep(1:5, each = 5)))
-#'
+#' 
 #' lpnorm(1:10, 1)
 #' lpnorm(matrix(1:25, 5, 5), 1)
 #' lpnorm(split(1:25, rep(1:5, each = 5)), 1)
-#'
+#' 
 #' lpnorm(rnorm(10), 0)
 #' lpnorm(matrix(rnorm(25), 5, 5), 0)
 #' lpnorm(split(rnorm(25), rep(1:5, each = 5)), 0)
-#'
+#' 
 #' lpnorm(-5:5, Inf)
 #' lpnorm(matrix(-25:-1, 5, 5), Inf)
 #' lpnorm(split(-25:-1, rep(1:5, each = 5)), Inf)
-#'
+#' 
 lpnorm <- function(x, p = 2){
   if(is.vector(x) && !is.list(x)){
   	if(p == Inf) return(max(abs(x)))
@@ -158,8 +158,9 @@ projectOnto <- function(A, x) qr.fitted(qr(A), x)
 
 
 #' Vector Projection onto the orthogonal complement of col(A)
-#'
-#' Project a vector onto the orthogonal complement of the column space of a matrix; the null space of A transpose
+#' 
+#' Project a vector onto the orthogonal complement of the column
+#' space of a matrix; the null space of A transpose
 #' 
 #' @param A a matrix
 #' @param x a vector
@@ -171,7 +172,7 @@ projectOnto <- function(A, x) qr.fitted(qr(A), x)
 #' x <- 1:5
 #' projectOnto(A, x)
 #' 
-#'
+#' 
 projectOntoPerp <- function(A, x) diag(length(x))%*%x - qr.fitted(qr(A), x) 
 
 
@@ -187,10 +188,13 @@ projectOntoPerp <- function(A, x) diag(length(x))%*%x - qr.fitted(qr(A), x)
 
 
 #' Multinomial Coefficient
-#'
+#' 
 #' Compute the multinomial coefficient.
-#'
-#' This function computes the multinomial coefficient by computing the factorial of each number on a log scale, differencing log(n!) - sum(log(x!)), and then exponentiating.  It then checks to see if this is an integer; if it's not, it issues a warning.
+#' 
+#' This function computes the multinomial coefficient by computing
+#' the factorial of each number on a log scale, differencing log(n!)
+#' - sum(log(x!)), and then exponentiating.  It then checks to see
+#' if this is an integer; if it's not, it issues a warning.
 #' 
 #' @param n an integer
 #' @param x a vector of integers
@@ -202,7 +206,7 @@ projectOntoPerp <- function(A, x) diag(length(x))%*%x - qr.fitted(qr(A), x)
 #' 
 #' 
 #' 
-#'
+#' 
 mchoose <- function(n, x){
   lboth <- lfactorial(c(n,x))
   out <- exp(lboth[1] - sum(lboth[-1]))
@@ -255,20 +259,22 @@ ones <- function(n) matrix(rep(1L, n))
 
 
 #' Iterated Kronecker product
-#'
+#' 
 #' Compute the Kronecker product of several matrices.
-#'
-#' If kronecker is  the function that computes A x B, kprod computes A x B x C and so on; it's a wrapper of Reduce and kronecker.
+#' 
+#' If kronecker is  the function that computes A x B, kprod computes
+#' A x B x C and so on; it's a wrapper of Reduce and kronecker.
 #' 
 #' @param ... a listing of matrices
-#' @return ... a matrix that is the kronecker product of those matrices (from left to right)
+#' @return ... a matrix that is the kronecker product of those
+#'   matrices (from left to right)
 #' @export kprod
 #' @examples
 #' 
 #' kprod(diag(2), t(ones(2)))
 #' kprod(t(ones(2)), diag(2))
 #' 
-#'
+#' 
 #' kprod(diag(2), t(ones(2)), t(ones(2)))
 #' kprod(t(ones(2)), diag(2), t(ones(2)))
 #' kprod(t(ones(2)), t(ones(2)), diag(2))
