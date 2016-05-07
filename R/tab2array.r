@@ -19,9 +19,8 @@
 #'
 tab2array <- function(tab){
   stopifnot(is.table(tab))
-  a <- tab
-  attributes(a)[c("class","dimnames")] <- NULL
-  a
+  attributes(tab)[c("class","dimnames")] <- NULL
+  tab
 }
 
 
