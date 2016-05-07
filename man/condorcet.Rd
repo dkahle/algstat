@@ -7,7 +7,8 @@
 condorcet(data, names)
 }
 \arguments{
-\item{data}{the data, a vector of counts of each permutation of the m objects (m is the length of data)}
+\item{data}{the data, a vector of counts of each permutation of
+the m objects (m is the length of data)}
 
 \item{names}{character vector of the names of the m objects}
 }
@@ -15,10 +16,13 @@ condorcet(data, names)
 ...
 }
 \description{
-Try to compute find a Condorcet choice given a full ranking of m objects.
+Try to compute find a Condorcet choice given a full ranking of m
+objects.
 }
 \details{
-In a ranking of m objects, the Condorcet choice is the choice that wins over every other choice in pairwise comparisons.  See Marden (1995), p.20 for details.
+In a ranking of m objects, the Condorcet choice is the choice
+that wins over every other choice in pairwise comparisons.  See
+Marden (1995), p.20 for details.
 }
 \examples{
 
@@ -32,7 +36,8 @@ condorcet(rowSums(city), colnames(city))    # overall winner
 
 }
 \references{
-Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data}, London: Chapman & Hall. p.20.
+Marden, J. I. (1995). \emph{Analyzing and Modeling
+  Rank Data}, London: Chapman & Hall. p.20.
 }
 \seealso{
 \code{\link{Pmaker}}
