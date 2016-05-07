@@ -164,7 +164,7 @@
 #'   
 #' # we can check loglinear's output with
 #' fisher.test(handy)$p.value
-#' 
+#' out$p.value
 #' 
 #' 
 #' 
@@ -902,8 +902,36 @@ loglinear <- function(model, data,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' @export
 hierarchical <- function(...){
   .Deprecated(msg = "hierarchical is deprecated, use loglinear instead.")
   loglinear(...)
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -168,7 +168,7 @@ MASS::loglm(~ Gender + Handedness, data = handy)
   
 # we can check loglinear's output with
 fisher.test(handy)$p.value
-
+out$p.value
 
 
 
