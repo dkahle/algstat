@@ -7,17 +7,22 @@
 tableau(move, dim)
 }
 \arguments{
-\item{move}{a markov move matrix, where the columns are moves in vector form (e.g. the output of markov)}
+\item{move}{a markov move matrix, where the columns are moves in
+vector form (e.g. the output of markov)}
 
-\item{dim}{the dimensions of the table form of the move, oftentimes a vector of the number of levels of each variable in order}
+\item{dim}{the dimensions of the table form of the move,
+oftentimes a vector of the number of levels of each variable in
+order}
 }
 \value{
 an object of class tableau
 }
 \description{
-Print the tableau notation for a Markov move.  See the reference provided, p. 13.
+Print the tableau notation for a Markov move.  See the reference
+provided, p. 13.
 }
 \examples{
+
 \dontrun{
 
 # 2x2 independence example
@@ -50,6 +55,8 @@ markov(A)
 
 }
 \references{
-Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+Drton, M., B. Sturmfels, and S. Sullivant (2009). 
+  \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+  Verlag AG.
 }
 
