@@ -2,7 +2,8 @@
 % Please edit documentation in R/makers.r
 \name{Emaker}
 \alias{Emaker}
-\title{Create the expected higher-order statistics calculating matrix for approval data}
+\title{Create the expected higher-order statistics calculating matrix
+for approval data}
 \usage{
 Emaker(m, vin, vout)
 }
@@ -17,7 +18,8 @@ Emaker(m, vin, vout)
 ...
 }
 \description{
-Create the expected higher-order statistics calculating matrix for approval data
+Create the expected higher-order statistics calculating matrix
+for approval data
 }
 \examples{
 
@@ -40,6 +42,8 @@ Tmaker(6, 3, 1)
 
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Mmaker}}, \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link{Tmaker}}, \code{\link{Amaker}},
+  \code{\link{Mmaker}}, \code{\link{Pmaker}},
+  \code{\link{Smaker}}
 }
 

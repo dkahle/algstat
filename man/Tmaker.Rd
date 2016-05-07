@@ -2,7 +2,8 @@
 % Please edit documentation in R/makers.r
 \name{Tmaker}
 \alias{Tmaker}
-\title{Create the sufficient statistics calculating matrix for approval data}
+\title{Create the sufficient statistics calculating matrix for approval
+data}
 \usage{
 Tmaker(m, k, d)
 }
@@ -17,7 +18,8 @@ Tmaker(m, k, d)
 ...
 }
 \description{
-Create the sufficient statistics calculating matrix for approval data
+Create the sufficient statistics calculating matrix for approval
+data
 }
 \examples{
 
@@ -92,6 +94,8 @@ effectsOnV3 # = t(t(cookie$freq)) = the (freq) data
 
 }
 \seealso{
-\code{\link{Emaker}}, \code{\link{Amaker}}, \code{\link{Mmaker}}, \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link{Emaker}}, \code{\link{Amaker}},
+  \code{\link{Mmaker}}, \code{\link{Pmaker}},
+  \code{\link{Smaker}}
 }
 

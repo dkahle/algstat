@@ -16,7 +16,10 @@ Smaker(m)
 Compute the means matrix for a full ranking of m objects
 }
 \details{
-This is the transpose of the means matrix presented in Marden (1995); it projects onto the means subspace of a collection of ranked data.  See the examples for how to compute the average rank.
+This is the transpose of the means matrix presented in Marden
+(1995); it projects onto the means subspace of a collection of
+ranked data.  See the examples for how to compute the average
+rank.
 }
 \examples{
 
@@ -50,9 +53,12 @@ apply(t(X) \%*\% rowSums(city), 2, function(x) x / sum(x) * factorial(3)) # aver
 
 }
 \references{
-Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data}, London: Chapman & Hall. p.41.
+Marden, J. I. (1995). \emph{Analyzing and Modeling
+  Rank Data}, London: Chapman & Hall. p.41.
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}}, \code{\link{Mmaker}}, \code{\link{Pmaker}}
+\code{\link{Tmaker}}, \code{\link{Amaker}},
+  \code{\link{Emaker}}, \code{\link{Mmaker}},
+  \code{\link{Pmaker}}
 }
 

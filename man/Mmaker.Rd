@@ -16,7 +16,8 @@ Mmaker(m)
 Compute the marginals matrix for a full ranking of m objects
 }
 \details{
-This is the transpose of the marginals matrix presented in Marden (1995).
+This is the transpose of the marginals matrix presented in Marden
+(1995).
 }
 \examples{
 
@@ -28,9 +29,12 @@ Mmaker(3) \%*\% city
 
 }
 \references{
-Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data}, London: Chapman & Hall. p.42.
+Marden, J. I. (1995). \emph{Analyzing and Modeling
+  Rank Data}, London: Chapman & Hall. p.42.
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}}, \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link{Tmaker}}, \code{\link{Amaker}},
+  \code{\link{Emaker}}, \code{\link{Pmaker}},
+  \code{\link{Smaker}}
 }
 

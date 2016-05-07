@@ -15,7 +15,8 @@ Amaker(m, k)
 ...
 }
 \description{
-Compute the distance transitive matrix for a survey in which k objects are selected from a group of m
+Compute the distance transitive matrix for a survey in which k
+objects are selected from a group of m
 }
 \examples{
 
@@ -24,6 +25,8 @@ Amaker(4, 2)
 
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Emaker}}, \code{\link{Mmaker}}, \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link{Tmaker}}, \code{\link{Emaker}},
+  \code{\link{Mmaker}}, \code{\link{Pmaker}},
+  \code{\link{Smaker}}
 }
 

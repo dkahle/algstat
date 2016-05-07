@@ -16,7 +16,8 @@ Pmaker(m)
 Compute the pairs matrix for a full ranking of m objects
 }
 \details{
-This is the transpose of the pairs matrix presented in Marden (1995).
+This is the transpose of the pairs matrix presented in Marden
+(1995).
 }
 \examples{
 
@@ -53,9 +54,12 @@ if(any(boole)) names(boole)[which(boole)]
 
 }
 \references{
-Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data}, London: Chapman & Hall. p.42.
+Marden, J. I. (1995). \emph{Analyzing and Modeling
+  Rank Data}, London: Chapman & Hall. p.42.
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}}, \code{\link{Mmaker}}, \code{\link{Smaker}}
+\code{\link{Tmaker}}, \code{\link{Amaker}},
+  \code{\link{Emaker}}, \code{\link{Mmaker}},
+  \code{\link{Smaker}}
 }
 
