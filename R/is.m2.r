@@ -12,7 +12,5 @@
 #' 
 #' }
 #' 
-is.m2 <- function(x){
-  any(class(x) == "m2")
-}
-
+is.m2 <- function(x) inherits(x, "m2")
+  
