@@ -1,23 +1,26 @@
 #' Solve an integer progam with LattE
 #' 
-#' \code{latteMax} and \code{latteMin} use LattE's \code{latte-maximize} and 
-#' \code{latte-minimize} functions to find the maximum or minimum of a linear 
-#' objective function over the integers points in a polytope (i.e. satisfying 
-#' linearity constraints). This makes use of the digging algorithm; see the 
-#' LattE manual at \url{http://www.math.ucdavis.edu/~latte} for details.
-#' @param objective a linear polynomial to pass to \code{\link{mp}}, see 
-#'   examples
-#' @param constraints a collection of linear polynomial (in)equalities that 
-#'   define the feasibility region, the integers in the polytope
+#' \code{latteMax} and \code{latteMin} use LattE's
+#' \code{latte-maximize} and \code{latte-minimize} functions to find
+#' the maximum or minimum of a linear objective function over the
+#' integers points in a polytope (i.e. satisfying linearity
+#' constraints). This makes use of the digging algorithm; see the 
+#' LattE manual at \url{http://www.math.ucdavis.edu/~latte} for
+#' details.
+#' @param objective a linear polynomial to pass to \code{\link{mp}},
+#'   see examples
+#' @param constraints a collection of linear polynomial
+#'   (in)equalities that define the feasibility region, the integers
+#'   in the polytope
 #' @param method method LP or cones
 #' @param dir directory to place the files in, without an ending /
 #' @param opts options; see the LattE manual at 
 #'   \url{http://www.math.ucdavis.edu/~latte}
 #' @param quiet show latte output
 #' @param type "max" or "min"
-#' @return a named list with components \code{par}, a named-vector of optimizing
-#'   arguments, and \code{value}, the value of the objective function at the
-#'   optimial point
+#' @return a named list with components \code{par}, a named-vector
+#'   of optimizing arguments, and \code{value}, the value of the
+#'   objective function at the optimial point
 #' @name latteOptim
 #' @examples
 #' 
