@@ -1,19 +1,25 @@
 #' Interconvert data structures
-#'
-#' Interconvert an array, a raw data frame, and frequency distribution data.frame.
-#'
-#' Multivariate categorical data can be represented in several ways.  Three comon ways are : a contingency table, a data frame of raw observations (1 row = 1 subject), and a long data frame with a variable containing the counts in the contingency table.
+#' 
+#' Interconvert an array, a raw data frame, and frequency
+#' distribution data.frame.
+#' 
+#' Multivariate categorical data can be represented in several ways.
+#' Three comon ways are : a contingency table, a data frame of raw
+#' observations (1 row = 1 subject), and a long data frame with a
+#' variable containing the counts in the contingency table.
 #' 
 #' @param data a data frame or array
 #' @param out the output format, see examples
-#' @param freqVar the name of the frequency variable in the dataset, if not freq
-#' @return a matrix containing the Markov basis as its columns (for easy addition to tables)
+#' @param freqVar the name of the frequency variable in the dataset,
+#'   if not freq
+#' @return a matrix containing the Markov basis as its columns (for
+#'   easy addition to tables)
 #' @export teshape
 #' @examples
 #' 
-#'
+#' 
 #' data(Titanic) 
-#'
+#' 
 #' # array to others
 #' teshape(Titanic, "freq")
 #' teshape(Titanic, "tab") # what it was
@@ -47,7 +53,7 @@
 #' TitanicFreq$freq  <- NULL 
 #' teshape(TitanicFreq, "tab", "n") 
 #' 
-#'
+#' 
 teshape <- function(data, out = c("freq", "tab", "raw"), freqVar){
   
   if(is.array(data)){

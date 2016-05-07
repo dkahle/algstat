@@ -11,16 +11,22 @@ teshape(data, out = c("freq", "tab", "raw"), freqVar)
 
 \item{out}{the output format, see examples}
 
-\item{freqVar}{the name of the frequency variable in the dataset, if not freq}
+\item{freqVar}{the name of the frequency variable in the dataset,
+if not freq}
 }
 \value{
-a matrix containing the Markov basis as its columns (for easy addition to tables)
+a matrix containing the Markov basis as its columns (for
+  easy addition to tables)
 }
 \description{
-Interconvert an array, a raw data frame, and frequency distribution data.frame.
+Interconvert an array, a raw data frame, and frequency
+distribution data.frame.
 }
 \details{
-Multivariate categorical data can be represented in several ways.  Three comon ways are : a contingency table, a data frame of raw observations (1 row = 1 subject), and a long data frame with a variable containing the counts in the contingency table.
+Multivariate categorical data can be represented in several ways.
+Three comon ways are : a contingency table, a data frame of raw
+observations (1 row = 1 subject), and a long data frame with a
+variable containing the counts in the contingency table.
 }
 \examples{
 
