@@ -43,11 +43,10 @@ Generate random moves on a fiber
 
 data(politics)
 politics
-x <- tab2vec(politics)
-x
+(x <- tab2vec(politics))
 
-A <- hmat(c(2,2), 1:2) # independence model on 2x2 table
-b <- A \%*\% x # vector of sufficient statistics
+(A <- hmat(c(2,2), 1:2)) # independence model on 2x2 table
+(b <- A \%*\% x) # vector of sufficient statistics
 rmove(10, A = A, b = b)
 rmove(10, A = A, x = x, method = "walk")
 
@@ -59,9 +58,9 @@ unique(t(moves))
 
 
 ## simple example
-A <- hmat(c(2,2), 1:2)
-x <- c(1, 3, 3, 1)
-b <- rep.int(4, 4)
+(A <- hmat(c(2,2), 1:2))
+(x <- c(1, 3, 3, 1))
+(b <- rep.int(4, 4))
 
 rfiber(10, A = A, b = b)
 (tabs <- rfiber(10, A = A, b = b, format = "vec"))
@@ -96,8 +95,8 @@ rmove(5, A, b, format = "tab", dim = c(2,2))
 data(politics)
 politics
 tab2vec(politics)
-b <- A \%*\% tab2vec(politics)
-tabs <- rfiber(1000, A = A, b = b, format = "vec")
+(b <- A \%*\% tab2vec(politics))
+(tabs <- rfiber(1000, A = A, b = b, format = "vec"))
 lapply(unique(tabs), vec2tab, dim = c(2, 2))
 
 rmove(5, A, b)
@@ -106,8 +105,8 @@ rmove(5, A, b, format = "tab", dim = c(2,2))
 
 
 ## parallelizing
-system.time(rmove(1e4, A, b)) # ~35s
-system.time(rmove(1e4, A, b, parallel = TRUE)) # ~7.5s, 8 cores
+system.time(rmove(1e4, A, b))                  # ~35s
+system.time(rmove(1e4, A, b, parallel = TRUE)) # ~ 8s, 8 cores
 
 
 
@@ -120,8 +119,8 @@ system.time(rmove(1e4, A, b, parallel = TRUE)) # ~7.5s, 8 cores
 
 ## drugs example
 data(drugs)
-A <- hmat(c(2,2,2), 1:3)
-b <- A \%*\% tab2vec(drugs)
+(A <- hmat(c(2,2,2), 1:3))
+(b <- A \%*\% tab2vec(drugs))
 markovMoves <- markov(A)
 rmove(5, A, b)
 rmove(5, A, b, format = "tab", dim = c(2,2,2))
