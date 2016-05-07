@@ -11,7 +11,5 @@
 #' 
 #' 
 #' 
-is.bertini <- function(x){
-  any(class(x) == "bertini")
-}
+is.bertini <- function(x) inherits(x, "bertini")
 
