@@ -24,13 +24,13 @@ is.linear <- function(x){
   if(is.mpolyList(x)) return(sapply(x, is.linear))
 
   all(
-    sapply(x, function(term){
+    vapply(x, function(term){
       if(all(length(term) <= 2)){
         return(TRUE)
       } else {
         return(FALSE)
       }
-    })
+    }, logical(1))
   )  
 }
 
