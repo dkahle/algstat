@@ -20,7 +20,9 @@ a list of subsets as vectors
 Compute the subsets of a given set.
 }
 \details{
-Note that this algorithm is run in R: it is therefore not intended to be the most efficient algorithm for computins subsets.
+Note that this algorithm is run in R: it is therefore not
+intended to be the most efficient algorithm for computins
+subsets.
 }
 \examples{
 
