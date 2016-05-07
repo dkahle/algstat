@@ -1,8 +1,12 @@
 #' Set paths to external functions
 #' 
-#' These functions set the path to external programs either by (1) passing them a character string or (2) using \code{\link{file.choose}}. 
+#' These functions set the path to external programs either by (1)
+#' passing them a character string or (2) using
+#' \code{\link{file.choose}}.
 #' 
-#' @param path a character string, the path to m2 (for Macaulay2), bertini (for Bertini), markov (say, for 4ti2), and count (say, for LattE)
+#' @param path a character string, the path to m2 (for Macaulay2),
+#'   bertini (for Bertini), markov (say, for 4ti2), and count (say,
+#'   for LattE)
 #' @return an invisible character string, the path found
 #' @name setPaths
 #' @author David Kahle \email{david.kahle@@gmail.com}
@@ -11,28 +15,28 @@
 #' \dontrun{ # the below code requires suggested external software
 #' 
 #' ## for Macaulay2
-#' getOption("m2Path")
+#' getOption("m2")
 #' setM2Path() 
 #' 
 #' ## for Bertini
-#' getOption("bertiniPath")
+#' getOption("bertini")
 #' setBertiniPath() 
 #' 
 #' ## for LattE
-#' getOption("lattePath")
+#' getOption("latte")
 #' setLattePath() 
 #' 
 #' ## for 4ti2 (typically the same as LattE)
-#' getOption("markovPath")
-#' setMarkovPath() 
+#' getOption("4ti2")
+#' set4ti2Path() 
 #' 
 #' 
 #' 
 #' ## each of these functions can be used statically as well
-#' (markovPath <- getOption("markovPath"))
-#' setMarkovPath("/path/to/4ti2/directory")
-#' getOption("markovPath")
-#' setMarkovPath(markovPath) # undoes example
+#' (`4ti2Path` <- getOption("4ti2"))
+#' set4ti2Path("/path/to/4ti2/directory")
+#' getOption("4ti2")
+#' set4ti2Path(`4ti2Path`) # undoes example
 #' 
 #' 
 #' 
