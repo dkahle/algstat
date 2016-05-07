@@ -7,7 +7,8 @@
 m2(code, dir = tempdir(), opts = "--script")
 }
 \arguments{
-\item{code}{Macaulay2 code as either a character string or function; see examples}
+\item{code}{Macaulay2 code as either a character string or
+function; see examples}
 
 \item{dir}{directory to place the files in}
 
@@ -17,7 +18,8 @@ m2(code, dir = tempdir(), opts = "--script")
 an object of class m2
 }
 \description{
-Write a Macaulay2 file, evaluate it through a back-end connection to Macaulay2, and bring the output back into R.
+Write a Macaulay2 file, evaluate it through a back-end connection
+to Macaulay2, and bring the output back into R.
 }
 \examples{
 \dontrun{

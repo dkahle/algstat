@@ -1,21 +1,23 @@
 #' Evaluate Macaulay2 Code
-#'
-#' Write a Macaulay2 file, evaluate it through a back-end connection to Macaulay2, and bring the output back into R.
 #' 
-#' @param code Macaulay2 code as either a character string or function; see examples
+#' Write a Macaulay2 file, evaluate it through a back-end connection
+#' to Macaulay2, and bring the output back into R.
+#' 
+#' @param code Macaulay2 code as either a character string or
+#'   function; see examples
 #' @param dir directory to place the files in
 #' @param opts options for m2
 #' @return an object of class m2
 #' @export
 #' @examples
 #' \dontrun{
-#'
+#' 
 #' options(digits = 20)
 #' 13^20
 #' m2("13^20") # correct answer
 #' m2("toRR(20,(19004963774880800571392-13^20)/13^20)") # relative error
 #' options(digits = 7)
-#'
+#' 
 #' code <- "
 #' 1+1
 #' 2+3
@@ -32,17 +34,17 @@
 #' G
 #' "
 #' m2(code)
-#'
-#'
+#' 
+#' 
 #' code <- "
 #' R = QQ[x,y,z,t]
 #' I = ideal( t^4 - x, t^3 - y, t^2 - z)
 #' gens gb I
 #' "
 #' m2(code)
-#'
+#' 
 #' }
-#'
+#' 
 m2 <- function(code, dir = tempdir(), opts = "--script"){
 	
   ## check for macaulay2
