@@ -9,18 +9,20 @@ cellBound(A, b, side = c("lower", "upper"), strategy = c("lp", "ip"))
 \arguments{
 \item{A}{the configuration matrix of the model defining the fiber}
 
-\item{b}{solution vector in Ax = b (vector of sufficient statistics)}
+\item{b}{solution vector in Ax = b (vector of sufficient
+statistics)}
 
 \item{side}{bound side to compute, "lower" or "upper"}
 
-\item{strategy}{"lp" for linear programming and "ip" for integer programming.
-(both use \code{\link{lp}}.)}
+\item{strategy}{"lp" for linear programming and "ip" for integer
+programming. (both use \code{\link{lp}}.)}
 }
 \value{
 an integer
 }
 \description{
-Compute the lower or upper bound of a cell in a vectorized contingency table.
+Compute the lower or upper bound of a cell in a vectorized
+contingency table.
 }
 \examples{
 
@@ -35,6 +37,7 @@ cellBound(A, b, "upper") # 4
 
 }
 \author{
-Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David Kahle \email{david.kahle@gmail.com}
+Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David
+  Kahle \email{david.kahle@gmail.com}
 }
 
