@@ -1,16 +1,20 @@
 #' Compute the lower and upper bounds
 #' 
-#' Compute the lower and upper bounds of a cell in a vectorized contingency table.
+#' Compute the lower and upper bounds of a cell in a vectorized
+#' contingency table.
 #' 
 #' @param A the configuration matrix of the model defining the fiber
-#' @param b solution vector in Ax = b (vector of sufficient statistics)
-#' @param strategy "lp" for linear programming and "ip" for integer programming.  
-#' (both use \code{\link{lp}})
-#' @param start reduce the size of the matrix A, i.e. use A[,start:ncol(A)] instead of A
+#' @param b solution vector in Ax = b (vector of sufficient
+#'   statistics)
+#' @param strategy "lp" for linear programming and "ip" for integer
+#'   programming. (both use \code{\link{lp}})
+#' @param start reduce the size of the matrix A, i.e. use
+#'   A[,start:ncol(A)] instead of A
 #' @param messaging TRUE for messages
 #' @return a named numeric vector
-#' @author Ruriko Yoshida \email{ruriko.yoshida@@uky.edu}, David Kahle \email{david.kahle@@gmail.com}
-#' @export 
+#' @author Ruriko Yoshida \email{ruriko.yoshida@@uky.edu}, David
+#'   Kahle \email{david.kahle@@gmail.com}
+#' @export
 #' @examples
 #' 
 #' 

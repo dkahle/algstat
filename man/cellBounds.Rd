@@ -9,12 +9,14 @@ cellBounds(A, b, strategy = c("lp", "ip"), start = 1, messaging = FALSE)
 \arguments{
 \item{A}{the configuration matrix of the model defining the fiber}
 
-\item{b}{solution vector in Ax = b (vector of sufficient statistics)}
+\item{b}{solution vector in Ax = b (vector of sufficient
+statistics)}
 
-\item{strategy}{"lp" for linear programming and "ip" for integer programming.
-(both use \code{\link{lp}})}
+\item{strategy}{"lp" for linear programming and "ip" for integer
+programming. (both use \code{\link{lp}})}
 
-\item{start}{reduce the size of the matrix A, i.e. use A[,start:ncol(A)] instead of A}
+\item{start}{reduce the size of the matrix A, i.e. use
+A[,start:ncol(A)] instead of A}
 
 \item{messaging}{TRUE for messages}
 }
@@ -22,7 +24,8 @@ cellBounds(A, b, strategy = c("lp", "ip"), start = 1, messaging = FALSE)
 a named numeric vector
 }
 \description{
-Compute the lower and upper bounds of a cell in a vectorized contingency table.
+Compute the lower and upper bounds of a cell in a vectorized
+contingency table.
 }
 \examples{
 
@@ -36,6 +39,7 @@ cellBounds(A, b, messaging = TRUE)
 
 }
 \author{
-Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David Kahle \email{david.kahle@gmail.com}
+Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David
+  Kahle \email{david.kahle@gmail.com}
 }
 
