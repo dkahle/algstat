@@ -14,6 +14,7 @@
 #' 
 #' 
 summary.bertini <- function(object, ...){
+message("this is currently broken.")
 return()	
   ## argument checking and basic variable setting
   stopifnot(is.bertini(object))  
