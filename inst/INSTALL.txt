@@ -5,13 +5,18 @@ outside programs to get the job done.  The programs come in bundles of
 varying sizes and complexities.  Thus, by the "program" we could
 either mean a program bundle that contains several executables, or a
 single bundle itself.  The bundles themselves, along with where they
-can be obtained, are: 1. LattE integrale :
+can be obtained, are: 
+
+1. LattE integrale :
 https://www.math.ucdavis.edu/~latte/software.php, note that this
-distribution contains the 4ti2 bundle.  2. Bertini :
-https://bertini.nd.edu 3. Macaulay2 :
-http://www.math.uiuc.edu/Macaulay2/ Notes on how to install each of
-these are listed below.  As always, you should see the installation
-instructions of the individual packages before proceeding.
+distribution contains the 4ti2 bundle.  
+
+2. Bertini : https://bertini.nd.edu 
+
+3. Macaulay2 : http://www.math.uiuc.edu/Macaulay2/ Notes on how to
+install each of these are listed below.  As always, you should see
+the installation instructions of the individual packages before
+proceeding.
 
 As a rundown of which functions depend on which packages, see the
 following list.  Note that the list is not meant to be all-inclusive
@@ -43,12 +48,15 @@ On Windows
 
 Step 1: Cygwin part.
 
-• Go to Cygwin website.  • Click Install Cygwin on the left nav bar.
-• Click setup-x86.exe and Install from Internet.  • When the "Select
-Roots Install Directory" page appears, click next. (C:\cygwin64 is
-assumed for this writeup.) • Click next through until you get to the
-"Choose A Download Site" page.  • Select any mirror (e.g.
-http://mirrors.kernel.org).  • In the Select Packages screen, 
+• Go to Cygwin website.  
+• Click Install Cygwin on the left nav bar.
+• Click setup-x86.exe and Install from Internet.  
+• When the "Select Roots Install Directory" page appears, click
+next. (C:\cygwin64 is assumed for this writeup.)
+• Click next through until you get to the "Choose A Download Site"
+page.
+• Select any mirror (e.g. http://mirrors.kernel.org).  
+• In the Select Packages screen, 
 	* Click the icon to the right of Devel to change it from
 	  "Default" to "Install". 
 	* Click the icon to the right of Interpreters to change it
@@ -57,36 +65,40 @@ http://mirrors.kernel.org).  • In the Select Packages screen,
 	  "Default" to "Install". 
 	* Click the + icon to the left of Math to expand it and click
 	  twice on "3.1.0-1" (or whatever the version is) to change it
-	  to "Skip".  • Click next through everything to complete the
-	  download, and then install it; this last part takes a while
-	  so be ready to wait.  • Once you've installed Cygwin, open
-	  it from the start menu.
+	  to "Skip".  
+• Click next through everything to complete the download, and then
+install it; this last part takes a while so be ready to wait.
+• Once you've installed Cygwin, open it from the start menu.
 
 
 Step 2: Unzip LattE.
 
-• Go to https://www.math.ucdavis.edu/~latte/software.php.  • Click
-LattE integrale 1.7.2 bundle to download (save it).  • Move the
-downloaded file (latte-integrale-1.7.2.tar.gz) into your Cygwin home
-directory, for example, from C:\Users\david_kahle\Downloads to
-C:\cygwin64\home\david_kahle\  (Note that if you didn't open Cygwin,
-the user directory (\David_Kahle\) won't be there.)
+• Go to https://www.math.ucdavis.edu/~latte/software.php.  
+• Click LattE integrale 1.7.2 bundle to download (save it).  
+• Move the downloaded file (latte-integrale-1.7.2.tar.gz) into your
+Cygwin home directory, for example, from
+C:\Users\david_kahle\Downloads to C:\cygwin64\home\david_kahle\ 
+(Note that if you didn't open Cygwin, the user directory
+(\David_Kahle\) won't be there.)
 
 
 Step 3: In Cygwin.
 
 • Open Cygwin and type "pwd" and enter, the directory listed above
-should come up. (Now as /home/david_kahle, for example.) • Type "ls"
-and enter, you should see the latte-integrale-1.7.2.tar.gz that you
-put in from before.
+should come up. (Now as /home/david_kahle, for example.) 
+• Type "ls" and enter, you should see the
+latte-integrale-1.7.2.tar.gz that you put in from before.
 
-• Type tar -xf latte-integrale-1.7.2.tar.gz • Type mv
-latte-integrale-1.7.2 latte (this renames the directory) • Type cd
-latte • Type ./configure --prefix=$HOME/latte --disable-lidia • Type
-make (this takes a very long time to work, so be ready to wait) (•
-Type make install) • Type ls -al bin, you should see a relatively long
-list of stuff that includes count.exe (this is part of LattE) and
-markov.exe (this is part of 4ti2).  If not, something went wrong.
+• Type tar -xf latte-integrale-1.7.2.tar.gz 
+• Type mv latte-integrale-1.7.2 latte (this renames the directory) 
+• Type cd latte 
+• Type ./configure --prefix=$HOME/latte --disable-lidia 
+• Type make (this takes a very long time to work, so be ready to
+wait)
+(• Type make install) 
+• Type ls -al bin, you should see a relatively long list of stuff
+that includes count.exe (this is part of LattE) and markov.exe (this
+is part of 4ti2).  If not, something went wrong.
 
 The executables are then made in the directory $HOME/latte/bin
 
@@ -108,14 +120,17 @@ Step 5: Inside R.
 
 • If you have R already, skip to the next step; if not, go to
 http://cran.r-project.org/, click Download R for Windows, and click
-next through everything to install it.  • Open R (the x64 version),
-and inside R type install.packages("algstat") at the prompt and enter.
-• Type library(algstat), you should see Loading required package:
-mpoly please cite mpoly if you use it. type citation("mpoly") for
-details how. Macaulay2 not found.  Set the location with
-setM2Path(). Bertini not found.  Set the location with
-setBertiniPath().  • If you see the following, but saw the .exe files
-above, do the following:
+next through everything to install it.  
+• Open R (the x64 version), and inside R type
+install.packages("algstat") at the prompt and enter.
+• Type library(algstat), you should see 
+  Loading required package:
+  mpoly please cite mpoly if you use it.
+  type citation("mpoly") for details how.
+  Macaulay2 not found.  Set the location with setM2Path(). 
+  Bertini not found.  Set the location with setBertiniPath().  
+• If you see the following, but saw the .exe files above, do the
+following:
 	* 4ti2 not found.  Set the location with set4ti2Path()
 		- Type set4ti2Path() and navigate to where you created
 		  4ti2.  This is usually
@@ -124,15 +139,20 @@ above, do the following:
 		  there by default.
 	* Latte not found.  Set the location with setLattePath()
 		- Same as above with setLattePath(); navigate to where
-		  you stored count.exe and click ok.  • To check that
-		  the 4ti2 connection is made, type ?markov and run
-		  the first few examples; i.e.  varlvls <- c(2,2)
-		  facets <- list(1,2) ( A <- hmat(varlvls, facets)
-		  ) markov(A) You shouldn't get any errors.  • To
-		  check that the LattE connection is made, type ?count
-		  and run the first few examples there; namely spec <-
-		  c("x + y <= 10", "x >= 1", "y >= 1") count(spec)
-		  You shouldn't get any errors.
+		  you stored count.exe and click ok.  
+• To check that the 4ti2 connection is made, type ?markov and run
+the first few examples; i.e.
+  varlvls <- c(2,2)
+  facets <- list(1,2)
+  ( A <- hmat(varlvls, facets) )
+  markov(A) 
+You shouldn't get any errors.  
+• To check that the LattE connection is made, type 
+  ?count
+and run the first few examples there; namely 
+  spec <- c("x + y <= 10", "x >= 1", "y >= 1")
+  count(spec)
+You shouldn't get any errors.
 
 
 
@@ -158,23 +178,25 @@ LattE.
 
 • Open Xcode, then go to Xcode > Preferences... under the Downloads
 tab, click the down arrow next to Command Line Tools to download them
-onto your computer.  After its done, close Xcode.  • Download LattE
-integrale 1.7.3 bundle (latte-integrale-1.7.3.tar.gz) • Open
-Terminal.app and type "echo $HOME". This is your home directory on
-your machine.  • In Finder, double click the downloaded
-latte-integrale-1.7.3.tar.gz to unzip it and move the unzipped folder
-into your home directory.  Change the unzipped directory's name from
-"latte-integrale-1.7.3” to simply "latte".  (In what follows, you can
-also use "/Applications" in place of "$HOME", if you want to install
-it into your Applications directory.) • Open Terminal.app and type cd
-$HOME/latte
+onto your computer.  After its done, close Xcode.  
+• Download LattE integrale 1.7.3 bundle (latte-integrale-1.7.3.tar.gz) 
+• Open Terminal.app and type "echo $HOME". This is your home directory on
+your machine.  
+• In Finder, double click the downloaded
+latte-integrale-1.7.3.tar.gz to unzip it and move the unzipped
+folder into your home directory.  Change the unzipped directory's
+name from "latte-integrale-1.7.3” to simply "latte".  (In what
+follows, you can also use "/Applications" in place of "$HOME", if
+you want to install it into your Applications directory.) 
+• Open Terminal.app and type cd $HOME/latte
 
 
 Step 2: Install everything.
 
-• Type ./configure --prefix=$HOME/latte --disable-lidia • Type make
-(this takes a very long time to work, so be ready to wait) (• Type
-make install) • Type ls -al bin, you should see a relatively long list
+• Type ./configure --prefix=$HOME/latte --disable-lidia 
+• Type make (this takes a very long time to work, so be ready to wait) 
+(• Type make install) 
+• Type ls -al bin, you should see a relatively long list
 of stuff that includes count (this is part of LattE) and markov (this
 is part of 4ti2).  If not, something went wrong.
 
