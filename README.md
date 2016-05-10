@@ -61,12 +61,12 @@ loglinear(~ Personality + Party, data = politics)
 #> N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 #> 
 #>       Distance   Stat     SE p.value     SE mid.p.value
-#>        P(samp)                0.3648 0.0048      0.2175
-#>    Pearson X^2 1.8182 0.0145  0.3648 0.0048      0.2175
-#> Likelihood G^2 1.848  0.0154  0.3648 0.0048      0.2175
-#>  Freeman-Tukey 1.8749 0.0165  0.3648 0.0048      0.2175
-#>   Cressie-Read 1.8247 0.0147  0.3648 0.0048      0.2175
-#>     Neyman X^2 2.0089 0.0226  0.3648 0.0048      0.2902
+#>        P(samp)                 0.374 0.0048      0.223 
+#>    Pearson X^2 1.8182 0.0147   0.374 0.0048      0.223 
+#> Likelihood G^2 1.848  0.0157   0.374 0.0048      0.223 
+#>  Freeman-Tukey 1.8749 0.017    0.374 0.0048      0.223 
+#>   Cressie-Read 1.8247 0.0149   0.374 0.0048      0.223 
+#>     Neyman X^2 2.0089 0.0227   0.374 0.0048      0.2988
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model. Consequently, the p-values estimated are only determined up to Monte Carlo error. The standard p-value is given under the column `p.value` in the row labeled `P(samp)`. The analogous asymptotic test can be done in either of two ways.
@@ -155,12 +155,12 @@ loglinear(~ income + satisfaction, data = Job)
 #> N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 #> 
 #>       Distance   Stat     SE p.value     SE mid.p.value
-#>        P(samp)                0.7722 0.0042      0.7717
-#>    Pearson X^2 5.9655 0.0423  0.7618 0.0043      0.7618
-#> Likelihood G^2 6.7641 0.0453  0.7688 0.0042      0.7688
-#>  Freeman-Tukey 8.6189 0.061   0.7711 0.0042      0.7711
-#>   Cressie-Read 6.0752 0.0418  0.7628 0.0043      0.7628
-#>     Neyman X^2 6.2442 0.0511  0.5933 0.0049      0.5933
+#>        P(samp)                0.7809 0.0041      0.7807
+#>    Pearson X^2 5.9655 0.0396  0.7694 0.0042      0.7694
+#> Likelihood G^2 6.7641 0.0428  0.7725 0.0042      0.7725
+#>  Freeman-Tukey 8.6189 0.0584  0.7713 0.0042      0.7713
+#>   Cressie-Read 6.0752 0.0392  0.7702 0.0042      0.7702
+#>     Neyman X^2 6.2442 0.0488  0.6005 0.0049      0.6005
 ```
 
 Note that the asymptotic test can be performed as well. The chi-square approximation is actually very good here:
@@ -203,12 +203,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 #> N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 #> 
 #>       Distance   Stat     SE p.value     SE mid.p.value
-#>        P(samp)                0.6056 0.0049      0.4643
-#>    Pearson X^2 0.5279 0.0132  0.6056 0.0049      0.4643
-#> Likelihood G^2 0.4845 0.0145  0.6056 0.0049      0.4643
-#>  Freeman-Tukey 0.4672 0.0232  0.6056 0.0049      0.4643
-#>   Cressie-Read 0.512  0.0128  0.6056 0.0049      0.4643
-#>     Neyman X^2 0.4294 0.0128  0.6056 0.0049      0.4643
+#>        P(samp)                0.6004 0.0049      0.4646
+#>    Pearson X^2 0.5279 0.0137  0.6004 0.0049      0.4646
+#> Likelihood G^2 0.4845 0.0151  0.6004 0.0049      0.4646
+#>  Freeman-Tukey 0.4672 0.0241  0.6004 0.0049      0.4646
+#>   Cressie-Read 0.512  0.0133  0.6004 0.0049      0.4646
+#>     Neyman X^2 0.4294 0.0125  0.6004 0.0049      0.4646
 ```
 
 Note that here we've used the more concise syntax of facet specification. Doing the same with `loglm()` looks like this:
@@ -224,7 +224,7 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 #> Pearson          0.5279994  1 0.4674492
 ```
 
-Statistical Applications of LattE
+Statistical applications of LattE
 =================================
 
 *Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and latter has registered it.*

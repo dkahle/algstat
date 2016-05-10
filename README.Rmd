@@ -124,7 +124,7 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 
 
 
-# Statistical Applications of LattE
+# Statistical applications of LattE
 
 _Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and latter has registered it._
 
