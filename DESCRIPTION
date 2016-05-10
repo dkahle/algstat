@@ -14,7 +14,8 @@ Description: Connections and tools for algebraic statistics in R.
     package. To aid in the process, algstat has ports to Macaulay2, Bertini,
     LattE-integrale and 4ti2.
 Depends:
-    mpoly
+    mpoly,
+    latter
 LinkingTo: Rcpp
 Imports:
     stringr,
