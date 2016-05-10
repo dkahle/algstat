@@ -11,8 +11,9 @@
 #' @param A the A matrix of Ax = b
 #' @param b the b vector of Ax = b
 #' @param dir directory to place the files in, without an ending /
-#' @param opts options for count
 #' @param quiet show latte output
+#' @param cache use count (default) or fcount
+#' @param ... additional arguments to \code{\link{count}}
 #' @return an integer
 #' @seealso \code{\link{count}}
 #' @export
@@ -29,11 +30,17 @@
 #' countFiber(A, b)
 #' 
 #' 
+#' # this counts the number of ways 10 non-negative integers can sum to 100
+#' A <- ones(1, 10)
+#' countFiber(A, 100, cache = FALSE)
+#' system.time(countFiber(A, 100, cache = FALSE))
+#' system.time(countFiber(A, 100))
+#' system.time(countFiber(A, 100))
 #' 
 #' 
 #' }
 #' 
-countFiber <- function(A, b, dir = tempdir(), opts = "", quiet = TRUE){
+countFiber <- function(A, b, dir = tempdir(), quiet = TRUE, cache = TRUE, ...){
   
   ## basic quantities
   m <- nrow(A); n <- ncol(A)
@@ -46,27 +53,14 @@ countFiber <- function(A, b, dir = tempdir(), opts = "", quiet = TRUE){
   attr(bNegA, "nonnegative") <- 1:n
   
   ## make code
-  code <- write.latte(bNegA)
-  
+  code <- format_latte(bNegA)
+
   ## count
-  count(spec = code, dir = dir, opts = opts, quiet = quiet)  
+  f <- if(cache) latter::count else latter::fcount
+  f(spec = code, dir = dir, quiet = quiet, ...)  
 }
 
 
-
-
-
-
-
-
-
-
-
-
-#' @param ... ...
-#' @export
-#' @rdname countFiber
-memCountFiber <- memoise::memoise(countFiber)
 
 
 

@@ -1,11 +1,10 @@
 .onAttach <- function(...) {
   
+  
   if(is.mac()){ ## find the path on a mac	
 
     mac_search_and_set("M2", "macaulay2", "m2")
     mac_search_and_set("bertini", "bertini", "bertini")
-    mac_search_and_set("count", "latte", "latte")
-    mac_search_and_set("markov", "latte", "4ti2")
     
   } else if(is.win()){ ## find the path on a pc  	
   	
@@ -26,8 +25,6 @@
     
   	win_search_and_set("m2")
   	win_search_and_set("bertini")
-  	win_search_and_set("latte")
-  	win_search_and_set("4ti2")
     
     
   } #else {  ## find the path on a unix-type machine
@@ -40,8 +37,6 @@
   ## check for programs
   startup_check_for_program("m2")
   startup_check_for_program("bertini")    
-  startup_check_for_program("latte")
-  startup_check_for_program("4ti2")
   
 }
 

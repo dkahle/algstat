@@ -675,13 +675,13 @@ loglinear <- function(model, data,
   ## construct A matrix and compute moves
   ##################################################  
   
-  if(missing(moves) && !is.null(getOption("4ti2"))){
+  if(missing(moves) && !is.null(getOption("4ti2_path"))){
    
     message("Computing Markov moves (4ti2)... ", appendLF = FALSE)  	
     moves <- markov(A)
     message("done.", appendLF = TRUE)      
     
-  } else if(missing(moves) && is.null(getOption("4ti2"))){
+  } else if(missing(moves) && is.null(getOption("4ti2_path"))){
     
     warning(
       "No moves were provided and 4ti2 is not found.\n",

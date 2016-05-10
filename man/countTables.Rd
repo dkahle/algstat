@@ -2,14 +2,10 @@
 % Please edit documentation in R/countTables.r
 \name{countTables}
 \alias{countTables}
-\alias{memCountTables}
 \title{Count Similarly Margined Contingency Tables}
 \usage{
 countTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
-  dir = tempdir(), opts = "", quiet = TRUE)
-
-memCountTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
-  dir = tempdir(), opts = "", quiet = TRUE)
+  dir = tempdir(), quiet = TRUE, cache = TRUE, ...)
 }
 \arguments{
 \item{table}{the table of interest}
@@ -18,11 +14,11 @@ memCountTables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
 
 \item{dir}{directory to place the files in, without an ending /}
 
-\item{opts}{options for count}
-
 \item{quiet}{show latte output}
 
-\item{...}{...}
+\item{cache}{use count (default) or fcount}
+
+\item{...}{arguments to pass to \code{\link{count}}}
 }
 \value{
 an integer
@@ -58,10 +54,10 @@ data(HairEyeColor)
 eyeHairColor <- margin.table(HairEyeColor, 2:1)
 countTables(eyeHairColor)
 
-system.time(countTables(eyeHairColor))
-system.time(countTables(eyeHairColor))
-system.time(memCountTables(eyeHairColor))
-system.time(memCountTables(eyeHairColor))
+system.time(countTables(eyeHairColor)) # it was computed above
+system.time(countTables(eyeHairColor)) # it was computed above
+system.time(countTables(eyeHairColor, cache = FALSE))
+system.time(countTables(eyeHairColor, cache = FALSE))
 
 
 library(gmp)
@@ -74,6 +70,20 @@ as.bigz(countTables(eyeHairColor))
 data(drugs)
 countTables(drugs)
 
+
+
+
+# 0-1 tables can be very hard and produce very large fibers
+# the 4x4 table below has 154 elements in its independence fiber
+# the 5x5 has 16830, and the compute times are on the order of
+# 1 and 10 seconds, respectively.
+set.seed(1)
+n <- 5
+tab <- matrix(sample(0:1, n^2, replace = TRUE), nrow = n)
+dimnames(tab) <- list(X = paste0("x", 1:n), Y = paste0("y", 1:n))
+tab
+countTables(tab)
+
 countTables(eyeHairColor, quiet = FALSE)
 
 
@@ -82,6 +92,6 @@ countTables(eyeHairColor, quiet = FALSE)
 
 }
 \seealso{
-\code{\link{count}}
+\code{\link{count}}, \code{\link{countFiber}}
 }
 

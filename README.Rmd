@@ -124,32 +124,13 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 
 
 
-# Lattice point counting, integer programming, and more with LattE
+# Statistical applications of LattE
 
-_Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) installed and algstat has registered it._
+_Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and latter has registered it._
 
-Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in __algstat__.  For example, `count()` uses LattE's `count` to determine the number of integer points in a [polytope](http://en.wikipedia.org/wiki/Polytope):
+Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in __latter__, which is imported by __algstat__.  Checkout the readme for __latter__ [here](https://github.com/dkahle/latter).
 
-```{r count}
-count(c("x + y <= 10", "x >= 0", "y >= 0"))
-```
-
-It's easy to confirm the solution with a simple visualization:
-
-```{r countExample, fig.height=6, dpi=200}
-library(ggplot2); theme_set(theme_bw())
-polytope <- data.frame(x = c(0,10,0), y = c(0,0,10))
-points   <- expand.grid(x = 0:10, y = 0:10)
-points   <- subset(points, x + y <= 10)
-points$number <- 1:nrow(points)
-ggplot(aes(x = x, y = y), data = polytope) +
-  geom_polygon(fill = "red", alpha = .2) + 
-  geom_text(aes(y = y + .25, label = number), size = 3.5, data = points) +
-  geom_point(data = points) + 
-  coord_equal()
-```
-
-This can be useful for counting the number of contingency tables with fixed marginals.  More generally, we can use `countTables()` to determine the number of contingency tables in the [fiber (isostatistical region)](http://en.wikipedia.org/wiki/Fiber_(mathematics)) of the table given any [exponential family model](http://en.wikipedia.org/wiki/Exponential_family).
+There are many statistical applications and potential applications of LattE in R.  One example is found in the `count` program, implemented in `latter::count()`.  `latter::count()` counts the number of integer points in a [convex polytope](https://en.wikipedia.org/wiki/Convex_polytope).  This can be useful for counting the number of contingency tables with fixed marginals.  __algstat__ uses `latter::count()` in the `countTables()` function, which determines the number of contingency tables in the [fiber (isostatistical region)](http://en.wikipedia.org/wiki/Fiber_(mathematics)) of a table given an [exponential family model](http://en.wikipedia.org/wiki/Exponential_family).
 
 ```{r countTables}
 countTables(politics) # the independence model is the default
@@ -160,23 +141,6 @@ For example, we can determine the number of tables with the same row sums of `po
 ```{r countTables2}
 (A <- hmat(varlvls = c(2, 2), facets = 1:2)[1:2,])
 countTables(politics, A)
-```
-
-In addition to table counting, it can also do integer programming with LattE's `latte-maximize` and `latte-minimize` programs.  To do this, it uses tools from [__mpoly__](http://github.com/dkahle/mpoly):
-
-```{r ip}
-latteMax("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
-latteMin("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
-```
-
-We can check that the solution given above is correct, but the value is not.  So, it needs some more work:
-
-```{r ipCheck, fig.height=6, dpi=200}
-points$objective <- with(points, -2*x + 3*y)
-ggplot(aes(x = x, y = y), data = polytope) +
-  geom_polygon(fill = "red", alpha = .2) + 
-  geom_point(aes(size = objective), data = points) + 
-  coord_equal()
 ```
 
 

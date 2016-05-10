@@ -21,12 +21,9 @@ We'll begin by doing Fisher's exact test on a built-in dataset called politics.
 library(algstat)
 #> Loading required package: mpoly
 #> Loading required package: stringr
-#> 
-#> Attaching package: 'algstat'
-#> 
-#> The following object is masked _by_ '.GlobalEnv':
-#> 
-#>     tabFill
+#> Loading required package: latter
+#> LattE found in /Applications/latte/dest/bin
+#> 4ti2 found in /Applications/latte/dest/bin
 data(politics)
 politics
 #>            Party
@@ -52,8 +49,8 @@ Since the independence model is log-linear, this exact same procedure can be don
 
 ``` r
 loglinear(~ Personality + Party, data = politics)
-#> Computing Markov moves... done.
-#> Running chain... done.
+#> Computing Markov moves (4ti2)... done.
+#> Running chain (C++)... done.
 #> Call:
 #> loglinear(model = ~Personality + Party, data = politics)
 #> 
@@ -64,12 +61,12 @@ loglinear(~ Personality + Party, data = politics)
 #> N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 #> 
 #>       Distance   Stat     SE p.value     SE mid.p.value
-#>        P(samp)                0.3645 0.0048      0.2178
-#>    Pearson X^2 1.8182 0.0149  0.3645 0.0048      0.2178
-#> Likelihood G^2 1.848  0.0159  0.3645 0.0048      0.2178
-#>  Freeman-Tukey 1.8749 0.0172  0.3645 0.0048      0.2178
-#>   Cressie-Read 1.8247 0.0151  0.3645 0.0048      0.2178
-#>     Neyman X^2 2.0089 0.0234  0.3645 0.0048      0.2938
+#>        P(samp)                 0.374 0.0048      0.223 
+#>    Pearson X^2 1.8182 0.0147   0.374 0.0048      0.223 
+#> Likelihood G^2 1.848  0.0157   0.374 0.0048      0.223 
+#>  Freeman-Tukey 1.8749 0.017    0.374 0.0048      0.223 
+#>   Cressie-Read 1.8247 0.0149   0.374 0.0048      0.223 
+#>     Neyman X^2 2.0089 0.0227   0.374 0.0048      0.2988
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model. Consequently, the p-values estimated are only determined up to Monte Carlo error. The standard p-value is given under the column `p.value` in the row labeled `P(samp)`. The analogous asymptotic test can be done in either of two ways.
@@ -145,9 +142,9 @@ And the **algstat** counterpart:
 
 ``` r
 loglinear(~ income + satisfaction, data = Job)
-#> care ought be taken with tables with sampling zeros to ensure the MLE exists.
-#> Computing Markov moves... done.
-#> Running chain... done.
+#> Care ought be taken with tables with sampling zeros to ensure the MLE exists.
+#> Computing Markov moves (4ti2)... done.
+#> Running chain (C++)... done.
 #> Call:
 #> loglinear(model = ~income + satisfaction, data = Job)
 #> 
@@ -158,12 +155,12 @@ loglinear(~ income + satisfaction, data = Job)
 #> N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 #> 
 #>       Distance   Stat     SE p.value     SE mid.p.value
-#>        P(samp)                0.7761 0.0042      0.7757
-#>    Pearson X^2 5.9655 0.0407  0.7628 0.0043      0.7628
-#> Likelihood G^2 6.7641 0.0436  0.7642 0.0042      0.7642
-#>  Freeman-Tukey 8.6189 0.059   0.7641 0.0042      0.7641
-#>   Cressie-Read 6.0752 0.0402  0.7634 0.0042      0.7634
-#>     Neyman X^2 6.2442 0.0495  0.597  0.0049      0.597
+#>        P(samp)                0.7809 0.0041      0.7807
+#>    Pearson X^2 5.9655 0.0396  0.7694 0.0042      0.7694
+#> Likelihood G^2 6.7641 0.0428  0.7725 0.0042      0.7725
+#>  Freeman-Tukey 8.6189 0.0584  0.7713 0.0042      0.7713
+#>   Cressie-Read 6.0752 0.0392  0.7702 0.0042      0.7702
+#>     Neyman X^2 6.2442 0.0488  0.6005 0.0049      0.6005
 ```
 
 Note that the asymptotic test can be performed as well. The chi-square approximation is actually very good here:
@@ -194,8 +191,8 @@ ftable(drugs)
 #>           No                456 279
 
 loglinear(subsets(1:3, 2), data = drugs)
-#> Computing Markov moves... done.
-#> Running chain... done.
+#> Computing Markov moves (4ti2)... done.
+#> Running chain (C++)... done.
 #> Call:
 #> loglinear(model = subsets(1:3, 2), data = drugs)
 #> 
@@ -206,12 +203,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 #> N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 #> 
 #>       Distance   Stat     SE p.value     SE mid.p.value
-#>        P(samp)                0.6042 0.0049      0.4642
-#>    Pearson X^2 0.5279 0.0132  0.6042 0.0049      0.4642
-#> Likelihood G^2 0.4845 0.0146  0.6042 0.0049      0.4642
-#>  Freeman-Tukey 0.4672 0.0235  0.6042 0.0049      0.4642
-#>   Cressie-Read 0.512  0.0129  0.6042 0.0049      0.4642
-#>     Neyman X^2 0.4294 0.0124  0.6042 0.0049      0.4642
+#>        P(samp)                0.6004 0.0049      0.4646
+#>    Pearson X^2 0.5279 0.0137  0.6004 0.0049      0.4646
+#> Likelihood G^2 0.4845 0.0151  0.6004 0.0049      0.4646
+#>  Freeman-Tukey 0.4672 0.0241  0.6004 0.0049      0.4646
+#>   Cressie-Read 0.512  0.0133  0.6004 0.0049      0.4646
+#>     Neyman X^2 0.4294 0.0125  0.6004 0.0049      0.4646
 ```
 
 Note that here we've used the more concise syntax of facet specification. Doing the same with `loglm()` looks like this:
@@ -227,36 +224,14 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 #> Pearson          0.5279994  1 0.4674492
 ```
 
-Lattice point counting, integer programming, and more with LattE
-================================================================
+Statistical applications of LattE
+=================================
 
-*Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) installed and algstat has registered it.*
+*Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and latter has registered it.*
 
-Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in **algstat**. For example, `count()` uses LattE's `count` to determine the number of integer points in a [polytope](http://en.wikipedia.org/wiki/Polytope):
+Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in **latter**, which is imported by **algstat**. Checkout the readme for **latter** [here](https://github.com/dkahle/latter).
 
-``` r
-count(c("x + y <= 10", "x >= 0", "y >= 0"))
-#> [1] 66
-```
-
-It's easy to confirm the solution with a simple visualization:
-
-``` r
-library(ggplot2); theme_set(theme_bw())
-polytope <- data.frame(x = c(0,10,0), y = c(0,0,10))
-points   <- expand.grid(x = 0:10, y = 0:10)
-points   <- subset(points, x + y <= 10)
-points$number <- 1:nrow(points)
-ggplot(aes(x = x, y = y), data = polytope) +
-  geom_polygon(fill = "red", alpha = .2) + 
-  geom_text(aes(y = y + .25, label = number), size = 3.5, data = points) +
-  geom_point(data = points) + 
-  coord_equal()
-```
-
-![](README-countExample-1.png)
-
-This can be useful for counting the number of contingency tables with fixed marginals. More generally, we can use `countTables()` to determine the number of contingency tables in the [fiber (isostatistical region)](http://en.wikipedia.org/wiki/Fiber_(mathematics)) of the table given any [exponential family model](http://en.wikipedia.org/wiki/Exponential_family).
+There are many statistical applications and potential applications of LattE in R. One example is found in the `count` program, implemented in `latter::count()`. `latter::count()` counts the number of integer points in a [convex polytope](https://en.wikipedia.org/wiki/Convex_polytope). This can be useful for counting the number of contingency tables with fixed marginals. **algstat** uses `latter::count()` in the `countTables()` function, which determines the number of contingency tables in the [fiber (isostatistical region)](http://en.wikipedia.org/wiki/Fiber_(mathematics)) of a table given an [exponential family model](http://en.wikipedia.org/wiki/Exponential_family).
 
 ``` r
 countTables(politics) # the independence model is the default
@@ -273,37 +248,6 @@ For example, we can determine the number of tables with the same row sums of `po
 countTables(politics, A)
 #> [1] 121
 ```
-
-In addition to table counting, it can also do integer programming with LattE's `latte-maximize` and `latte-minimize` programs. To do this, it uses tools from [**mpoly**](http://github.com/dkahle/mpoly):
-
-``` r
-latteMax("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
-#> $par
-#>  x  y 
-#>  0 10 
-#> 
-#> $value
-#> [1] 30
-latteMin("-2 x + 3 y", c("x + y <= 10", "x >= 0", "y >= 0"))
-#> $par
-#>  x  y 
-#> 10  0 
-#> 
-#> $value
-#> [1] -20
-```
-
-We can check that the solution given above is correct, but the value is not. So, it needs some more work:
-
-``` r
-points$objective <- with(points, -2*x + 3*y)
-ggplot(aes(x = x, y = y), data = polytope) +
-  geom_polygon(fill = "red", alpha = .2) + 
-  geom_point(aes(size = objective), data = points) + 
-  coord_equal()
-```
-
-![](README-ipCheck-1.png)
 
 Numerically solving systems of polynomial equations
 ===================================================

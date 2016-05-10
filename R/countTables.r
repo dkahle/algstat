@@ -12,10 +12,11 @@
 #' @param table the table of interest
 #' @param A the configuration/transpose design matrix
 #' @param dir directory to place the files in, without an ending /
-#' @param opts options for count
 #' @param quiet show latte output
+#' @param cache use count (default) or fcount
+#' @param ... arguments to pass to \code{\link{count}}
 #' @return an integer
-#' @seealso \code{\link{count}}
+#' @seealso \code{\link{count}}, \code{\link{countFiber}}
 #' @export
 #' @name countTables
 #' @examples
@@ -38,10 +39,10 @@
 #' eyeHairColor <- margin.table(HairEyeColor, 2:1)
 #' countTables(eyeHairColor)
 #' 
-#' system.time(countTables(eyeHairColor))
-#' system.time(countTables(eyeHairColor))
-#' system.time(memCountTables(eyeHairColor))
-#' system.time(memCountTables(eyeHairColor))
+#' system.time(countTables(eyeHairColor)) # it was computed above
+#' system.time(countTables(eyeHairColor)) # it was computed above
+#' system.time(countTables(eyeHairColor, cache = FALSE))
+#' system.time(countTables(eyeHairColor, cache = FALSE))
 #' 
 #' 
 #' library(gmp)
@@ -54,6 +55,20 @@
 #' data(drugs)
 #' countTables(drugs)
 #' 
+#' 
+#' 
+#' 
+#' # 0-1 tables can be very hard and produce very large fibers
+#' # the 4x4 table below has 154 elements in its independence fiber
+#' # the 5x5 has 16830, and the compute times are on the order of
+#' # 1 and 10 seconds, respectively.
+#' set.seed(1)
+#' n <- 5
+#' tab <- matrix(sample(0:1, n^2, replace = TRUE), nrow = n)
+#' dimnames(tab) <- list(X = paste0("x", 1:n), Y = paste0("y", 1:n))
+#' tab
+#' countTables(tab)
+#' 
 #' countTables(eyeHairColor, quiet = FALSE)
 #' 
 #' 
@@ -62,7 +77,7 @@
 #' 
 countTables <- function(table, 
     A = hmat(dim(table), as.list(1:length(dim(table)))), 
-    dir = tempdir(), opts = "", quiet = TRUE
+    dir = tempdir(), quiet = TRUE, cache = TRUE, ...
 ){
   
   ## make column names
@@ -71,8 +86,13 @@ countTables <- function(table,
   
   ## make the sums
   margConds <- unname(apply(A, 1, function(v){
-    paste(paste(v, cellNames), collapse = " + ")
+    nonzero_ndcs <- unname(which(v > 0))
+    one_ndcs     <- unname(which(v[nonzero_ndcs] == 1))
+    terms <- paste(v[nonzero_ndcs], cellNames[nonzero_ndcs])
+    terms[one_ndcs] <- str_sub(terms[one_ndcs], 3)
+    paste(terms, collapse = " + ")
   }))
+
   
   
   ## compute the marginals
@@ -85,24 +105,10 @@ countTables <- function(table,
   
   
   ## count
-  count(c(margConds, nonnegConds), dir, opts, quiet)  
+  f <- if(cache) latter::count else latter::fcount
+  f(c(margConds, nonnegConds), dir, quiet, ...)  
 }
 
-
-
-
-
-
-
-
-
-
-
-
-#' @param ... ...
-#' @export
-#' @rdname countTables
-memCountTables <- memoise::memoise(countTables)
 
 
 

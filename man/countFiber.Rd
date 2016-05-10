@@ -2,12 +2,9 @@
 % Please edit documentation in R/countFiber.R
 \name{countFiber}
 \alias{countFiber}
-\alias{memCountFiber}
 \title{Count the elements of a fiber Ax = b}
 \usage{
-countFiber(A, b, dir = tempdir(), opts = "", quiet = TRUE)
-
-memCountFiber(A, b, dir = tempdir(), opts = "", quiet = TRUE)
+countFiber(A, b, dir = tempdir(), quiet = TRUE, cache = TRUE, ...)
 }
 \arguments{
 \item{A}{the A matrix of Ax = b}
@@ -16,11 +13,11 @@ memCountFiber(A, b, dir = tempdir(), opts = "", quiet = TRUE)
 
 \item{dir}{directory to place the files in, without an ending /}
 
-\item{opts}{options for count}
-
 \item{quiet}{show latte output}
 
-\item{...}{...}
+\item{cache}{use count (default) or fcount}
+
+\item{...}{additional arguments to \code{\link{count}}}
 }
 \value{
 an integer
@@ -47,6 +44,12 @@ b <- A \%*\% tab2vec(politics)
 countFiber(A, b)
 
 
+# this counts the number of ways 10 non-negative integers can sum to 100
+A <- ones(1, 10)
+countFiber(A, 100, cache = FALSE)
+system.time(countFiber(A, 100, cache = FALSE))
+system.time(countFiber(A, 100))
+system.time(countFiber(A, 100))
 
 
 }
