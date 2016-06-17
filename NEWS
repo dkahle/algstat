@@ -3,6 +3,8 @@ Version 0.1.0
 
 NEW FEATURES
 
+* algstat now depends on latter and outsources latte and 4ti2 tasks to it.
+
 * algstat now has a function called plotMatrix that is a variant of Matlab's 
   spy function.
 
@@ -11,13 +13,6 @@ NEW FEATURES
   
 * algstat now has functions for generating random moves, see ?rmove.  Note that 
   these are pre-computed.
-  
-* The 4ti2 functions groebner, zbasis, and graver are now implemented.
-
-* All 4ti2 and latte functions have memoised copies that start with mem. Thus, 
-  the memoised version of markov is memMarkov, that of count is memCount, and so on.
-  
-* Functions write.latte and read.latte are now implemented.
 
 * loglinear (hierarchical) now takes more general model specifications, including 
   facet specification (i.e. list(1, 2) and list("Gender", "Handedness")) and 

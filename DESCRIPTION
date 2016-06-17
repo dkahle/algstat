@@ -16,7 +16,9 @@ Description: Connections and tools for algebraic statistics in R.
 Depends:
     mpoly,
     latter
-LinkingTo: Rcpp
+LinkingTo: 
+    Rcpp,
+    lpSolve
 Imports:
     stringr,
     reshape2,
