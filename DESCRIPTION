@@ -15,7 +15,8 @@ Description: Connections and tools for algebraic statistics in R.
     LattE-integrale and 4ti2.
 Depends:
     mpoly,
-    latter
+    latter,
+    m2r
 LinkingTo: Rcpp
 Imports:
     stringr,

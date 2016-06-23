@@ -3,7 +3,6 @@
   
   if(is.mac()){ ## find the path on a mac	
 
-    mac_search_and_set("M2", "macaulay2", "m2")
     mac_search_and_set("bertini", "bertini", "bertini")
     
   } else if(is.win()){ ## find the path on a pc  	
@@ -17,13 +16,12 @@
     if(!whereis_is_accessible()){ # check for whereis, return if not found
       psm(
         "The whereis function was not found, so algstat can't find the required exe's.\n",
-        "  Try setting the paths with setM2Path(), setBertiniPath(), setLattePath(),\n",
-        "  and set4ti2Path()."
+        "  Try setting the path with setBertiniPath()."
       )
       return()
     }
     
-  	win_search_and_set("m2")
+
   	win_search_and_set("bertini")
     
     
@@ -35,7 +33,6 @@
   #}
   
   ## check for programs
-  startup_check_for_program("m2")
   startup_check_for_program("bertini")    
   
 }
@@ -78,7 +75,6 @@
 
 longName <- function(optionName){
   switch(optionName,
-    m2 = "Macaulay2", 
     bertini = "Bertini", 
     "4ti2" = "4ti2", 
     latte = "LattE"
@@ -87,7 +83,6 @@ longName <- function(optionName){
 
 execName <- function(optionName){
   switch(optionName,
-    m2 = "m2", 
     bertini = "bertini", 
     "4ti2" = "markov", 
     latte = "count"
@@ -96,7 +91,6 @@ execName <- function(optionName){
 
 setFun <- function(optionName){
   switch(optionName,
-    m2 = "setM2Path()", 
     bertini = "setBertiniPath()", 
     "4ti2" = "set4ti2Path()", 
     latte = "setLattePath()"

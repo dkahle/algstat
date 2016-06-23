@@ -36,9 +36,9 @@ CHANGES
 
 * algstat now imports tidyr and ggplot2 for the plotMatrix function.
 
-* The path for markov (or any 4ti2 functions) is now called "4ti2" in options.
-  Similarly, "lattePath" has changed to "latte", "bertiniPath" to "bertini", 
-  and "m2Path" to "m2".
+* LattE and 4ti2 functionality have been rebased on the latter package.
+
+* Macaulay2 functionality has been rebased on the m2r package.
 
 * The hierarchical function is now called loglinear.  hierarchical is deprecated.
 

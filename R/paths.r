@@ -1,12 +1,11 @@
 #' Set paths to external functions
 #' 
-#' These functions set the path to external programs either by (1)
-#' passing them a character string or (2) using
+#' These functions set the path to external programs either by (1) 
+#' passing them a character string or (2) using 
 #' \code{\link{file.choose}}.
 #' 
-#' @param path a character string, the path to m2 (for Macaulay2),
-#'   bertini (for Bertini), markov (say, for 4ti2), and count (say,
-#'   for LattE)
+#' @param path a character string, the path to bertini (for
+#'   Bertini), markov (say, for 4ti2), and count (say, for LattE)
 #' @return an invisible character string, the path found
 #' @name setPaths
 #' @author David Kahle \email{david.kahle@@gmail.com}
@@ -14,9 +13,6 @@
 #' 
 #' \dontrun{ # the below code requires suggested external software
 #' 
-#' ## for Macaulay2
-#' getOption("m2")
-#' setM2Path() 
 #' 
 #' ## for Bertini
 #' getOption("bertini")
@@ -49,33 +45,6 @@ NULL
 
 
 
-
-
-#' @rdname setPaths
-#' @export 
-setM2Path <- function(path){
-
-  if(missing(path) && interactive()){
-  	
-    m2Path <- dirname(file.choose())
-    if(is.win() && str_detect(m2Path,"C:/")){
-      m2Path <- str_replace(m2Path, "C:/", "/cygdrive/c/")
-    }
-    options(m2 = m2Path)
-    return(invisible(m2Path))
-    
-  } else if(!missing(path)){
-  	
-    options(m2 = path)
-    return(invisible(path))
-    
-  } else {
-    stop(
-      "If the session is not interactive, a path must be specified.", 
-      call. = FALSE
-    )
-  }
-}
 
 
 

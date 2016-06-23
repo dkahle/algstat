@@ -5,12 +5,9 @@
 \alias{setBertiniPath}
 \alias{setLattEPath}
 \alias{setLattePath}
-\alias{setM2Path}
 \alias{setPaths}
 \title{Set paths to external functions}
 \usage{
-setM2Path(path)
-
 setBertiniPath(path)
 
 setLattePath(path)
@@ -18,25 +15,21 @@ setLattePath(path)
 set4ti2Path(path)
 }
 \arguments{
-\item{path}{a character string, the path to m2 (for Macaulay2),
-bertini (for Bertini), markov (say, for 4ti2), and count (say,
-for LattE)}
+\item{path}{a character string, the path to bertini (for
+Bertini), markov (say, for 4ti2), and count (say, for LattE)}
 }
 \value{
 an invisible character string, the path found
 }
 \description{
-These functions set the path to external programs either by (1)
-passing them a character string or (2) using
+These functions set the path to external programs either by (1) 
+passing them a character string or (2) using 
 \code{\link{file.choose}}.
 }
 \examples{
 
 \dontrun{ # the below code requires suggested external software
 
-## for Macaulay2
-getOption("m2")
-setM2Path() 
 
 ## for Bertini
 getOption("bertini")
