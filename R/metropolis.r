@@ -1,28 +1,73 @@
-#' Markov Basis Metropolis-Hastings Algorithm
+#' The Metropolis Algorithm
 #' 
-#' Given a starting table (as a vector) and a loglinear model matrix
-#' A, compute the Markov basis of A with 4ti2 and then run the
-#' Metropolis-Hastings algorithm starting with the starting table.
+#' Given a starting table (as a vector) and a collection of moves, 
+#' run the Metropolis-Hastings algorithm starting with the starting 
+#' table.
 #' 
 #' See Algorithm 1.1.13 in LAS, the reference below.
 #' 
 #' @param init the initial step
-#' @param moves the moves to be used (the negatives will be added);
+#' @param moves the moves to be used (the negatives will be added); 
 #'   they are arranged as the columns of a matrix.
 #' @param iter number of chain iterations
 #' @param burn burn-in
 #' @param thin thinning
+#' @param dist steady-state distribution; "hypergeometric" (default)
+#'   or "uniform"
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
 #' @name metropolis
 #' @return a list
 #' @export metropolis
 #' @author David Kahle
-#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009).
-#'   \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). 
+#'   \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser 
 #'   Verlag AG.
 #' @examples
 #' 
 #' \dontrun{
+#' 
+#' library(ggplot2); theme_set(theme_bw())
+#' 
+#' # move up and down integer points on the line y = 100 - x
+#' # sampling from the hypergeometric distribution
+#' init <- c(10,90)
+#' moves <- matrix(c(1,-1), ncol = 1)
+#' out <- metropolis(init, moves)
+#' qplot(out$steps[1,])
+#' 
+#' # view convergence through trace plot
+#' qplot(1:1000, out$steps[1,])
+#' 
+#' # sampling from the hypergeometric distribution
+#' out <- metropolis(init, moves, dist = "uniform")
+#' qplot(out$steps[1,])
+#' 
+#' # view convergence through trace plot
+#' qplot(1:1000, out$steps[1,])
+#' 
+#' # look at autocorrelation
+#' acf(out$steps[1,])
+#' # thin
+#' out <- metropolis(init, moves, dist = "uniform", thin = 2500)
+#' acf(out$steps[1,])
+#' qplot(out$steps[1,])
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
 #' 
 #' data(handy)
 #' 
@@ -98,12 +143,13 @@
 #' }
 #' 
 #' 
-metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
-  engine = c("Cpp","R")
+metropolis <- function(init, moves, iter = 1E3, burn = 0, thin = 1,
+  dist = c("hypergeometric","uniform"), engine = c("Cpp","R")
 ){
 
   ## preliminary checking
   ##################################################
+  dist <- match.arg(dist)
   engine <- match.arg(engine)
   if(thin == 0){
     message("thin = 1 corresponds to no thinning, resetting thin = 0.")
@@ -134,7 +180,11 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
       if(any(propState < 0)){
         prob <- 0
       } else {
-        prob <- exp( sum(lfactorial(current)) - sum(lfactorial(propState)) )
+        if(dist == "hypergeometric"){
+          prob <- exp( sum(lfactorial(current)) - sum(lfactorial(propState)) )
+        } else { # dist == "uniform"
+          prob <- 1
+        }
       }
     
       if(unifs[k] < prob) current <- propState # else current
@@ -159,7 +209,11 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
       if(any(propState < 0)){
         prob <- 0
       } else {
-        prob <- exp( sum(lfactorial(current)) - sum(lfactorial(propState)) )
+        if(dist == "hypergeometric"){
+          prob <- exp( sum(lfactorial(current)) - sum(lfactorial(propState)) )
+        } else { # dist == "uniform"
+          prob <- 1
+        }
       }
       probTotal <- probTotal + min(1, prob)
 
@@ -173,7 +227,9 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
   message("done.")  
   
   ## format output
-  out <- list(steps = state, moves = moves, 
+  out <- list(
+    steps = state, 
+    moves = moves, 
     acceptProb = probTotal / totalRuns
   )
   
@@ -188,9 +244,14 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
     
   current   <- unname(init)  
   allMoves  <- cbind(moves, -moves)  
+  sampler   <- if(dist == "hypergeometric") {
+    metropolis_hypergeometric_cpp
+  } else {
+    metropolis_uniform_cpp
+  }
   message("Running chain (C++)... ", appendLF = FALSE)  
-  if(burn > 0) current   <- metropolisCpp(current, allMoves, burn, 1)$steps[,burn]
-  out       <- metropolisCpp(current, allMoves, iter, thin)
+  if (burn > 0) current <- sampler(current, allMoves, burn, 1)$steps[,burn]
+  out       <- sampler(current, allMoves, iter, thin)
   out$moves <- moves
   message("done.")
 
@@ -207,8 +268,12 @@ metropolis <- function(init, moves, iter = 1E3, burn = 1000, thin = 10,
 
 
 
+
+
+
 #' @rdname metropolis
 #' @export
-rawMetropolis <- function(init, moves, iter = 1E3){
-  metropolis(init, moves, iter, thin = 1, burn = 0) 
+rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric"){
+  metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist) 
 }
+

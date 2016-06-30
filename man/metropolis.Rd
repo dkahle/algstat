@@ -3,17 +3,17 @@
 \name{metropolis}
 \alias{metropolis}
 \alias{rawMetropolis}
-\title{Markov Basis Metropolis-Hastings Algorithm}
+\title{The Metropolis Algorithm}
 \usage{
-metropolis(init, moves, iter = 1000, burn = 1000, thin = 10,
-  engine = c("Cpp", "R"))
+metropolis(init, moves, iter = 1000, burn = 0, thin = 1,
+  dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"))
 
-rawMetropolis(init, moves, iter = 1000)
+rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric")
 }
 \arguments{
 \item{init}{the initial step}
 
-\item{moves}{the moves to be used (the negatives will be added);
+\item{moves}{the moves to be used (the negatives will be added); 
 they are arranged as the columns of a matrix.}
 
 \item{iter}{number of chain iterations}
@@ -22,15 +22,18 @@ they are arranged as the columns of a matrix.}
 
 \item{thin}{thinning}
 
+\item{dist}{steady-state distribution; "hypergeometric" (default)
+or "uniform"}
+
 \item{engine}{C++ or R? (C++ yields roughly a 20-25x speedup)}
 }
 \value{
 a list
 }
 \description{
-Given a starting table (as a vector) and a loglinear model matrix
-A, compute the Markov basis of A with 4ti2 and then run the
-Metropolis-Hastings algorithm starting with the starting table.
+Given a starting table (as a vector) and a collection of moves, 
+run the Metropolis-Hastings algorithm starting with the starting 
+table.
 }
 \details{
 See Algorithm 1.1.13 in LAS, the reference below.
@@ -38,6 +41,49 @@ See Algorithm 1.1.13 in LAS, the reference below.
 \examples{
 
 \dontrun{
+
+library(ggplot2); theme_set(theme_bw())
+
+# move up and down integer points on the line y = 100 - x
+# sampling from the hypergeometric distribution
+init <- c(10,90)
+moves <- matrix(c(1,-1), ncol = 1)
+out <- metropolis(init, moves)
+qplot(out$steps[1,])
+
+# view convergence through trace plot
+qplot(1:1000, out$steps[1,])
+
+# sampling from the hypergeometric distribution
+out <- metropolis(init, moves, dist = "uniform")
+qplot(out$steps[1,])
+
+# view convergence through trace plot
+qplot(1:1000, out$steps[1,])
+
+# look at autocorrelation
+acf(out$steps[1,])
+# thin
+out <- metropolis(init, moves, dist = "uniform", thin = 2500)
+acf(out$steps[1,])
+qplot(out$steps[1,])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 data(handy)
 
@@ -118,8 +164,8 @@ showSteps <- function(steps){
 David Kahle
 }
 \references{
-Drton, M., B. Sturmfels, and S. Sullivant (2009).
-  \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+Drton, M., B. Sturmfels, and S. Sullivant (2009). 
+  \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser 
   Verlag AG.
 }
 

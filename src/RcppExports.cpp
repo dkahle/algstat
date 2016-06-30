@@ -65,9 +65,9 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// metropolisCpp
-List metropolisCpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
-RcppExport SEXP algstat_metropolisCpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+// metropolis_hypergeometric_cpp
+List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -75,7 +75,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
-    __result = Rcpp::wrap(metropolisCpp(current, moves, iter, thin));
+    __result = Rcpp::wrap(metropolis_hypergeometric_cpp(current, moves, iter, thin));
+    return __result;
+END_RCPP
+}
+// metropolis_uniform_cpp
+List metropolis_uniform_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP algstat_metropolis_uniform_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
+    __result = Rcpp::wrap(metropolis_uniform_cpp(current, moves, iter, thin));
     return __result;
 END_RCPP
 }
