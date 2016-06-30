@@ -9,13 +9,10 @@ NEW FEATURES
 * algstat now has functions for sequential importance sampling of tables, 
   see ?rfiber
   
-* algstat now has functions for generating random moves, see ?rmove.  Note that 
-  these are pre-computed.
+* algstat now has functions for generating random moves, see ?rmove.  
   
-* The 4ti2 functions groebner, zbasis, and graver are now implemented.
-
-* All 4ti2 and latte functions have memoised copies that start with mem. Thus, 
-  the memoised version of markov is memMarkov, that of count is memCount, and so on.
+* Most 4ti2 and latte functions are implemented through the latter package, 
+  a new dependency.
   
 * Functions write.latte and read.latte are now implemented.
 
@@ -31,6 +28,9 @@ NEW FEATURES
 * The new function countFiber uses LattE's count function to count the elements 
   of a fiber; that is, the number of nonnegative integer x's such that Ax = b 
   for a given A and b. (Thanks to Tobias Windisch for the suggestion.)
+  
+* The metropolis algorithm can now sample from the uniform distribution.
+  See ?metropolis.
 
 CHANGES
 
