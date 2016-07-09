@@ -63,7 +63,7 @@ page.
 	  from "Default" to "Install". 
 	* Click the icon to the right of Math to change it from
 	  "Default" to "Install". 
-	* Click the + icon to the left of Math to expand it and click
+	* Click the + icon to the left of R to expand it and click
 	  twice on "3.1.0-1" (or whatever the version is) to change it
 	  to "Skip".  
 • Click next through everything to complete the download, and then
