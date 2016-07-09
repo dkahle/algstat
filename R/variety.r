@@ -104,7 +104,7 @@ variety <- function(mpolyList, varOrder, ...){
     paste(paste("f", 1:length(mpolyList), sep = ""), collapse = ", ")
   )
 
-  funs <- suppressMessages(print(mpolyList, stars = TRUE))
+  funs <- print(mpolyList, stars = TRUE, silent = TRUE)
   funs <- str_replace_all(funs, "  ", " ")
   funs <- str_replace_all(funs, "\\*\\*", "^")  
   code <- str_replace(code, "funs",
