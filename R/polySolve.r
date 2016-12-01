@@ -126,7 +126,7 @@ polySolve <- function(lhs, rhs, varOrder, ...){
     paste(paste("f", 1:length(gens), sep = ""), collapse = ", ")
   )
 
-  funs <- suppressMessages(print(gens, stars = TRUE))
+  funs <- print(gens, stars = TRUE, silent = TRUE)
   funs <- str_replace_all(funs, "  ", " ")
   funs <- str_replace_all(funs, "\\*\\*", "^")  
   code <- str_replace(code, "funs",

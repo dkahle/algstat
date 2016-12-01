@@ -19,6 +19,7 @@
 #' polyOptim("-(x - 2)^2") 
 #' polyOptim("-(x^2 + y^2)") 
 #' polyOptim("-(x^2 + (y - 2)^2)") 
+#' polyOptim("-(x^2 + (y - 2)^2)") # saddle
 #' 
 #' polyOptim("(x - 1) (x - 2) (x - 3)") # fix global labeling
 #' 
