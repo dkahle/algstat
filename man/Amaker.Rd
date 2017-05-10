@@ -29,4 +29,3 @@ Amaker(4, 2)
   \code{\link{Mmaker}}, \code{\link{Pmaker}},
   \code{\link{Smaker}}
 }
-

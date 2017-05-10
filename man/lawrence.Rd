@@ -53,10 +53,9 @@ zbasis(lawrence(A))
 
 
 }
-\author{
-David Kahle \email{david.kahle@gmail.com}
-}
 \seealso{
 Aoki, Hara, and Takemura (2012), pp. 61-62
 }
-
+\author{
+David Kahle \email{david.kahle@gmail.com}
+}

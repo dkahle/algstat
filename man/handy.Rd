@@ -15,4 +15,3 @@ A small fictional dataset on handedness.
 David Kahle
 }
 \keyword{datasets}
-

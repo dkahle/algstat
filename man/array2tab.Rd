@@ -28,4 +28,3 @@ array2tab(handy)
 \seealso{
 \code{\link{tab2array}}
 }
-

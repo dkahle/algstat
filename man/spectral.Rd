@@ -439,4 +439,3 @@ freq <- table( factor(rawTogether, levels = levels) )
 
 }
 }
-

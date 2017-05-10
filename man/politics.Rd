@@ -11,11 +11,10 @@ data(politics)
 \description{
 A 2-by-2 contingency table comparing political identification and personality.
 }
-\author{
-David Kahle, simplifying the dataset found on p.622 of Sheskin (see References)
-}
 \references{
 Sheskin, D. J. Handbook of Parametric and Nonparametric Statistical Procedures. 4ed. Chapman and Hall/CRC Press, 2007.
 }
+\author{
+David Kahle, simplifying the dataset found on p.622 of Sheskin (see References)
+}
 \keyword{datasets}
-

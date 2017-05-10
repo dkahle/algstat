@@ -42,4 +42,3 @@ cellBounds(A, b, messaging = TRUE)
 Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David
   Kahle \email{david.kahle@gmail.com}
 }
-

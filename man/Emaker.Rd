@@ -46,4 +46,3 @@ Tmaker(6, 3, 1)
   \code{\link{Mmaker}}, \code{\link{Pmaker}},
   \code{\link{Smaker}}
 }
-

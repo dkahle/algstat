@@ -24,4 +24,3 @@ This function summarizes the output from Bertini.
 
 
 }
-

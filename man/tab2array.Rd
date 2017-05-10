@@ -30,4 +30,3 @@ tab2array(Titanic)
 \seealso{
 \code{\link{tab2vec}}, \code{\link{array2tab}}
 }
-

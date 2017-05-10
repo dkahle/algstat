@@ -26,4 +26,3 @@ projectOnto(A, x)
 
 
 }
-

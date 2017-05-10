@@ -1,0 +1,11 @@
+citHeader("To cite algstat in publications, please use:")
+
+citEntry(entry="Manual",
+  author = "David Kahle and Luis Garcia-Puente and Ruriko Yoshida",
+  title = "algstat: Algebraic Statistics in R",
+  year = "2017",
+  note = "R package version 0.1.0",
+  url = "https://github.com/dkahle/algstat",
+  textVersion = "D. Kahle, L. Garcia-Puente, and R. Yoshida. algstat: Algebraic Statistics in R. R package version 0.1.0. https://github.com/dkahle/algstat"
+)
+

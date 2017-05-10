@@ -113,4 +113,3 @@ system.time(rfiber(1e4, A = A, b = b, parallel = TRUE))
 David Kahle \email{david.kahle@gmail.com}, Ruriko Yoshida 
   \email{ruriko.yoshida@uky.edu}
 }
-

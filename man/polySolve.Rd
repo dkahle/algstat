@@ -77,4 +77,3 @@ polySolve(c(
 \seealso{
 \code{\link{variety}}, \code{\link{bertini}}
 }
-

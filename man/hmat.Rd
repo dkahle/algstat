@@ -57,4 +57,3 @@ Drton, M., B. Sturmfels, and S. Sullivant (2009).
 \seealso{
 \code{\link{genmodel}}
 }
-

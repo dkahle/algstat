@@ -28,4 +28,3 @@ projectOnto(A, x)
 \seealso{
 \code{\link{qr.fitted}}
 }
-

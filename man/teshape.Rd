@@ -68,4 +68,3 @@ teshape(TitanicFreq, "tab", "n")
 
 
 }
-

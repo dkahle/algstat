@@ -22,4 +22,3 @@ Test whether an object is an bertini object.
 
 
 }
-

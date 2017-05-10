@@ -29,4 +29,3 @@ tabFill(Titanic, rpois(nCells, 5))
 
 
 }
-

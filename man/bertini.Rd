@@ -122,4 +122,3 @@ out <- bertini(code)
 }
 
 }
-

@@ -50,7 +50,7 @@ Step 1: Cygwin part.
 
 • Go to Cygwin website.  
 • Click Install Cygwin on the left nav bar.
-• Click setup-x86.exe and Install from Internet.  
+• Click setup-x86_64.exe and Install from Internet.  
 • When the "Select Roots Install Directory" page appears, click
 next. (C:\cygwin64 is assumed for this writeup.)
 • Click next through until you get to the "Choose A Download Site"
@@ -63,9 +63,6 @@ page.
 	  from "Default" to "Install". 
 	* Click the icon to the right of Math to change it from
 	  "Default" to "Install". 
-	* Click the + icon to the left of R to expand it and click
-	  twice on "3.1.0-1" (or whatever the version is) to change it
-	  to "Skip".  
 • Click next through everything to complete the download, and then
 install it; this last part takes a while so be ready to wait.
 • Once you've installed Cygwin, open it from the start menu.
@@ -170,7 +167,7 @@ You shouldn't get any errors.
 
 
 
-On OS-X
+On macOS
 
 
 Step 1: Get your compilers and so forth ready; download and unzip

@@ -13,12 +13,11 @@ Haberman's example of a log-linear model (the no-three way
 interaction model) that lacks an MLE even though it has positive
 margins.
 }
-\author{
-unknown
-}
 \references{
 Haberman, S. (1974). \emph{The Analysis of Frequency
   Data} 1, 2. University of Chicago Press, Chicago, IL.
 }
+\author{
+unknown
+}
 \keyword{datasets}
-

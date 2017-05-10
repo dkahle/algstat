@@ -12,13 +12,12 @@ data(drugs)
 A multi-way contingency table of alcohol, cigarettes, and
 marijuana use by high school students.
 }
-\author{
-Wright State University School of Medicine and the United
-  Health Services in Dayton, Ohio
-}
 \references{
 Agresti, A. (2002). \emph{Categorical Data Analysis},
   Basel: John Wiley & Sons, 2ed. (p.322)
 }
+\author{
+Wright State University School of Medicine and the United
+  Health Services in Dayton, Ohio
+}
 \keyword{datasets}
-

@@ -40,4 +40,3 @@ cellBound(A, b, "upper") # 4
 Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David
   Kahle \email{david.kahle@gmail.com}
 }
-

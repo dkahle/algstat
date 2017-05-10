@@ -130,11 +130,10 @@ rmove(5, A, b, format = "tab", dim = c(2,2,2))
 }
 
 }
+\seealso{
+\code{\link{rfiber}}
+}
 \author{
 David Kahle \email{david.kahle@gmail.com}, Ruriko Yoshida 
   \email{ruriko.yoshida@uky.edu}
 }
-\seealso{
-\code{\link{rfiber}}
-}
-

@@ -27,4 +27,3 @@ Pretty printing of polyOptim (Bertini) output.
 
 
 }
-

@@ -44,4 +44,3 @@ subsets(c('a','b','c','d'), include_null = TRUE)
 \seealso{
 \code{\link{combn}}
 }
-

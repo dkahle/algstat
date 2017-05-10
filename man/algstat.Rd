@@ -3,8 +3,8 @@
 \docType{package}
 \name{algstat}
 \alias{algstat}
-\alias{algstat-package}
 \alias{package-algstat}
+\alias{algstat-package}
 \title{algstat : Algebraic statistics in R}
 \description{
 algstat is a package for algebraic statistics in R.  Current 
@@ -15,4 +15,3 @@ building on the mpoly package.  To aid in the process, algstat
 leverages ports to Macaulay2 (through m2r), Bertini, LattE and
 4ti2 (through latter).
 }
-

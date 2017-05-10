@@ -11,11 +11,10 @@ data(abortion)
 \description{
 A multi-way contingency table with the results of a survey concerning attitudes concerning abortion.
 }
-\author{
-1972 National Opinion Research Center
-}
 \references{
 Haberman, S. (1978). \emph{Analysis of Qualitative Data} 1, 2. Academic Press, Orlando, FL.
 }
+\author{
+1972 National Opinion Research Center
+}
 \keyword{datasets}
-

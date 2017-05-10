@@ -58,4 +58,3 @@ system.time(countFiber(A, 100))
 \seealso{
 \code{\link{count}}
 }
-

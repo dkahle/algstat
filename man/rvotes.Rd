@@ -23,4 +23,3 @@ Generate spectral data for testing purposes.
 rvotes(100, 10, 3)
 
 }
-

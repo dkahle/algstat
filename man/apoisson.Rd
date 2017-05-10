@@ -118,9 +118,6 @@ out$p.value
 
 
 }
-\author{
-David Kahle
-}
 \references{
 Diaconis, P. and B. Sturmfels (1998). Algebraic 
   Algorithms for Sampling from Conditional Distributions. 
@@ -147,4 +144,6 @@ Read, T. and Cressie, N. (1998).
 \code{\link{loglin}}, \code{\link{loglm}}, 
   \code{\link{metropolis}}
 }
-
+\author{
+David Kahle
+}

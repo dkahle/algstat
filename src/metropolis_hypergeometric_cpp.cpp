@@ -5,8 +5,7 @@ using namespace Rcpp;
 List metropolis_hypergeometric_cpp(
     IntegerVector current, 
     IntegerMatrix moves, 
-    int iter, int 
-  thin
+    int iter, int thin
 ){
 
   int nTotalSamples = iter * thin;         // total number of steps

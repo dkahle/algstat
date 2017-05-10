@@ -37,4 +37,3 @@ Marden, J. I. (1995). \emph{Analyzing and Modeling
   \code{\link{Emaker}}, \code{\link{Pmaker}},
   \code{\link{Smaker}}
 }
-

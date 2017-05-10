@@ -14,12 +14,11 @@ city (1), suburbs (2), and the country (3).  637 of these
 individuals themselves lived in a city, 500 in the suburbs, and
 302 in the country.
 }
-\author{
-1972 National Opinion Research Center Amalgam Survey
-}
 \references{
 Marden, J. I. (1995). \emph{Analyzing and Modeling
   Rank Data}, London: Chapman & Hall. p.35.
 }
+\author{
+1972 National Opinion Research Center Amalgam Survey
+}
 \keyword{datasets}
-

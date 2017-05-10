@@ -29,4 +29,3 @@ is.linear(mp(c("x + x y", "x")))
 
 }
 }
-

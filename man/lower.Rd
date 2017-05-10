@@ -28,4 +28,3 @@ upper(rnorm(6))
 \seealso{
 \code{\link{upper}}
 }
-

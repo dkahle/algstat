@@ -160,12 +160,11 @@ showSteps <- function(steps){
 
 
 }
-\author{
-David Kahle
-}
 \references{
 Drton, M., B. Sturmfels, and S. Sullivant (2009). 
   \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser 
   Verlag AG.
 }
-
+\author{
+David Kahle
+}

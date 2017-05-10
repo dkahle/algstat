@@ -31,6 +31,8 @@ NEW FEATURES
   
 * The metropolis algorithm can now sample from the uniform distribution.
   See ?metropolis.
+  
+* algstat now has a CITATION file.
 
 CHANGES
 

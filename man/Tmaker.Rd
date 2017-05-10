@@ -98,4 +98,3 @@ effectsOnV3 # = t(t(cookie$freq)) = the (freq) data
   \code{\link{Mmaker}}, \code{\link{Pmaker}},
   \code{\link{Smaker}}
 }
-

@@ -36,4 +36,3 @@ lpnorm(matrix(-25:-1, 5, 5), Inf)
 lpnorm(split(-25:-1, rep(1:5, each = 5)), Inf)
 
 }
-

@@ -94,4 +94,3 @@ countTables(eyeHairColor, quiet = FALSE)
 \seealso{
 \code{\link{count}}, \code{\link{countFiber}}
 }
-
