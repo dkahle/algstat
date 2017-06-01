@@ -66,8 +66,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // metropolis_hypergeometric_cpp
-List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
-RcppExport SEXP algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin, bool hit_and_run);
+RcppExport SEXP algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -75,7 +75,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
-    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(current, moves, iter, thin));
+    Rcpp::traits::input_parameter< bool >::type hit_and_run(hit_and_runSEXP);
+    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(current, moves, iter, thin, hit_and_run));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -1,11 +1,15 @@
 #include <Rcpp.h>
+#include <cmath>
 using namespace Rcpp;
+
+// [[Rcpp::plugins(cpp11)]]
 
 // [[Rcpp::export]]
 List metropolis_hypergeometric_cpp(
     IntegerVector current, 
     IntegerMatrix moves, 
-    int iter, int thin
+    int iter, int thin, 
+    bool hit_and_run
 ){
 
   int nTotalSamples = iter * thin;         // total number of steps
@@ -19,6 +23,12 @@ List metropolis_hypergeometric_cpp(
   bool anyIsNegative;
   IntegerVector move(n);
   double acceptProb = 0;
+  NumericVector stepSize(n);
+  NumericVector lowerBound(n);
+  NumericVector upperBound(n);
+  double lb;
+  double ub;
+  IntegerVector run(1);
 
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -33,10 +43,42 @@ List metropolis_hypergeometric_cpp(
       for(int k = 0; k < n; ++k){
         move[k] = moves(k, whichMove[thin*i+j]-1);
       }
+      
+      // If hit_and_run is true, choose how far to run
+      if(hit_and_run){
+        for(int l = 0; l < n; ++l){
+          if(std::isinf(-current[l] / move[l])){
+            stepSize[l] = 0;
+          }else{
+            stepSize[l] = -current[l] / move[l];
+          }
+        }
+        for(int l = 0; l < n; ++l){
+          if(stepSize[l] >=0){
+            lowerBound[l] = -100000;
+          }else{
+            lowerBound[l] = stepSize[l];
+          }
+        }
+        for(int l = 0; l < n; ++l){
+          if(stepSize[l] <= 0){
+            upperBound[l] = 100000;
+          }else{
+            upperBound[l] = stepSize[l];
+          }
+        }
+        lb = max(lowerBound);
+        ub = min(upperBound);
+        run = sample(seq(floor(lb),floor(ub)),1);
+        if(run[1] == 0){
+          run[1] = 1;
+        }
+        
+      }
 
       // compute proposal
       for(int k = 0; k < n; ++k){
-        proposal[k] = current[k] + move[k];
+        proposal[k] = current[k] + run[1] * move[k];
       }
 
       // compute probability of transition
