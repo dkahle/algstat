@@ -15,6 +15,8 @@
 #' @param dist steady-state distribution; "hypergeometric" (default)
 #'   or "uniform"
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
+#' @param hit_and_run Whether or not to use the hit and run algorithm in
+#'   the metropolis algorithm
 #' @name metropolis
 #' @return a list
 #' @export metropolis

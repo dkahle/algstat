@@ -21,6 +21,10 @@ computeX2sCpp <- function(x, exp) {
     .Call('algstat_computeX2sCpp', PACKAGE = 'algstat', x, exp)
 }
 
+isinfinite <- function(x) {
+    .Call('algstat_isinfinite', PACKAGE = 'algstat', x)
+}
+
 metropolis_hypergeometric_cpp <- function(current, moves, iter, thin, hit_and_run) {
     .Call('algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, iter, thin, hit_and_run)
 }

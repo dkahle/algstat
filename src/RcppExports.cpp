@@ -65,6 +65,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// isinfinite
+LogicalVector isinfinite(NumericVector x);
+RcppExport SEXP algstat_isinfinite(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(isinfinite(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // metropolis_hypergeometric_cpp
 List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin, bool hit_and_run);
 RcppExport SEXP algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP) {
