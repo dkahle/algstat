@@ -92,8 +92,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // metropolis_uniform_cpp
-List metropolis_uniform_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
-RcppExport SEXP algstat_metropolis_uniform_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+List metropolis_uniform_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin, bool hit_and_run);
+RcppExport SEXP algstat_metropolis_uniform_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -101,7 +101,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
-    rcpp_result_gen = Rcpp::wrap(metropolis_uniform_cpp(current, moves, iter, thin));
+    Rcpp::traits::input_parameter< bool >::type hit_and_run(hit_and_runSEXP);
+    rcpp_result_gen = Rcpp::wrap(metropolis_uniform_cpp(current, moves, iter, thin, hit_and_run));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -130,4 +131,23 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(walk(current, moves, iter, thin));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"algstat_computeCRsCpp", (DL_FUNC) &algstat_computeCRsCpp, 3},
+    {"algstat_computeG2sCpp", (DL_FUNC) &algstat_computeG2sCpp, 2},
+    {"algstat_computeNMsCpp", (DL_FUNC) &algstat_computeNMsCpp, 2},
+    {"algstat_computeUProbsCpp", (DL_FUNC) &algstat_computeUProbsCpp, 1},
+    {"algstat_computeX2sCpp", (DL_FUNC) &algstat_computeX2sCpp, 2},
+    {"algstat_isinfinite", (DL_FUNC) &algstat_isinfinite, 1},
+    {"algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &algstat_metropolis_hypergeometric_cpp, 5},
+    {"algstat_metropolis_uniform_cpp", (DL_FUNC) &algstat_metropolis_uniform_cpp, 5},
+    {"algstat_rfiberOne", (DL_FUNC) &algstat_rfiberOne, 2},
+    {"algstat_walk", (DL_FUNC) &algstat_walk, 4},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_algstat(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

@@ -1,6 +1,10 @@
 #include <Rcpp.h>
+#include <random>
+#include <iostream>
 #include "isinfinite.h"
 using namespace Rcpp;
+
+// [[Rcpp::plugins("cpp11")]]
 
 // [[Rcpp::export]]
 
@@ -25,54 +29,67 @@ List metropolis_hypergeometric_cpp(
   IntegerVector move(n);
   double acceptProb = 0;
   NumericVector stepSize_1(n);
-  NumericVector stepSize;
   NumericVector current_num(n);
   NumericVector move_num(n);
-  NumericVector upperBound;
-  NumericVector lowerBound;
+  NumericVector s(nMoves);
+  for(int i = 0; i < nMoves; ++i){
+    int num = 0;
+    for(int j = 0; j < n;++j){
+      if(moves(i,j) != 0){
+        ++num;
+      }
+    }
+    s[i] = num;
+  }
+  int ss = min(s);
+  NumericVector stepSize(ss);
+  NumericVector upperBound(ss);
+  NumericVector lowerBound(ss);
   double lb;
   double ub;
-  IntegerVector run(1);
+  int run;
 
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
   Function runif("runif");
   unifs = runif(nTotalSamples);
   Function print("print");
-  Function subset("subset");
   
-  
-
   for(int i = 0; i < iter; ++i){
     for(int j = 0; j < thin; ++j){
-
+      
       // make move
       for(int k = 0; k < n; ++k){
         move[k] = moves(k, whichMove[thin*i+j]-1);
       }
-      // If hit_and_run is true, choose how far to run
       if(hit_and_run == TRUE){
         current_num = as<NumericVector>(current);
         move_num = as<NumericVector>(move);
-        for(int l = 0; l < n; ++l){
-         stepSize_1[l] = -1 * current_num[l] / move_num[l];
+        for(int i = 0; i < n; ++i){
+          stepSize_1[i] = -1 * current_num[i] / move_num[i];
         }
-        stepSize = subset(stepSize_1, isinfinite(stepSize_1) == FALSE);
-        lowerBound = subset(stepSize, stepSize < 0);
-        upperBound = subset(stepSize, stepSize > 0);
+        stepSize = stepSize_1[isinfinite(stepSize_1) == FALSE];
+        lowerBound = stepSize[stepSize < 0];
+        upperBound = stepSize[stepSize > 0];
         lb = max(lowerBound);
         ub = min(upperBound);
-        run = sample(seq(lb,ub),1);
-        if(run[1] == 0){
-          run[1] = 1;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dis(lb,ub);
+        run = dis(gen);
+        if(run == 0){
+          run = 1;
         }
       }
-
-      // compute proposal
-      for(int k = 0; k < n; ++k){
-        proposal[k] = current[k] + as<int>(run) * move[k];
+      if(hit_and_run == TRUE){
+        for(int k = 0; k < n; ++k){
+          proposal[k] = current[k] + run * move[k];
+        }
+      }else{
+        for(int k = 0; k < n; ++k){
+          proposal[k] = current[k] + move[k];
+        }
       }
-
       // compute probability of transition
       anyIsNegative = false;
       for(int k = 0; k < n; ++k){
