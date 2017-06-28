@@ -5,10 +5,12 @@
 \alias{rawMetropolis}
 \title{The Metropolis Algorithm}
 \usage{
-metropolis(init, moves, iter = 1000, burn = 0, thin = 1,
-  dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"))
+metropolis(init, moves, suff_stats, config, iter = 1000, burn = 0,
+  thin = 1, dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"),
+  hit_and_run = FALSE, SIS = FALSE)
 
-rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric")
+rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric",
+  hit_and_run = FALSE)
 }
 \arguments{
 \item{init}{the initial step}
@@ -26,6 +28,9 @@ they are arranged as the columns of a matrix.}
 or "uniform"}
 
 \item{engine}{C++ or R? (C++ yields roughly a 20-25x speedup)}
+
+\item{hit_and_run}{Whether or not to use the hit and run algorithm in
+the metropolis algorithm}
 }
 \value{
 a list

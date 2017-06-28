@@ -145,9 +145,9 @@
 #' }
 #' 
 #' 
-metropolis <- function(init, moves, iter = 1E3, burn = 0, thin = 1,
+metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, thin = 1,
                        dist = c("hypergeometric","uniform"), engine = c("Cpp","R"), 
-                       hit_and_run = FALSE
+                       hit_and_run = FALSE, SIS = FALSE
 ){
   
   ## preliminary checking
@@ -179,13 +179,24 @@ metropolis <- function(init, moves, iter = 1E3, burn = 0, thin = 1,
         
         if(hit_and_run)
         {
-          move <- moves[,sample(nMoves,1)]
+          move <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
           w_move <- move[move != 0]
           w_current <- current[move != 0]
           w_moves <- -1 * w_current / w_move
           lower_bound <- if(any(w_moves < 0)){max(subset(w_moves,subset = w_moves < 0))}else{1}
           upper_bound <- if(any(w_moves > 0)){min(subset(w_moves,subset = w_moves > 0))}else{-1}
-          c_s <- sample(c(lower_bound:-1,1:upper_bound),1)
+          w_propStatelow <- current + lower_bound * move
+          w_propStateup <-  current + upper_bound * move
+          if(any(w_propStatelow < 0)){
+            lower_bound <- 1
+          }
+          if(any(w_propStateup < 0)){
+            upper_bound <- -1
+          }
+          c_s <- sample(lower_bound:upper_bound,1)
+          if(c_s == 0){
+            c_s <- 1
+          }
           propState <- current + c_s * move
         }else{
           move      <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
@@ -219,13 +230,24 @@ metropolis <- function(init, moves, iter = 1E3, burn = 0, thin = 1,
         
         if(hit_and_run)
         {
-          move <- c(moves[,sample(nMoves,1)])
+          move <- moves[,sample(nMoves,1)]
           w_move <- move[move != 0]
           w_current <- current[move != 0]
           w_moves <- (-1 * w_current) / w_move
           lower_bound <- if(any(w_moves < 0)){max(subset(w_moves,subset = w_moves < 0))}else{1}
           upper_bound <- if(any(w_moves > 0)){min(subset(w_moves,subset = w_moves > 0))}else{-1} 
-          c_s <- sample(c(lower_bound:-1,1:upper_bound),1)
+          w_propStatelow <- current + lower_bound * move
+          w_propStateup <-  current + upper_bound * move
+          if(any(w_propStatelow < 0)){
+            lower_bound <- 1
+          }
+          if(any(w_propStateup < 0)){
+            upper_bound <- -1
+          }
+          c_s <- sample(lower_bound:upper_bound,1)
+          if(c_s == 0){
+            c_s <- 1
+          }
           propState <- current + c_s * move
         }else{
           move      <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
@@ -276,8 +298,8 @@ metropolis <- function(init, moves, iter = 1E3, burn = 0, thin = 1,
       metropolis_uniform_cpp
     }
     message("Running chain (C++)... ", appendLF = FALSE)  
-    if (burn > 0) current <- sampler(current, allMoves, burn, 1, hit_and_run)$steps[,burn]
-    out       <- sampler(current, allMoves, iter, thin, hit_and_run)
+    if (burn > 0) current <- sampler(current, allMoves, suff_stats, config, burn, 1, hit_and_run, SIS)$steps[,burn]
+    out       <- sampler(current, allMoves, suff_stats, config, iter, thin, hit_and_run, SIS)
     out$moves <- moves
     message("done.")
     
