@@ -66,8 +66,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // metropolis_hypergeometric_cpp
-List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, IntegerVector suff_stats, IntegerMatrix config, int iter, int thin, bool hit_and_run, bool SIS);
-RcppExport SEXP algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP suff_statsSEXP, SEXP configSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP, SEXP SISSEXP) {
+List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, IntegerVector suff_stats, IntegerMatrix config, int iter, int thin, bool hit_and_run, bool SIS, bool non_uniform);
+RcppExport SEXP algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP suff_statsSEXP, SEXP configSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP, SEXP SISSEXP, SEXP non_uniformSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,7 +79,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
     Rcpp::traits::input_parameter< bool >::type hit_and_run(hit_and_runSEXP);
     Rcpp::traits::input_parameter< bool >::type SIS(SISSEXP);
-    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS));
+    Rcpp::traits::input_parameter< bool >::type non_uniform(non_uniformSEXP);
+    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -143,7 +144,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"algstat_computeNMsCpp", (DL_FUNC) &algstat_computeNMsCpp, 2},
     {"algstat_computeUProbsCpp", (DL_FUNC) &algstat_computeUProbsCpp, 1},
     {"algstat_computeX2sCpp", (DL_FUNC) &algstat_computeX2sCpp, 2},
-    {"algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &algstat_metropolis_hypergeometric_cpp, 8},
+    {"algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &algstat_metropolis_hypergeometric_cpp, 9},
     {"algstat_metropolis_uniform_cpp", (DL_FUNC) &algstat_metropolis_uniform_cpp, 5},
     {"algstat_rfiberOne", (DL_FUNC) &algstat_rfiberOne, 2},
     {"algstat_sis_tbl", (DL_FUNC) &algstat_sis_tbl, 2},

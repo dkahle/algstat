@@ -147,7 +147,7 @@
 #' 
 metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, thin = 1,
                        dist = c("hypergeometric","uniform"), engine = c("Cpp","R"), 
-                       hit_and_run = FALSE, SIS = FALSE
+                       hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE
 ){
   
   ## preliminary checking
@@ -166,17 +166,26 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
     
     nMoves <- ncol(moves)
     state  <- matrix(nrow = nrow(moves), ncol = iter)
-    
     ## run burn-in
     
     current <- unname(init)
-    unifs <- runif(burn)
+    train_current <- unname(init)
     
     message("Running chain (R)... ", appendLF = FALSE)
+   
+    #Setting up non-uniform move sampling framework
+    if(non_uniform == TRUE){
+      move_dist <- rep(1,nMoves)
+      counter <- nMoves
+    }
     
+    unifs <- runif(burn)
+    if(non_uniform == TRUE){
+       move_prob <- runif(burn)
+    }
     if(burn > 0) {
       for(k in 1:burn){
-        
+        #Hit and Run option
         if(hit_and_run)
         {
           move <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
@@ -198,11 +207,29 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
             c_s <- 1
           }
           propState <- current + c_s * move
-        }else{
+        }
+        
+        #Non-uniform move sampling option
+        if(non_uniform == TRUE)
+        {
+          
+          for(l in 1:nMoves){
+            if(move_prob[k] <= sum(move_dist[1:l])/counter){
+              move <- moves[,l]
+              which_move <- l
+            }
+          }
+          move <- sample(c(-1,1), 1) * move
+          propState <- current + move
+        }
+        
+        else{
           move      <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
           propState <- current + move
         }
-        if(any(propState < 0)){
+       
+        
+         if(any(propState < 0)){
           prob <- 0
         } else {
           if(dist == "hypergeometric"){
@@ -212,7 +239,15 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           }
         }
         
-        if(unifs[k] < prob) current <- propState # else current
+        if(non_uniform == TRUE){
+          if(unifs[k] < prob){
+            current  <- propState
+            move_dist[which_move] <- move_dist[which_move] + 1
+            counter <- counter + 1
+          }
+        }else{
+          if(unifs[k] < prob) current <- propState # else current
+        }
         
       }
       state[,1] <- current
@@ -222,7 +257,7 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
     
     totalRuns <- 0
     probTotal <- 0
-    unifs <- runif(iter*thin)  
+    unifs <- runif(iter*thin)
     
     for(k in 2:iter){
       
@@ -249,7 +284,21 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
             c_s <- 1
           }
           propState <- current + c_s * move
-        }else{
+        }
+        if(non_uniform == TRUE)
+        {
+          move_prob <- runif(1)
+          for(l in 1:nMoves){
+            if(move_prob <= sum(move_dist[1:l])/counter){
+              move <- moves[,l]
+              which_move <- l
+              break()
+            }
+          }
+          move <- sample(c(-1,1), 1) * move
+          propState <- current + move
+        }
+        else{
           move      <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
           propState <- current + move
         }
@@ -265,7 +314,15 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
         }
         probTotal <- probTotal + min(1, prob)
         
-        if(unifs[k*(thin-1)+j] < prob) current <- propState # else current
+        if(non_uniform == TRUE){
+          if(unifs[k*(thin-1)+j] < prob){
+            current  <- propState
+            move_dist[which_move] <- move_dist[which_move] + 1
+            counter <- counter + 1
+          }
+        }else{
+          if(unifs[k*(thin-1)+j] < prob) current <- propState # else current
+        }
         
         totalRuns <- totalRuns + 1        
       }
@@ -273,7 +330,6 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
       state[,k] <- current    
     }
     message("done.")  
-    
     ## format output
     out <- list(
       steps = state, 
@@ -298,8 +354,8 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
       metropolis_uniform_cpp
     }
     message("Running chain (C++)... ", appendLF = FALSE)  
-    if (burn > 0) current <- sampler(current, allMoves, suff_stats, config, burn, 1, hit_and_run, SIS)$steps[,burn]
-    out       <- sampler(current, allMoves, suff_stats, config, iter, thin, hit_and_run, SIS)
+    if (burn > 0) current <- sampler(current, allMoves, suff_stats, config, burn, 1, hit_and_run, SIS, non_uniform)$steps[,burn]
+    out       <- sampler(current, allMoves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform)
     out$moves <- moves
     message("done.")
     

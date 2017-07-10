@@ -11,51 +11,55 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
   IntegerVector tbl(n1);
   NumericMatrix constr(n+n1, n1+2);
   NumericVector objfun(n1+1);
-  IntegerVector maxs(n1);
+  int p = 0;
+  Function print("print");
+  IntegerMatrix work;
+  IntegerVector work2;
+  int min, max;
+  
   while(w < 1){
-  IntegerMatrix work = A;
-  IntegerVector work2 = suff_stats;
-  int min;
-  int max;
-  LogicalVector first(1);
-  first[0] = true;
-  LogicalVector second(1);
-  second[0] = false;
-  CharacterVector solver(1);
-  solver = "DualSimplex";
-  bool isAnyNegative = false;
-  bool lpsolved = true;
-    for(int i = 0; i<n1;++i){
-      for(int j = 0; j <  n1+1; ++j){
-        if(j == i+1){
-          objfun[j] = -1;
-        }else{
-          objfun[j] = 0;
+    work = clone(A);
+    work2 = clone(suff_stats);
+    LogicalVector first(1);
+    first[0] = true;
+    LogicalVector second(1);
+    second[0] = false;
+    CharacterVector solver(1);
+    solver = "DualSimplex";
+    bool isAnyNegative = false;
+    bool lpsolved = true;
+      for(int i = 0; i<n1;++i){
+        for(int j = 0; j <  n1+1; ++j){
+         if(j == i+1){
+            objfun[j] = -1;
+         }else{
+           objfun[j] = 0;
         }
       }
-      int z = 2;
-      for(int k = 0; k < n+n1 ; ++k){
-        for(int l = 0; l < n1 + 2; ++l){
-          if(k < n && l == 0){
-            constr(k,l) = 1;
-          }if(k < n && l == 1){
-            constr(k,l) = work2[k];
-          }
-          for(int m = 2; m < n1 +2; ++m){
-            if(k < n && l == m){
-              constr(k,l) = work(k,m-2);
-            }
-          }if(k >= n && l == 0){
-            constr(k,l) = 0;
-          }if(k >= n && l == 1){
-            constr(k,l) = 0;
-          }
-          for(int m = 2; m < n1 + 2; ++m){
-            if(k >= n && l == m){
-              if(z == m){
-                constr(k,l) = -1;
-              }else{
-                constr(k,l) = 0;
+        int z = 2;
+        for(int k = 0; k < n+n1 ; ++k){
+         for(int l = 0; l < n1 + 2; ++l){
+            if(k < n && l == 0) constr(k,l) = 1;
+            
+            if(k < n && l == 1) constr(k,l) = work2[k];
+  
+           for(int m = 2; m < n1 +2; ++m){
+              
+              if(k < n && l == m) constr(k,l) = work(k,m-2);
+  
+             }
+           if(k >= n && l == 0){
+               constr(k,l) = 0;
+             }
+           if(k >= n && l == 1){
+               constr(k,l) = 0;
+              }
+            for(int m = 2; m < n1 + 2; ++m){
+              if(k >= n && l == m){
+               if(z == m){
+                  constr(k,l) = -1;
+                }else{
+                 constr(k,l) = 0;
               }
             }
           }
@@ -83,13 +87,9 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
         lpsolved = false;
         break;
       }
-        if(min == max){
-          tbl[i] = min;
-        } else {
           IntegerVector range = seq(min,max);
           IntegerVector value = sample(range,1);
           tbl[i] = Rcpp::as<int>(value);
-        }
       // Update constraints(work and work2)
       IntegerVector index;
       int y = 0;
@@ -118,16 +118,15 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
     if(isAnyNegative == false && lpsolved == true){
       ++w;
     }
+    print(tbl);
+    ++p;
+    if(p > 2){
+      break;
+    }
   }
   return tbl;
 }
 
 
 
-/*** R
-tbl <- c(50, 54, 56, 43, 59, 32, 54, 45, 82)
-#Configuration matrix of a 3 by 3 matrix
-  A <- hmat(c(3,3),1:2)
-  suff_stats <- A %*% t(t(tbl))
-  sis_tbl(A, suff_stats)
-*/
+
