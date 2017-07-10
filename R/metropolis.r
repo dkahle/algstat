@@ -303,6 +303,12 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           propState <- current + move
         }
         
+        if(SIS == TRUE){
+          if(runif(1) <= .05){
+            propState <- sis_table(config, suff_stats)
+          }
+        }
+        
         if(any(propState < 0)){
           prob <- 0
         } else {

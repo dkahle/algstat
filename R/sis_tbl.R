@@ -18,8 +18,8 @@ sis_table <- function(config_mat, suff_statistics){
     max_lp <- lpcdd(constr, objfun, minimize = FALSE)
     
     if(min_lp[1] == "Optimal" && max_lp[1] == "Optimal"){
-      print(minimum <- as.numeric(unname(min_lp[4])))
-      print(maximum <- as.numeric(unname(max_lp[4])))
+      minimum <- as.numeric(unname(min_lp[4]))
+      maximum <- as.numeric(unname(max_lp[4]))
       tbl[i] <- if(isTRUE(all.equal(minimum, maximum))){minimum}
       else{sample(minimum:maximum, 1)}
     } else { tbl[i] <- 0 }

@@ -118,7 +118,6 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
     if(isAnyNegative == false && lpsolved == true){
       ++w;
     }
-    print(tbl);
     ++p;
     if(p > 2){
       break;
