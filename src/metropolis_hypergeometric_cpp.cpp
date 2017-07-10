@@ -41,7 +41,6 @@ List metropolis_hypergeometric_cpp(
   unifs = runif(nTotalSamples);
   unifs2 = runif(nTotalSamples);
   unifs3 = runif(nTotalSamples);
-  unifs3[0] = .999;
   Function print("print");
   
 
