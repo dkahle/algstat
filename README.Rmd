@@ -178,6 +178,17 @@ polySolve(c("y = x^2", "y = 2 - x^2"), varOrder = c("x", "y"))
 
 
 
+
+
+# Acknowledgements
+
+This material is based upon work supported by the National Science Foundation under Grant Nos. [1622449](https://nsf.gov/awardsearch/showAward?AWD_ID=1622449) and [1622369](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1622369).
+
+
+
+
+
+
 # Installation
 
 ## Installing algstat

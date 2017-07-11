@@ -67,12 +67,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #       Distance   Stat     SE p.value     SE mid.p.value
-#        P(samp)                0.3644 0.0048      0.2172
-#    Pearson X^2 1.8182 0.0145  0.3644 0.0048      0.2172
-# Likelihood G^2 1.848  0.0154  0.3644 0.0048      0.2172
-#  Freeman-Tukey 1.8749 0.0163  0.3644 0.0048      0.2172
-#   Cressie-Read 1.8247 0.0147  0.3644 0.0048      0.2172
-#     Neyman X^2 2.0089 0.0229  0.3644 0.0048      0.2909
+#        P(samp)                0.3715 0.0048      0.2204
+#    Pearson X^2 1.8182 0.0145  0.3715 0.0048      0.2204
+# Likelihood G^2 1.848  0.0154  0.3715 0.0048      0.2204
+#  Freeman-Tukey 1.8749 0.0165  0.3715 0.0048      0.2204
+#   Cressie-Read 1.8247 0.0147  0.3715 0.0048      0.2204
+#     Neyman X^2 2.0089 0.0227  0.3715 0.0048      0.2972
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model. Consequently, the p-values estimated are only determined up to Monte Carlo error. The standard p-value is given under the column `p.value` in the row labeled `P(samp)`.
@@ -163,12 +163,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #       Distance   Stat     SE p.value     SE mid.p.value
-#        P(samp)                0.7947 0.004       0.7944
-#    Pearson X^2 5.9655 0.0392  0.7835 0.0041      0.7835
-# Likelihood G^2 6.7641 0.0426  0.7847 0.0041      0.7847
-#  Freeman-Tukey 8.6189 0.0586  0.7834 0.0041      0.7834
-#   Cressie-Read 6.0752 0.0388  0.7852 0.0041      0.7852
-#     Neyman X^2 6.2442 0.0479  0.6113 0.0049      0.6113
+#        P(samp)                0.7706 0.0042      0.7701
+#    Pearson X^2 5.9655 0.0407  0.7602 0.0043      0.7602
+# Likelihood G^2 6.7641 0.0437  0.7639 0.0042      0.7639
+#  Freeman-Tukey 8.6189 0.0597  0.7645 0.0042      0.7645
+#   Cressie-Read 6.0752 0.0401  0.7616 0.0043      0.7616
+#     Neyman X^2 6.2442 0.0472  0.5821 0.0049      0.5821
 ```
 
 The asymptotic test can be performed as well. The chi-square approximation is actually very good here:
@@ -211,12 +211,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #       Distance   Stat     SE p.value     SE mid.p.value
-#        P(samp)                 0.603 0.0049      0.4662
-#    Pearson X^2 0.5279 0.0144   0.603 0.0049      0.4662
-# Likelihood G^2 0.4845 0.0154   0.603 0.0049      0.4662
-#  Freeman-Tukey 0.4672 0.0242   0.603 0.0049      0.4662
-#   Cressie-Read 0.512  0.0139   0.603 0.0049      0.4662
-#     Neyman X^2 0.4294 0.0137   0.603 0.0049      0.4662
+#        P(samp)                0.5969 0.0049      0.4606
+#    Pearson X^2 0.5279 0.0142  0.5969 0.0049      0.4606
+# Likelihood G^2 0.4845 0.0153  0.5969 0.0049      0.4606
+#  Freeman-Tukey 0.4672 0.0242  0.5969 0.0049      0.4606
+#   Cressie-Read 0.512  0.0137  0.5969 0.0049      0.4606
+#     Neyman X^2 0.4294 0.0132  0.5969 0.0049      0.4606
 ```
 
 Note that here we've used the more concise syntax of facet specification; if you want to understand the model specification better, read the documentation in `?loglinear`. You can perform the asymptotic test with `loglm()` like this:
@@ -299,6 +299,11 @@ polySolve(c("y = x^2", "y = 2 - x^2"), varOrder = c("x", "y"))
 #     (-1,1) (R)
 #     ( 1,1) (R)
 ```
+
+Acknowledgements
+================
+
+This material is based upon work supported by the National Science Foundation under Grant Nos. [1622449](https://nsf.gov/awardsearch/showAward?AWD_ID=1622449) and [1622369](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1622369).
 
 Installation
 ============
