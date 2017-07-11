@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-
+#include "sis_tbl.h"
 using namespace Rcpp;
 
 // [[Rcpp::export]]
