@@ -2,14 +2,14 @@
 algstat
 =======
 
-**algstat** is a collection of tools to help do algebraic statistics in R. Many (but not all) of the tools make use of back-end connections to software used in various math communities, such as [Macaulay2](http://www.math.uiuc.edu/Macaulay2/) (for algebraic computations), [Bertini](https://bertini.nd.edu) (for solving systems of polynomial equations), and [LattE](https://www.math.ucdavis.edu/~latte/) with [4ti2](http://www.4ti2.de) (for lattice problems and, in particular, the computation of Markov bases).
+**algstat** is a collection of tools to help you use algebraic statistical methods in R. It is intended to be an end user package for that purpose, and consequently depends on other packages that make connections to math software to do key computations. Currently, [the **latter** package](https://github.com/dkahle/latter.git) is used to connect R to [LattE](https://www.math.ucdavis.edu/~latte/) with [4ti2](http://www.4ti2.de) for lattice problems and the computation of Markov bases, and [the **m2r** package](https://github.com/coneill-math/m2r.git) connects R to [Macaulay2](http://www.math.uiuc.edu/Macaulay2/) for algebraic computations. In the future, **bertini** will connect R to [Bertini](https://bertini.nd.edu), which is used to numerically solve systems of polynomial equations. **m2r** can be used for that purpose to some extent currently by using Macaulay2's connection to [PHCPack](http://homepages.math.uic.edu/~jan/download.html), so be sure to look there for now if that's what you're trying to do.
 
-This brief intro is currently under construction.
+If you have something you're wanting implemented here, please file an issue!
 
 Exact inference with log-linear models
 ======================================
 
-*Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and algstat has registered them.*
+*Note: this section assumes you have [**latter**](https://github.com/dkahle/latter.git) installed and working on your machine.*
 
 One of the most well-developed parts of the package allows users to perform (conditional) exact tests for log-linear models. There are several great references on the math behind this, such as [Diaconis and Sturmfels' original paper](http://projecteuclid.org/euclid.aos/1030563990), the [Lectures on Algebraic Statistics](http://smile.amazon.com/Lectures-Algebraic-Statistics-Oberwolfach-Seminars/dp/3764389044/ref=sr_1_1?ie=UTF8&qid=1430536908&sr=8-1&keywords=lectures+on+algebraic+statistics), and [Markov Bases in Algebraic Statistics](http://smile.amazon.com/Markov-Bases-Algebraic-Statistics-Springer/dp/1461437180/ref=sr_1_fkmr0_1?ie=UTF8&qid=1430536933&sr=8-1-fkmr0&keywords=aoki%2C+hada%2C+and+takemura), so we'll keep the technical discussion to a minimum.
 
@@ -32,7 +32,11 @@ politics
 # Personality Democrat Republican
 #   Introvert        3          7
 #   Extrovert        6          4
+```
 
+Here's how you typically do Fisher's exact test in R:
+
+``` r
 fisher.test(politics)
 # 
 #   Fisher's Exact Test for Count Data
@@ -47,14 +51,12 @@ fisher.test(politics)
 #   0.305415
 ```
 
-Since the independence model is log-linear, this exact same procedure can be done with **algstat**. The go-to function here is `loglinear()` (formerly `hierarchical()`):
+Since the independence model is log-linear, this exact same procedure can be done with **algstat**. The go-to function here is `loglinear()`:
 
 ``` r
 loglinear(~ Personality + Party, data = politics)
-# Computing Markov moves (4ti2)...
-# done.
-# Running chain (C++)...
-# done.
+# Computing Markov moves (4ti2)... done.
+# Running chain (C++)... done.
 # Call:
 # loglinear(model = ~Personality + Party, data = politics)
 # 
@@ -65,15 +67,17 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #       Distance   Stat     SE p.value     SE mid.p.value
-#        P(samp)                0.3689 0.0048      0.22  
-#    Pearson X^2 1.8182 0.0148  0.3689 0.0048      0.22  
-# Likelihood G^2 1.848  0.0158  0.3689 0.0048      0.22  
-#  Freeman-Tukey 1.8749 0.0169  0.3689 0.0048      0.22  
-#   Cressie-Read 1.8247 0.015   0.3689 0.0048      0.22  
-#     Neyman X^2 2.0089 0.0237  0.3689 0.0048      0.2932
+#        P(samp)                0.3644 0.0048      0.2172
+#    Pearson X^2 1.8182 0.0145  0.3644 0.0048      0.2172
+# Likelihood G^2 1.848  0.0154  0.3644 0.0048      0.2172
+#  Freeman-Tukey 1.8749 0.0163  0.3644 0.0048      0.2172
+#   Cressie-Read 1.8247 0.0147  0.3644 0.0048      0.2172
+#     Neyman X^2 2.0089 0.0229  0.3644 0.0048      0.2909
 ```
 
-Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model. Consequently, the p-values estimated are only determined up to Monte Carlo error. The standard p-value is given under the column `p.value` in the row labeled `P(samp)`. The analogous asymptotic test can be done in either of two ways.
+Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model. Consequently, the p-values estimated are only determined up to Monte Carlo error. The standard p-value is given under the column `p.value` in the row labeled `P(samp)`.
+
+The asymptotic test of independence analogous to Fisher's exact test (which does not condition on the marginals being known) can be done in either of two ways.
 
 The first way uses the `loglin()` function from the **stats** package. It outputs the likelihood ratio statistic (`Likelihood G^2` in the output above) and Pearson's chi-squared statistic (`Pearson X^2` above), but you have to calculate the p-value yourself.
 
@@ -142,15 +146,13 @@ fisher.test(Job)
 # alternative hypothesis: two.sided
 ```
 
-And the **algstat** counterpart:
+Here's the **algstat** counterpart:
 
 ``` r
 loglinear(~ income + satisfaction, data = Job)
 # Care ought be taken with tables with sampling zeros to ensure the MLE exists.
-# Computing Markov moves (4ti2)...
-# done.
-# Running chain (C++)...
-# done.
+# Computing Markov moves (4ti2)... done.
+# Running chain (C++)... done.
 # Call:
 # loglinear(model = ~income + satisfaction, data = Job)
 # 
@@ -161,15 +163,15 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #       Distance   Stat     SE p.value     SE mid.p.value
-#        P(samp)                0.7704 0.0042      0.7701
-#    Pearson X^2 5.9655 0.0398  0.7576 0.0043      0.7576
-# Likelihood G^2 6.7641 0.0426  0.763  0.0043      0.763 
-#  Freeman-Tukey 8.6189 0.0579  0.7634 0.0042      0.7634
-#   Cressie-Read 6.0752 0.0393  0.7589 0.0043      0.7589
-#     Neyman X^2 6.2442 0.0484  0.5882 0.0049      0.5882
+#        P(samp)                0.7947 0.004       0.7944
+#    Pearson X^2 5.9655 0.0392  0.7835 0.0041      0.7835
+# Likelihood G^2 6.7641 0.0426  0.7847 0.0041      0.7847
+#  Freeman-Tukey 8.6189 0.0586  0.7834 0.0041      0.7834
+#   Cressie-Read 6.0752 0.0388  0.7852 0.0041      0.7852
+#     Neyman X^2 6.2442 0.0479  0.6113 0.0049      0.6113
 ```
 
-Note that the asymptotic test can be performed as well. The chi-square approximation is actually very good here:
+The asymptotic test can be performed as well. The chi-square approximation is actually very good here:
 
 ``` r
 MASS::loglm(~ income + satisfaction, data = Job)
@@ -184,7 +186,7 @@ MASS::loglm(~ income + satisfaction, data = Job)
 
 ### Fisher's exact test on multi-way tables
 
-`fisher.test()` does not generalize to multi-way tables and is prone to crashing even in large-celled two-way tables (see `?loglinear` for an example). Thus, the only way to do exact inference in multi-way tables (in general and in R) is to use an algebraic method. We'll illustrate this using the drugs dataset from `loglinear()`'s documentation, taken from Agresti (2002, p.322), on which we'll test the no-three-way interaction model:
+`fisher.test()` does not work with multi-way tables and is prone to crashing even in large-celled two-way tables (see `?loglinear` for an example). Thus, the only way to do exact inference in multi-way tables is to use `loglinear()`. We'll illustrate this using the drugs dataset from `loglinear()`'s documentation, taken from Agresti (2002, p.322), on which we'll test the no-three-way interaction model:
 
 ``` r
 data(drugs)
@@ -197,10 +199,8 @@ ftable(drugs)
 #           No                456 279
 
 loglinear(subsets(1:3, 2), data = drugs)
-# Computing Markov moves (4ti2)...
-# done.
-# Running chain (C++)...
-# done.
+# Computing Markov moves (4ti2)... done.
+# Running chain (C++)... done.
 # Call:
 # loglinear(model = subsets(1:3, 2), data = drugs)
 # 
@@ -211,15 +211,15 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #       Distance   Stat     SE p.value     SE mid.p.value
-#        P(samp)                0.5988 0.0049      0.4576
-#    Pearson X^2 0.5279 0.0137  0.5988 0.0049      0.4576
-# Likelihood G^2 0.4845 0.0149  0.5988 0.0049      0.4576
-#  Freeman-Tukey 0.4672 0.0235  0.5988 0.0049      0.4576
-#   Cressie-Read 0.512  0.0133  0.5988 0.0049      0.4576
-#     Neyman X^2 0.4294 0.0131  0.5988 0.0049      0.4576
+#        P(samp)                 0.603 0.0049      0.4662
+#    Pearson X^2 0.5279 0.0144   0.603 0.0049      0.4662
+# Likelihood G^2 0.4845 0.0154   0.603 0.0049      0.4662
+#  Freeman-Tukey 0.4672 0.0242   0.603 0.0049      0.4662
+#   Cressie-Read 0.512  0.0139   0.603 0.0049      0.4662
+#     Neyman X^2 0.4294 0.0137   0.603 0.0049      0.4662
 ```
 
-Note that here we've used the more concise syntax of facet specification. Doing the same with `loglm()` looks like this:
+Note that here we've used the more concise syntax of facet specification; if you want to understand the model specification better, read the documentation in `?loglinear`. You can perform the asymptotic test with `loglm()` like this:
 
 ``` r
 MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
@@ -235,7 +235,7 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 Statistical applications of LattE
 =================================
 
-*Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and latter has registered it.*
+*Note: this section assumes you have [**latter**](https://github.com/dkahle/latter.git) installed and working on your machine.*
 
 Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in **latter**, which is imported by **algstat**. Checkout the readme for **latter** [here](https://github.com/dkahle/latter).
 
@@ -287,7 +287,7 @@ bertini(code)
 Even better, **algstat** can team up with [**mpoly**](http://github.com/dkahle/mpoly) (working under the hood) to solve systems of polynomial equations using `polySolve()`:
 
 ``` r
-curve(x^2, from = -2, to = 2, )
+curve(x^2, from = -2, to = 2)
 curve(2 - x^2, from = -2, to = 2, add = TRUE)
 ```
 
@@ -306,15 +306,18 @@ Installation
 Installing algstat
 ------------------
 
--   From CRAN: `install.packages("algstat")` (this is not up-to-date)
+There are currently two ways to get **algstat**. Here's the preferred way until we push a new release to CRAN:
 
--   From Github (dev version):
+-   From Github:
 
-    ``` r
-    # install.packages("devtools")
-    # install.packages("mpoly")
-    devtools::install_github("dkahle/algstat")
-    ```
+``` r
+if(!requireNamespace("devtools")) install.packages("devtools")
+install.packages(c("mpoly", "m2r"))
+devtools::install_github("dkahle/latter")
+devtools::install_github("dkahle/algstat")
+```
+
+-   From CRAN: `install.packages("algstat")` (don't get this now; it's currently out of date)
 
 Installing supporting software
 ------------------------------
