@@ -593,9 +593,10 @@ loglinear <- function(model, data,
                       init = tab2vec(data), 
                       iter = 1E4, burn = 1000, 
                       thin = 10, engine = c("Cpp","R"), 
-                      method = c("ipf", "mcmc"), moves,
+                      method = c("ipf", "mcmc"),moves,
                       hit_and_run = FALSE,
                       SIS = FALSE,
+                      non_uniform = FALSE,
                       ...)
 {
 
@@ -718,7 +719,8 @@ loglinear <- function(model, data,
   ##################################################  
   init <- unname(init) # init
   out <- metropolis(init, moves, suff_stats = suff_stats, config = unname(A), iter = iter, burn = burn, thin = thin, 
-                    engine = engine, hit_and_run = hit_and_run, SIS = SIS)  
+                    engine = engine, hit_and_run = hit_and_run, SIS = SIS, 
+                    non_uniform = non_uniform)  
 
 
 
