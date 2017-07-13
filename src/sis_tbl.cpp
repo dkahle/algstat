@@ -25,6 +25,8 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
   second[0] = false;
   CharacterVector solver(1);
   solver = "DualSimplex";
+  
+  
   // Theoretically, the loop will run until "correct" table is produced
   while(w < 1){
 
@@ -35,8 +37,8 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
     }
     for(int i = 0; i < suff_stats.size(); ++i) work_suff_stats[i] = suff_stats[i];
    
-   //Logical for checking purposes
-    bool lpsolved = true;
+   
+    bool lpsolved = true; //Logical for checking purposes
 
       for(int i = 0; i<r;++i){
         // creating the objective function
@@ -47,32 +49,26 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
         int z = 2;
         for(int k = 0; k < d+r ; ++k){
           for(int l = 0; l < r + 2; ++l){
-            //First column for equalities
-            if(k < d && l == 0) constr(k,l) = 1;
-            //Second column for sufficient statistics (rhs)
-            if(k < d && l == 1) constr(k,l) = work_suff_stats[k];
+           
+            if(k < d && l == 0) constr(k,l) = 1; //First column for equalities
+            
+            if(k < d && l == 1) constr(k,l) = work_suff_stats[k];//Second column for sufficient statistics (rhs)
+           
             //Rest of the columns for A matrix
             for(int m = 2; m < r +2; ++m){
               if(k < d && l == m) constr(k,l) = work_A(k,m-2);
              }
-            //First column for inequalities
-            if(k >= d && l == 0){
-                constr(k,l) = 0;
-              }
-            //Second column for right hand side
-            if(k >= d && l == 1){
-               constr(k,l) = 0;
-              }
+            
+            if(k >= d && l == 0) constr(k,l) = 0;//First column for inequalities
+        
+            if(k >= d && l == 1)constr(k,l) = 0;//Second column for right hand side
+    
             //Constructing coefficients for each cell to be positive
             for(int m = 2; m < r + 2; ++m){
-              if(k >= d && l == m){
-              constr(k,l) = (z == m) ? -1:0;
-            }
+              if(k >= d && l == m) constr(k,l) = (z == m) ? -1:0;
           }
         }
-        if(k >= d){
-          ++z;
-        }
+        if(k >= d) ++z;
       }
       //Running linear program solver to find range of possible values(min, max)
       SEXP out1 = lpcdd_f(constr, objfun, first, solver);
@@ -104,7 +100,8 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
       IntegerVector index;
       int y = 0;
       
-      
+      //Updating work_A by changing non-zero A elements to zero in the column
+      //Keep track of where non-zero elements were
       for(int o = 0; o < d; ++o){
         if(work_A(o,i) != 0){
           work_A(o,i) = 0;
@@ -112,6 +109,7 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
           ++y;
         }
       }
+      //Updating work_suff_stats where elements of work_A were changed
       int x = 0;
       for(int p = 0; p < d; ++p){
         if(p == index[x]){
@@ -121,14 +119,11 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
       }
     }
     // If all linear programs are solved, index w and end the loop
-    if(lpsolved == true){
-      ++w;
-    }
+    if(lpsolved == true) ++w;
+    
     // If error continues, only let it continue two times
     ++p;
-    if(p > 2){
-      break;
-    }
+    if(p > 2) break;
   }
   return tbl;
 }
