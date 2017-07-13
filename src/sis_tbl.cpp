@@ -131,8 +131,8 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
 
 /***R
 library(algstat)
-tbl <- rep(21,8)
-A <- matrix(c(rep(1,8), 1:8), nrow = 2, byrow = TRUE)
+tbl <- rep(50,8)
+A <- hmat(c(4,2), 1:2)
 suff_stats <- A %*% t(t(tbl))
 sis_tbl(A, suff_stats)
 */
