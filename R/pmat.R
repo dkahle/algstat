@@ -12,32 +12,17 @@
 #' @export pmat
 
 pmat <- function(levels, facets){
-  
-  #Basic Variables
-  num_covariates <- length(levels)
-  cov_index <- 1:num_covariates
-  num_elements <- prod(levels)
-  num_rows <- length(facets)
-  
-  #Base level combos 
-  varsNlvls <- lapply(as.list(levels), function(x) number2Glyph(1:x))
-  baseLvls  <- expand.grid(rev(varsNlvls))[,num_covariates:1]
-  
-  #Make initial matrix
-  A <- matrix(0L, nrow = num_rows, ncol = num_elements)
-  
-  for(i in 1:num_rows){
-    if(length(facets[[i]]) == 1){
 
-      A[i, ] <- baseLvls[,facets[[i]]]
-    }else{
-      inter_terms <- cov_index %in% facets[[i]]
-      sub_mat <- as.matrix(baseLvls[ ,inter_terms])
-      class(sub_mat) <- "numeric"
-      A[i,] <- apply(sub_mat, 1, prod)
-    }
+  levels <- levels[levels != 1]
+  num_covariates <- length(levels)
+  mat_list <- list()
+  
+  for(i in 1:num_covariates){
+    mat_list[[i]] <- matrix(c(rep(1,levels[i]), 1:levels[i]), nrow = 2, byrow = T)
   }
-  return(rbind(rep(1, num_elements), A))
+  
+  return(do.call(kprod, mat_list))
+
 }
 
-number2Glyph <- function(n) c(0:9, letters, LETTERS)[n+1]
+

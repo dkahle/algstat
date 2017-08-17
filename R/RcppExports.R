@@ -2,42 +2,42 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 computeCRsCpp <- function(x, exp, lambda) {
-    .Call('algstat_computeCRsCpp', PACKAGE = 'algstat', x, exp, lambda)
+    .Call('_algstat_computeCRsCpp', PACKAGE = 'algstat', x, exp, lambda)
 }
 
 computeG2sCpp <- function(x, exp) {
-    .Call('algstat_computeG2sCpp', PACKAGE = 'algstat', x, exp)
+    .Call('_algstat_computeG2sCpp', PACKAGE = 'algstat', x, exp)
 }
 
 computeNMsCpp <- function(x, exp) {
-    .Call('algstat_computeNMsCpp', PACKAGE = 'algstat', x, exp)
+    .Call('_algstat_computeNMsCpp', PACKAGE = 'algstat', x, exp)
 }
 
 computeUProbsCpp <- function(x) {
-    .Call('algstat_computeUProbsCpp', PACKAGE = 'algstat', x)
+    .Call('_algstat_computeUProbsCpp', PACKAGE = 'algstat', x)
 }
 
 computeX2sCpp <- function(x, exp) {
-    .Call('algstat_computeX2sCpp', PACKAGE = 'algstat', x, exp)
+    .Call('_algstat_computeX2sCpp', PACKAGE = 'algstat', x, exp)
 }
 
 metropolis_hypergeometric_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform) {
-    .Call('algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform)
+    .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform)
 }
 
-metropolis_uniform_cpp <- function(current, moves, iter, thin, hit_and_run) {
-    .Call('algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', current, moves, iter, thin, hit_and_run)
+metropolis_uniform_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform) {
+    .Call('_algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform)
 }
 
 rfiberOne <- function(A, b) {
-    .Call('algstat_rfiberOne', PACKAGE = 'algstat', A, b)
+    .Call('_algstat_rfiberOne', PACKAGE = 'algstat', A, b)
 }
 
 sis_tbl <- function(A, suff_stats) {
-    .Call('algstat_sis_tbl', PACKAGE = 'algstat', A, suff_stats)
+    .Call('_algstat_sis_tbl', PACKAGE = 'algstat', A, suff_stats)
 }
 
 walk <- function(current, moves, iter, thin) {
-    .Call('algstat_walk', PACKAGE = 'algstat', current, moves, iter, thin)
+    .Call('_algstat_walk', PACKAGE = 'algstat', current, moves, iter, thin)
 }
 

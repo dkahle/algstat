@@ -92,6 +92,8 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
         break;
       }
       //Calculate the range and sample from that range to populate the table
+          if(min == max - 1) min = max;
+          
           IntegerVector range = seq(min,max);
           IntegerVector value = sample(range,1);
           tbl[i] = Rcpp::as<int>(value);
@@ -127,13 +129,4 @@ IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats) {
   }
   return tbl;
 }
-
-
-/***R
-library(algstat)
-tbl <- rep(50,8)
-A <- hmat(c(4,2), 1:2)
-suff_stats <- A %*% t(t(tbl))
-sis_tbl(A, suff_stats)
-*/
 

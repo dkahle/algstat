@@ -35,6 +35,7 @@ List metropolis_uniform_cpp(
   int ub;
   IntegerVector run;
   
+  Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
   Function runif("runif");
   unifs = runif(nTotalSamples);
@@ -76,26 +77,38 @@ List metropolis_uniform_cpp(
         }
         if(hit_and_run == true){
           current_num = current[move != 0];
+          
           move_num = move[move != 0];
+          
           stepSize = (-1 * current_num) / move_num;
+
           lowerBound = stepSize[stepSize < 0];
+          
           upperBound = stepSize[stepSize > 0];
+          
           lb = max(lowerBound);
+          
           ub = min(upperBound);
-          IntegerVector test1 = current + lb * move;
-          IntegerVector test2 = current + ub * move;
-          for(int i = 0; i < n; ++i){
-            if(test1[i] < 0){
-              lb = 1;
-            }
-            if(test2[i] < 0){
-              ub = -1;
+          
+          if(is_true(any(stepSize == 0))){
+            IntegerVector test1 = current + lb * move;
+            IntegerVector test2 = current + ub * move;
+            for(int i = 0; i < n; ++i){
+              if(test1[i] < 0) lb = 1;
+              if(test2[i] < 0) ub = -1;
             }
           }
+          if(lb > ub){
+            run[0] = 1;
+          }else{
+          
           IntegerVector range = seq(lb,ub);
-          run = sample(range,1);
-          if(run[1] == 0){
-            run[1] = 1;
+          
+          run = Rcpp::sample(range,1);
+          
+            }
+          if(run[0] == 0){
+            run[0] = 1;
           }
         }
         if(hit_and_run == TRUE){
@@ -171,3 +184,4 @@ List metropolis_uniform_cpp(
 
   return out;
 }
+

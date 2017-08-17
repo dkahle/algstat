@@ -194,6 +194,8 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           w_moves <- -1 * w_current / w_move
           lower_bound <- if(any(w_moves < 0)){max(subset(w_moves,subset = w_moves < 0))}else{1}
           upper_bound <- if(any(w_moves > 0)){min(subset(w_moves,subset = w_moves > 0))}else{-1}
+          
+          if(any(w_moves == 0)){
           w_propStatelow <- current + lower_bound * move
           w_propStateup <-  current + upper_bound * move
           if(any(w_propStatelow < 0)){
@@ -202,6 +204,8 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           if(any(w_propStateup < 0)){
             upper_bound <- -1
           }
+          }
+          
           c_s <- sample(lower_bound:upper_bound,1)
           if(c_s == 0){
             c_s <- 1
@@ -271,14 +275,17 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           w_moves <- (-1 * w_current) / w_move
           lower_bound <- if(any(w_moves < 0)){max(subset(w_moves,subset = w_moves < 0))}else{1}
           upper_bound <- if(any(w_moves > 0)){min(subset(w_moves,subset = w_moves > 0))}else{-1} 
-          w_propStatelow <- current + lower_bound * move
-          w_propStateup <-  current + upper_bound * move
-          if(any(w_propStatelow < 0)){
-            lower_bound <- 1
+          if(any(w_moves == 0)){
+            w_propStatelow <- current + lower_bound * move
+            w_propStateup <-  current + upper_bound * move
+            if(any(w_propStatelow < 0)){
+              lower_bound <- 1
+            }
+            if(any(w_propStateup < 0)){
+              upper_bound <- -1
+            }
           }
-          if(any(w_propStateup < 0)){
-            upper_bound <- -1
-          }
+         
           c_s <- sample(lower_bound:upper_bound,1)
           if(c_s == 0){
             c_s <- 1

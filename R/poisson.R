@@ -156,8 +156,6 @@ pois_reg <- function(model, data,
     # make configuration (model) matrix
     A <- pmat(dim(data), facets)
   }
-  #len <- length(init)
-  #A <- matrix(c(rep(1, len), 1:len), nrow = 2, byrow = TRUE)
   suff_stats <- unname(A %*% init)
   
   ## construct A matrix and compute moves

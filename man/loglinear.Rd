@@ -7,7 +7,7 @@
 \usage{
 loglinear(model, data, init = tab2vec(data), iter = 10000, burn = 1000,
   thin = 10, engine = c("Cpp", "R"), method = c("ipf", "mcmc"), moves,
-  hit_and_run = FALSE, SIS = FALSE, ...)
+  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE, ...)
 }
 \arguments{
 \item{model}{hierarchical log-linear model specification}

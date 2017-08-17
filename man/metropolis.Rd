@@ -7,7 +7,7 @@
 \usage{
 metropolis(init, moves, suff_stats, config, iter = 1000, burn = 0,
   thin = 1, dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"),
-  hit_and_run = FALSE, SIS = FALSE)
+  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE)
 
 rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric",
   hit_and_run = FALSE)
