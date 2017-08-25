@@ -86,7 +86,7 @@ pois_reg <- function(model, data,
   
   ## other basic objects
   #varsNlevels <- dimnames(data)  
-  vars        <- names(data)
+  vars  <- names(data)
   
   
   
@@ -172,7 +172,7 @@ pois_reg <- function(model, data,
     warning(
       "No moves were provided and 4ti2 is not found.\n",
       "  The resulting chain is likely not connected and strongly autocorrelated.\n",
-      "  See ?loglinear.  Consider using rmove to generate SIS moves in advance.",
+      "  See ?pois_reg.  Consider using rmove to generate SIS moves in advance.",
       immediate. = TRUE
     )
     message("Computing 1000 SIS moves... ", appendLF = FALSE)    
