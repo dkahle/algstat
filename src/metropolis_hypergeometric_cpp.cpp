@@ -24,6 +24,7 @@ List metropolis_hypergeometric_cpp(
   NumericVector unifs3(nTotalSamples);
   IntegerVector proposal(n);               // the proposed moves
   double prob;                             // the probability of transition
+  double prob2;
   bool anyIsNegative;
   IntegerVector move(n);
   double acceptProb = 0;
@@ -35,6 +36,7 @@ List metropolis_hypergeometric_cpp(
   int lb;
   int ub;
   IntegerVector run;
+  IntegerVector constant = IntegerVector::create(-1,1);
   
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -86,31 +88,92 @@ List metropolis_hypergeometric_cpp(
        upperBound = stepSize[stepSize > 0];
        lb = max(lowerBound);
        ub = min(upperBound);
-       
-         if(is_true(any(stepSize == 0))){
-         IntegerVector test1 = current + lb * move;
-         IntegerVector test2 = current + ub * move;
-         for(int i = 0; i < n; ++i){
-           if(test1[i] < 0) lb = 1;
-           if(test2[i] < 0) ub = -1;
+     
+     // Enumerating all tables
+    // IntegerVector line = seq(lb, ub);
+    // int line_length = line.size();
+    // IntegerMatrix tables(n, line_length);
+    // for(int i = 0; i < line_length;++i){
+    //   for(int j = 0; j < n;++j){
+    //     tables(j,i) = current[j] + line[i] * move[j];
+    //   }
+    // }
+     
+     // MCMC inside MCMC
+      IntegerVector line = seq(lb, ub);
+      int line_length = line.size();
+      IntegerVector w_current(n);
+      IntegerVector w_proposal(n);
+      for(int m = 0; m < n;++m){
+        w_current[m] = current[m];
+      }
+      
+      for(int l = 0; l < line_length;++l){
+        int constant2 = as<int>(Rcpp::sample(constant, 1));
+        for(int k = 0; k < n;++k){
+          w_proposal[k] = w_current[k] + constant2 * move[k];
+        }
+        bool anyIsNegative2;
+        anyIsNegative2 = false;
+        for(int k = 0; k < n; ++k){
+          if(w_proposal[k] < 0){
+            anyIsNegative2 = true;
           }
         }
-       if(lb > ub){
-         run[0] = 1;
-       }else{
-         IntegerVector range = seq(lb,ub);
-         
-         run = Rcpp::sample(range,1);
-       }
-        if(run[0] == 0){
-          run[0] = 1;
+        
+        if(anyIsNegative2){
+          prob2 = 0;
+        } else {
+          prob2 = exp( sum(lgamma(w_current+1)) - sum(lgamma(w_proposal+1)) );
+        }
+        
+        if(prob2 > 1){
+          prob2 = 1;
+        }
+        
+        // make move
+        if(unifs[l] < prob2){
+          for(int k = 0; k < n; ++k){
+            w_current[k] = w_proposal[k];
+          }
         }
       }
-      if(hit_and_run){
-        for(int k = 0; k < n; ++k){
-          proposal[k] = current[k] + as<int>(run) * move[k];
-        }
-      }else{
+      for(int k = 0; k < n; ++k){
+        proposal[k] = w_current[k];
+      }
+    
+    
+      //Attempt at recursively calling MCMC routine 
+   //  List MCMC_out = metropolis_hypergeometric_cpp(current, as<IntegerMatrix>(move), suff_stats, config, 50, 1, false, false, false);
+   //  IntegerMatrix mini_steps = MCMC_out[0];
+   //  int step_length = mini_steps.ncol();
+   //  proposal = mini_steps(_, step_length);
+   
+     // Base Hit and Run
+   //    if(is_true(any(stepSize == 0))){
+   //    IntegerVector test1 = current + lb * move;
+   //    IntegerVector test2 = current + ub * move;
+   //    for(int i = 0; i < n; ++i){
+   //      if(test1[i] < 0) lb = 1;
+   //      if(test2[i] < 0) ub = -1;
+   //     }
+   //   }
+   //  if(lb > ub){
+   //    run[0] = 1;
+   //  }else{
+   //    IntegerVector range = seq(lb,ub);
+   //    
+   //    run = Rcpp::sample(range,1);
+   //  }
+   //   if(run[0] == 0){
+   //     run[0] = 1;
+   //   }
+   //  if(hit_and_run){
+   //    for(int k = 0; k < n; ++k){
+   //      proposal[k] = current[k] + as<int>(run) * move[k];
+   //    }
+   //  }
+    }else{
         for(int k = 0; k < n; ++k){
           proposal[k] = current[k] + move[k];
         }

@@ -169,7 +169,6 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
     ## run burn-in
     
     current <- unname(init)
-    train_current <- unname(init)
     
     message("Running chain (R)... ", appendLF = FALSE)
    
@@ -275,6 +274,46 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           w_moves <- (-1 * w_current) / w_move
           lower_bound <- if(any(w_moves < 0)){max(subset(w_moves,subset = w_moves < 0))}else{1}
           upper_bound <- if(any(w_moves > 0)){min(subset(w_moves,subset = w_moves > 0))}else{-1} 
+        
+          #New part 
+         # #Option 1 Enumerate tables and 
+         # line <- lower_bound:upper_bound
+         # #Enumerate tables on the line
+         # tables <- matrix(0L, nrow =length(init) , ncol = length(line))
+         # for(i in 1:length(line)){
+         #   tables[,i] <- current + line[i]*move
+         # }
+         # probs <- apply(tables, 2, function(x) 1/(sum(lfactorial(x))))
+         # prob_dist <- probs / sum(probs)
+         # unif <- runif(1)
+         # dummy <- prob_dist[1]
+         # for(i in 1:(length(prob_dist) -1)){
+         #   if(unif < dummy){
+         #     propState <- tables[,i]
+         #     break()
+         #   }
+         #   dummy <- dummy + prob_dist[i+1]
+         # }
+          #Option 2
+         # line <- lower_bound:upper_bound
+         # w_current <- current
+         # unifs2 <- runif(2*length(line))
+         # for(i in 1:(2*length(line))){
+         #   w_propState <- w_current + sample(c(-1,1), 1)*move
+         #   if(any(w_propState < 0)){
+         #     prob <- 0
+         #   } else {
+         #     if(dist == "hypergeometric"){
+         #       prob <- exp( sum(lfactorial(w_current)) - sum(lfactorial(w_propState)) )
+         #     } else { # dist == "uniform"
+         #       prob <- 1
+         #     }
+         #   }
+         #   if(unifs2[i] < prob) w_current <- w_propState # else w_current
+         # }
+         # propState <- w_current
+          
+          
           if(any(w_moves == 0)){
             w_propStatelow <- current + lower_bound * move
             w_propStateup <-  current + upper_bound * move
@@ -390,7 +429,7 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
 
 #' @rdname metropolis
 #' @export
-rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hit_and_run = FALSE){
+rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE){
   metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hit_and_run) 
 }
 
