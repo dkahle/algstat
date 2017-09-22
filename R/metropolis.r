@@ -15,8 +15,11 @@
 #' @param dist steady-state distribution; "hypergeometric" (default)
 #'   or "uniform"
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
-#' @param hit_and_run Whether or not to use the hit and run algorithm in
+#' @param hit_and_run Whether or not to use the discrete hit and run algorithm in
 #'   the metropolis algorithm
+#' @param adaptive Option inside hit_and_run option. If TRUE, hit and run will choose a proposal distribution adaptively. Defaulted to FALSE.
+#' @param SIS If TRUE, with a small probability the move will be chosen randomly from the uniform distribution 
+#'  on the fiber using Sequential Importance "Like" Sampling methods. Defaulted to FALSE
 #' @name metropolis
 #' @return a list
 #' @export metropolis
@@ -147,7 +150,7 @@
 #' 
 metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, thin = 1,
                        dist = c("hypergeometric","uniform"), engine = c("Cpp","R"), 
-                       hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE
+                       hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE, adaptive = FALSE
 ){
   
   ## preliminary checking
@@ -406,8 +409,8 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
       metropolis_uniform_cpp
     }
     message("Running chain (C++)... ", appendLF = FALSE)  
-    if (burn > 0) current <- sampler(current, allMoves, suff_stats, config, burn, 1, hit_and_run, SIS, non_uniform)$steps[,burn]
-    out       <- sampler(current, allMoves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform)
+    if (burn > 0) current <- sampler(current, allMoves, suff_stats, config, burn, 1, hit_and_run, SIS, non_uniform, adaptive)$steps[,burn]
+    out       <- sampler(current, allMoves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
     out$moves <- moves
     message("done.")
     

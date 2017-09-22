@@ -10,7 +10,8 @@ List metropolis_uniform_cpp(
     IntegerMatrix config,
     int iter, int thin, 
     bool hit_and_run, 
-    bool SIS, bool non_uniform
+    bool SIS, bool non_uniform, 
+    bool adaptive
 ){
 
   int nTotalSamples = iter * thin;         // total number of steps
@@ -23,6 +24,7 @@ List metropolis_uniform_cpp(
   NumericVector unifs3(nTotalSamples);
   IntegerVector proposal(n);               // the proposed moves
   double prob;                             // the probability of transition
+  double prob2;
   bool anyIsNegative;
   IntegerVector move(n);
   double acceptProb = 0;
@@ -33,6 +35,9 @@ List metropolis_uniform_cpp(
   IntegerVector lowerBound;
   int lb;
   int ub;
+  IntegerVector constant = IntegerVector::create(-1,1);
+  IntegerVector w_current(n);
+  IntegerVector w_proposal(n);
   IntegerVector run;
   
   Function sample("sample");
@@ -77,18 +82,58 @@ List metropolis_uniform_cpp(
         }
         if(hit_and_run == true){
           current_num = current[move != 0];
-          
           move_num = move[move != 0];
-          
           stepSize = (-1 * current_num) / move_num;
-
           lowerBound = stepSize[stepSize < 0];
-          
           upperBound = stepSize[stepSize > 0];
-          
           lb = max(lowerBound);
-          
           ub = min(upperBound);
+          
+          if(adaptive){
+            int line_length = ub-lb;
+            for(int m = 0; m < n;++m){
+              w_current[m] = current[m];
+            }
+            
+            for(int l = 0; l < line_length;++l){
+              int constant2 = as<int>(Rcpp::sample(constant, 1));
+              for(int k = 0; k < n;++k){
+                w_proposal[k] = w_current[k] + constant2 * move[k];
+              }
+              bool anyIsNegative2;
+              anyIsNegative2 = false;
+              for(int k = 0; k < n; ++k){
+                if(w_proposal[k] < 0){
+                  anyIsNegative2 = true;
+                }
+              }
+              
+              if(anyIsNegative2){
+                prob2 = 0;
+              } else {
+                prob2 = exp( sum(lgamma(w_current+1)) - sum(lgamma(w_proposal+1)) );
+              }
+              
+              if(prob2 > 1){
+                prob2 = 1;
+              }
+              
+              // make move
+              if(unifs[l] < prob2){
+                for(int k = 0; k < n; ++k){
+                  w_current[k] = w_proposal[k];
+                }
+              }
+            }
+            for(int k = 0; k < n; ++k){
+              proposal[k] = w_current[k];
+            }
+            //Attempt at recursively calling MCMC routine 
+            //  List MCMC_out = metropolis_hypergeometric_cpp(current, as<IntegerMatrix>(move), suff_stats, config, 50, 1, false, false, false);
+            //  IntegerMatrix mini_steps = MCMC_out[0];
+            //  int step_length = mini_steps.ncol();
+            //  proposal = mini_steps(_, step_length);
+          } else {
           
           if(is_true(any(stepSize == 0))){
             IntegerVector test1 = current + lb * move;
@@ -115,7 +160,8 @@ List metropolis_uniform_cpp(
           for(int k = 0; k < n; ++k){
             proposal[k] = current[k] + as<int>(run) * move[k];
           }
-        }else{
+        }
+        } else {
           for(int k = 0; k < n; ++k){
             proposal[k] = current[k] + move[k];
           }

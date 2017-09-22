@@ -21,8 +21,8 @@ computeX2sCpp <- function(x, exp) {
     .Call('_algstat_computeX2sCpp', PACKAGE = 'algstat', x, exp)
 }
 
-metropolis_hypergeometric_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform) {
-    .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform)
+metropolis_hypergeometric_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive) {
+    .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
 }
 
 metropolis_uniform_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform) {

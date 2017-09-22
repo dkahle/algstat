@@ -77,7 +77,7 @@ pois_reg <- function(model, data,
   ## reshape data
   ##################################################
   
-  # data   <- suppressMessages(teshape(data, "tab"))
+   data   <- suppressMessages(teshape(data, "freq"))
   # p      <- length(dim(data))
   # nCells <- length(data)
   
@@ -117,8 +117,11 @@ pois_reg <- function(model, data,
       response   <- fString[2]
       predString <- fString[3]
       
-      
-      
+      #Rename the response variable to fit formula syntax id needed
+      if(any(response != vars)){
+        colnames(data)[colnames(data) == "freq"] <- response
+        vars <- names(data)
+      }
       ## make list of facets
       model <- strsplit(predString, " \\+ ")[[1]]
       model <- strsplit(model, " \\* ")
@@ -129,7 +132,6 @@ pois_reg <- function(model, data,
         nCells <- length(init)
         p     <- 1
         data <- data[vars == model]
-        
       }else{
       #If model specifiaction, then make table
       data <- suppressMessages(teshape(cbind(data[vars == response],data[vars %in% model]), "tab", freqVar = response))

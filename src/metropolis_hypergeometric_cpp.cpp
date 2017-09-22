@@ -12,7 +12,8 @@ List metropolis_hypergeometric_cpp(
     IntegerMatrix config,
     int iter, int thin, 
     bool hit_and_run, 
-    bool SIS, bool non_uniform
+    bool SIS, bool non_uniform, 
+    bool adaptive
 ){
   int nTotalSamples = iter * thin;         // total number of steps
   int n = current.size();                  // number of cells
@@ -37,6 +38,8 @@ List metropolis_hypergeometric_cpp(
   int ub;
   IntegerVector run;
   IntegerVector constant = IntegerVector::create(-1,1);
+  IntegerVector w_current(n);
+  IntegerVector w_proposal(n);
   
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -100,10 +103,9 @@ List metropolis_hypergeometric_cpp(
     // }
      
      // MCMC inside MCMC
-      IntegerVector line = seq(lb, ub);
-      int line_length = line.size();
-      IntegerVector w_current(n);
-      IntegerVector w_proposal(n);
+      //IntegerVector line = seq(lb, ub);
+      if(adaptive){
+      int line_length = ub-lb;
       for(int m = 0; m < n;++m){
         w_current[m] = current[m];
       }
@@ -141,38 +143,38 @@ List metropolis_hypergeometric_cpp(
       for(int k = 0; k < n; ++k){
         proposal[k] = w_current[k];
       }
-    
-    
       //Attempt at recursively calling MCMC routine 
-   //  List MCMC_out = metropolis_hypergeometric_cpp(current, as<IntegerMatrix>(move), suff_stats, config, 50, 1, false, false, false);
-   //  IntegerMatrix mini_steps = MCMC_out[0];
-   //  int step_length = mini_steps.ncol();
-   //  proposal = mini_steps(_, step_length);
+      //  List MCMC_out = metropolis_hypergeometric_cpp(current, as<IntegerMatrix>(move), suff_stats, config, 50, 1, false, false, false);
+      //  IntegerMatrix mini_steps = MCMC_out[0];
+      //  int step_length = mini_steps.ncol();
+      //  proposal = mini_steps(_, step_length);
+      } else {
    
      // Base Hit and Run
-   //    if(is_true(any(stepSize == 0))){
-   //    IntegerVector test1 = current + lb * move;
-   //    IntegerVector test2 = current + ub * move;
-   //    for(int i = 0; i < n; ++i){
-   //      if(test1[i] < 0) lb = 1;
-   //      if(test2[i] < 0) ub = -1;
-   //     }
-   //   }
-   //  if(lb > ub){
-   //    run[0] = 1;
-   //  }else{
-   //    IntegerVector range = seq(lb,ub);
-   //    
-   //    run = Rcpp::sample(range,1);
-   //  }
-   //   if(run[0] == 0){
-   //     run[0] = 1;
-   //   }
-   //  if(hit_and_run){
-   //    for(int k = 0; k < n; ++k){
-   //      proposal[k] = current[k] + as<int>(run) * move[k];
-   //    }
-   //  }
+       if(is_true(any(stepSize == 0))){
+       IntegerVector test1 = current + lb * move;
+       IntegerVector test2 = current + ub * move;
+       for(int i = 0; i < n; ++i){
+         if(test1[i] < 0) lb = 1;
+         if(test2[i] < 0) ub = -1;
+        }
+      }
+     if(lb > ub){
+       run[0] = 1;
+     }else{
+       IntegerVector range = seq(lb,ub);
+       
+       run = Rcpp::sample(range,1);
+     }
+      if(run[0] == 0){
+        run[0] = 1;
+      }
+     if(hit_and_run){
+       for(int k = 0; k < n; ++k){
+         proposal[k] = current[k] + as<int>(run) * move[k];
+       }
+     }
+      }
     }else{
         for(int k = 0; k < n; ++k){
           proposal[k] = current[k] + move[k];
