@@ -25,8 +25,8 @@ metropolis_hypergeometric_cpp <- function(current, moves, suff_stats, config, it
     .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
 }
 
-metropolis_uniform_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform) {
-    .Call('_algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform)
+metropolis_uniform_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive) {
+    .Call('_algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
 }
 
 rfiberOne <- function(A, b) {

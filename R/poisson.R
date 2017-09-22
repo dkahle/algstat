@@ -117,8 +117,8 @@ pois_reg <- function(model, data,
       response   <- fString[2]
       predString <- fString[3]
       
-      #Rename the response variable to fit formula syntax id needed
-      if(any(response != vars)){
+      #Rename the response variable to fit formula syntax if needed
+      if(!(response %in% vars)){
         colnames(data)[colnames(data) == "freq"] <- response
         vars <- names(data)
       }
@@ -134,7 +134,9 @@ pois_reg <- function(model, data,
         data <- data[vars == model]
       }else{
       #If model specifiaction, then make table
-      data <- suppressMessages(teshape(cbind(data[vars == response],data[vars %in% model]), "tab", freqVar = response))
+      augdata <- cbind(data[vars == response],data[vars %in% model])
+      vars <- names(augdata)
+      data <- suppressMessages(teshape(augdata, "tab", freqVar = response))
       p <- length(dim(data))
       init <- tab2vec(data)
       nCells <- length(init)
