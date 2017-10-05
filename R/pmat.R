@@ -13,11 +13,30 @@
 
 pmat <- function(levels, facets){
 
+  #########Old Setup#########
   #Setup the levels
-  levels <- levels[levels != 1]
-  num_covariates <- length(levels)
-  mat_list <- list()
-  exp_cov <-1:num_covariates
+  #levels <- levels[levels != 1]
+  #num_covariates <- length(levels)
+  #mat_list <- list()
+  #exp_cov <-1:num_covariates
+ #############################
+  #Small function to make single covariate configuration matrix
+  func <- function(x){
+    rbind(rep(1, length(x)), x)
+  }
+  
+  ######### New Setup ########
+  if(is.vector(levels)){
+    num_covariates <- 1
+    full_mat <- func(levels)
+  }else{
+  num_covariates <- ncol(levels)
+  #Make single covariate configuration matrix for each covariate
+  mat_list <- alply(levels, 2, func)
+  #Full heirarchicial config matrix with all interactions included
+  full_mat <- do.call(kprod, mat_list)
+  }
+  exp_cov <- 1:num_covariates
   
   #Checking heirarchical sturcture of facets
   if(any(sapply(facets, length) > 1)){
@@ -30,17 +49,18 @@ pmat <- function(levels, facets){
     facets <- union(heirarc, facets)
   }
   
+  ########Old#######
   #List of config matrices, one for each covariate
-  for(i in exp_cov){
-    mat_list[[i]] <- matrix(c(rep(1,levels[i]), 1:levels[i]), nrow = 2, byrow = TRUE)
-  }
+  #for(i in exp_cov){
+  #  mat_list[[i]] <- matrix(c(rep(1,levels[i]), 1:levels[i]), nrow = 2, byrow = TRUE)
+  #}
+  ################
   
-  #Full heirarchicial config matrix with all interactions included
-  full_mat <- do.call(kprod, mat_list)
   
   #All possible combinations of covariates (powerset like) to be compared to facets
-   if(length(exp_cov) == 1) facet_list <- list(exp_cov)
-   else{
+   if(length(exp_cov) == 1) {
+     facet_list <- list(exp_cov)
+   }else{
      facet_list <- list(integer(0))
    for(i in seq_along(exp_cov)){
      facet_list <- c(facet_list, lapply(facet_list, function(x) c(x,exp_cov[i])))
