@@ -9,10 +9,9 @@ pois_reg(model, data, iter = 10000, burn = 1000, thin = 10,
   hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE, ...)
 }
 \arguments{
-\item{model}{hierarchical log-linear model specification}
+\item{model}{hierarchical poisson model specification}
 
-\item{data}{data, as a data frame with frequencies. see \code{\link{teshape}} if your data is not 
-in that format}
+\item{data}{data, as a data frame with raw data with discrete covariates}
 
 \item{iter}{number of chain iterations}
 
@@ -61,6 +60,7 @@ a list containing named elements \itemize{ \item
   \code{sampsStats}: the statistics computed for each mcmc
   sample. \item \code{cells}: the number of cells in the table.
   \item \code{method}: the method used to estimate the table. }
+  @importFrom stats model.frame
 }
 \description{
 Fit a Poisson Regression model with algebraic methods

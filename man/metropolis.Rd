@@ -7,10 +7,11 @@
 \usage{
 metropolis(init, moves, suff_stats, config, iter = 1000, burn = 0,
   thin = 1, dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"),
-  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE)
+  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE,
+  adaptive = FALSE)
 
 rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric",
-  hit_and_run = FALSE)
+  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE)
 }
 \arguments{
 \item{init}{the initial step}
@@ -29,8 +30,13 @@ or "uniform"}
 
 \item{engine}{C++ or R? (C++ yields roughly a 20-25x speedup)}
 
-\item{hit_and_run}{Whether or not to use the hit and run algorithm in
+\item{hit_and_run}{Whether or not to use the discrete hit and run algorithm in
 the metropolis algorithm}
+
+\item{SIS}{If TRUE, with a small probability the move will be chosen randomly from the uniform distribution 
+on the fiber using Sequential Importance "Like" Sampling methods. Defaulted to FALSE}
+
+\item{adaptive}{Option inside hit_and_run option. If TRUE, hit and run will choose a proposal distribution adaptively. Defaulted to FALSE.}
 }
 \value{
 a list

@@ -12,7 +12,6 @@
 #' @export pmat
 
 pmat <- function(levels, facets){
-
   #########Old Setup#########
   #Setup the levels
   #levels <- levels[levels != 1]
@@ -26,18 +25,18 @@ pmat <- function(levels, facets){
   }
   
   ######### New Setup ########
-  if(is.vector(levels)){
+  if(!is.list(levels)){
     num_covariates <- 1
     full_mat <- func(levels)
   }else{
-  num_covariates <- ncol(levels)
+  num_covariates <- length(levels)
   #Make single covariate configuration matrix for each covariate
-  mat_list <- alply(levels, 2, func)
+  mat_list <- lapply(levels, func)
   #Full heirarchicial config matrix with all interactions included
   full_mat <- do.call(kprod, mat_list)
   }
   exp_cov <- 1:num_covariates
-  
+
   #Checking heirarchical sturcture of facets
   if(any(sapply(facets, length) > 1)){
     long_list_elts <- facets[which(sapply(facets, length)>1)]

@@ -3,8 +3,7 @@
 #' 
 #' 
 #' @param model hierarchical poisson model specification
-#' @param data data, as a data frame with frequencies. see \code{\link{teshape}} if your data is not 
-#' in that format
+#' @param data data, as a data frame with raw data with discrete covariates
 #' @param init the initialization of the chain. by default, this is
 #'   the observed table
 #' @param iter number of chain iterations
@@ -43,6 +42,7 @@
 #'   \code{sampsStats}: the statistics computed for each mcmc
 #'   sample. \item \code{cells}: the number of cells in the table.
 #'   \item \code{method}: the method used to estimate the table. }
+#'   @importFrom stats model.frame
 #' @export pois_reg
 
 
@@ -86,7 +86,7 @@ pois_reg <- function(model, data,
   
   ## other basic objects
   #varsNlevels <- dimnames(data)  
-  vars  <- names(data)
+  
   
   
   
@@ -114,6 +114,9 @@ pois_reg <- function(model, data,
       ## Reshape data
       data <- model.frame(model, data)
       
+      # name data
+      vars  <- names(data)
+      
       ## parse formula
       fString    <- as.character(model)
       response   <- fString[2]
@@ -130,7 +133,6 @@ pois_reg <- function(model, data,
     
       ##Format the data 
       data <- ddply(data, unique(unlist(model)), "sum")
-      
       
       if(length(model) == 1){
         init  <- data$sum
@@ -162,13 +164,22 @@ pois_reg <- function(model, data,
     ##Levels (assuming all levels are numeric i.e. (1,2,3,...  not Green, Blue, Red, etc.)
     
     if(ncol(data) <= 2){ 
-      levls <- unique(data[,-ncol(data)])
+      lvls <- unique(data[,-ncol(data)])
     }else{
-    levls <- apply(data[,-ncol(data)], 2, unique)
+    lvls <- apply(data[,-ncol(data)], 2, unique)
     }
     # make configuration (model) matrix
-    A <- pmat(levls, facets)
+    A <- pmat(lvls, facets)
   }
+  
+  
+  # check to see if all level configurations are there (need work here)
+  lvlsInData <- as.list(as.data.frame(t(expand.grid(lvls)))) %in% as.list(as.data.frame(t(data[,-ncol(data)])))
+  
+  # subset A by levels that are present
+  A <- A[,lvlsInData]
+  
+  # find the sufficient statistics
   suff_stats <- unname(A %*% init)
   
   ## construct A matrix and compute moves
