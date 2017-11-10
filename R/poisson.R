@@ -57,6 +57,7 @@ pois_reg <- function(model, data,
                       hit_and_run = FALSE,
                       SIS = FALSE,
                      non_uniform = FALSE,
+                     adaptive = FALSE,
                       ...)
 {
   
@@ -111,7 +112,7 @@ pois_reg <- function(model, data,
   } else {
     # if it's a formula, convert to list
     if(is.formula(model)){ 
-      ## Reshape data
+      ## reshape data
       data <- model.frame(model, data)
       
       # name data
@@ -122,26 +123,23 @@ pois_reg <- function(model, data,
       response   <- fString[2]
       predString <- fString[3]
       
-      #Rename the response variable to fit formula syntax if needed
-      #if(!(response %in% vars)){
-      #  colnames(data)[colnames(data) == "freq"] <- response
-      #  vars <- names(data)
-      #}
+     
       ## make list of facets
       model <- strsplit(predString, " \\+ ")[[1]]
       model <- strsplit(model, " \\* ")
-    
-      ##Format the data 
-      data <- ddply(data, unique(unlist(model)), "sum")
+
+      ## format the data 
+      names(data)[names(data) == response] <- "response"
+      data <- ddply(data, unique(unlist(model)), summarise, sum = sum(response))
       
       if(length(model) == 1){
+        
         init  <- data$sum
         nCells <- length(init)
         p     <- 1
-      }else{
-      #If model specifiaction, then make table
-      #data <- suppressMessages(teshape(data, "tab", freqVar = response))
-      #p <- length(dim(data))
+        
+      } else {
+      # if model specifiaction, then make table
       p <- ncol(data) - 1
       init <- data$sum
       nCells <- length(init)
@@ -161,17 +159,16 @@ pois_reg <- function(model, data,
     } else {
       stop("Invalid model specification, see ?pois_reg")
     }
-    ##Levels (assuming all levels are numeric i.e. (1,2,3,...  not Green, Blue, Red, etc.)
-    
+    ## levels (assuming all levels are numeric i.e. (1,2,3,...  not Green, Blue, Red, etc.)
+
     if(ncol(data) <= 2){ 
       lvls <- unique(data[,-ncol(data)])
-    }else{
-    lvls <- apply(data[,-ncol(data)], 2, unique)
+    } else {
+    lvls <- lapply(data[,-ncol(data)], unique)
     }
     # make configuration (model) matrix
     A <- pmat(lvls, facets)
   }
-  
   
   # check to see if all level configurations are there (need work here)
   lvlsInData <- as.list(as.data.frame(t(expand.grid(lvls)))) %in% as.list(as.data.frame(t(data[,-ncol(data)])))
@@ -224,7 +221,7 @@ pois_reg <- function(model, data,
   ##################################################  
   init <- unname(init) # init
   out <- metropolis(init, moves, suff_stats = suff_stats, config = unname(A), iter = iter, burn = burn, thin = thin, 
-                    engine = engine, hit_and_run = hit_and_run, SIS = SIS, non_uniform = non_uniform)  
+                    engine = engine, hit_and_run = hit_and_run, SIS = SIS, non_uniform = non_uniform, adaptive = adaptive)  
   
   
   
@@ -246,10 +243,6 @@ pois_reg <- function(model, data,
   # }
   # e <- unname(tab2vec(exp))
 
-#####Issue Here!!!!!!!#############
-  ###Old
-  #u <- t(t(unname(tab2vec(data))))
-  ###New
   u <- t(t(data$sum))
   PR <- computeUProbsCpp(matrix(u))  # unnormd prob; numers LAS 1.1.10
   # X2 <- computeX2sCpp(u, e)  
