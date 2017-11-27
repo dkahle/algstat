@@ -12,19 +12,12 @@
 #' @export pmat
 
 pmat <- function(levels, facets){
-  #########Old Setup#########
-  #Setup the levels
-  #levels <- levels[levels != 1]
-  #num_covariates <- length(levels)
-  #mat_list <- list()
-  #exp_cov <-1:num_covariates
- #############################
+ 
   #Small function to make single covariate configuration matrix
   func <- function(x){
     rbind(rep(1, length(x)), x)
   }
   
-  ######### New Setup ########
   if(!is.list(levels)){
     num_covariates <- 1
     full_mat <- func(levels)
@@ -47,14 +40,6 @@ pmat <- function(levels, facets){
     
     facets <- union(heirarc, facets)
   }
-  
-  ########Old#######
-  #List of config matrices, one for each covariate
-  #for(i in exp_cov){
-  #  mat_list[[i]] <- matrix(c(rep(1,levels[i]), 1:levels[i]), nrow = 2, byrow = TRUE)
-  #}
-  ################
-  
   
   #All possible combinations of covariates (powerset like) to be compared to facets
    if(length(exp_cov) == 1) {
