@@ -39,7 +39,7 @@
 #'     b0 <- 1; b1 <- 0.3
 #'
 #'    # generate data
-#'     n <- 100
+#'     n <- 5000
 #'     x <- sample(1:5, n, replace = T)
 #'     y <- rpois(n, lambda = exp(b0 + b1*x))
 #'     df <- data.frame(
@@ -48,12 +48,12 @@
 #'     )
 #'     
 #'     # function output
-#'     out <- Aglm(y ~ x, data = df, family = poisson())
+#'     out <- aglm(y ~ x, data = df, family = poisson(), thin = 2000)
 #'     
 #'     # check convergence through trace plot
-#'     qplot(1:10000, out$sampStats$PRs, geom = "line")
+#'     qplot(1:10000, out$sampsStats$PRs, geom = "line")
 #'   
-#'    # compare Aglm and glm predictions with the truth
+#'    # compare aglm and glm predictions with the truth
 #'     
 #'     # model fitting with glm
 #'     mod <- glm(y ~ x, data = df, family = poisson())
@@ -64,7 +64,7 @@
 #'     # glm predictions
 #'     predict(mod, data.frame(x = 1:5), type = "response")
 #'     
-#'     # Aglm predictions
+#'     # aglm predictions
 #'     rowMeans(out$steps) / ddply(df, "x", nrow)$V1
 #'     
 #'     
@@ -89,11 +89,11 @@
 #'     y = y
 #'   )
 #'   
-#'   # Aglm 
-#'   out <- Aglm(y ~ x, data = df, family = binomial())
+#'   # aglm 
+#'   out <- aglm(y ~ x, data = df, family = binomial())
 #'  
 #'   # check convergence through trace plot
-#'   qplot(1:10000, out$sampStats$PRs, geom = "line")
+#'   qplot(1:10000, out$sampsStats$PRs, geom = "line")
 #'   
 #'   # using glm
 #'   mod <- glm(y ~ x, data = df, family = binomial())
@@ -104,19 +104,16 @@
 #'   # glm predictions
 #'   predict(mod, data.frame(x = c(1:5)), type = "response")
 #'   
-#'   # Aglm predictions 
+#'   # aglm predictions 
 #'   rowMeans(out$steps) / ddply(df, "x", nrow)$V1
 #'   
 #' @export 
 
 
-Aglm <- function(model, data, family = poisson(),
+aglm <- function(model, data, family = poisson(),
                      iter = 1E4, burn = 10000, 
                      thin = 100, engine = c("Cpp","R"), 
-                      moves, hit_and_run = FALSE,
-                     SIS = FALSE,
-                     non_uniform = FALSE,
-                     adaptive = FALSE,
+                      moves, 
                      ...)
 {
   ## set/check args
@@ -286,7 +283,7 @@ Aglm <- function(model, data, family = poisson(),
   ##################################################  
   init <- unname(init) # init
   out <- metropolis(init, moves, suff_stats = suff_stats, config = unname(A), iter = iter, burn = burn, thin = thin, 
-                    engine = engine, hit_and_run = hit_and_run, SIS = SIS, non_uniform = non_uniform, adaptive = adaptive)  
+                    engine = engine)  
 
   
   u <- t(t(data$sum))
@@ -325,7 +322,7 @@ Aglm <- function(model, data, family = poisson(),
   out$cells      <- nCells
   out$method     <- method
   
-  class(out) <- "Aglm"
+  class(out) <- "aglm"
   out
   
   
