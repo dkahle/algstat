@@ -7,16 +7,27 @@
 pmat(levels, facets)
 }
 \arguments{
-\item{levels}{a vector containing the number of levels of each
+\item{levels}{a list containing the number of levels of each
 variable}
 
 \item{facets}{the facets generating the hierarchical model, a
 list of vectors of variable indices}
 }
 \value{
-a matrix
+The configuration matrix for the given levels and facets
 }
 \description{
 Determine the A matrix associated with a hierarchical model on a
 contingency table for Poisson Regression.
+}
+\examples{
+# Single Covariate
+levels <- 1:5
+facets <- list(1)
+pmat(levels, facets)
+
+# multiple covariates, each has levels 1, ..., 5
+levels <- list(1:5, 1:5)
+facets <- list(1, 2, c(1,2))
+pmat(levels, facets)
 }

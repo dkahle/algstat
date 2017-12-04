@@ -432,7 +432,7 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
 
 #' @rdname metropolis
 #' @export
-rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE){
+rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE, adaptive = FALSE){
   metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hit_and_run) 
 }
 

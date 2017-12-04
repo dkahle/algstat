@@ -3,7 +3,7 @@
 #'
 #' @param model model specification, either in terms of a configuration matrix or a symbolic 
 #'   description of the model to be fitted
-#' @param data data, as a data frame with raw data with discrete covariates
+#' @param data data, as a data frame of raw data with ordinal discrete covariates
 #' @param family a description of the error distirbution and link function used in the model
 #' @param iter number of chain iterations
 #' @param burn burn-in
@@ -215,21 +215,20 @@ aglm <- function(model, data, family = poisson(),
     } else if(all(unlist(model) %in% 1:length(vars))){ # by indices
       facets <- lapply(model, as.integer) # to fix the ~ 1 + 2 case, parsed as chars
     } else {
-      stop("Invalid model specification, see ?Aglm")
+      stop("Invalid model specification, see ?aglm")
     }
     ## levels (assuming all levels are numeric i.e. (1,2,3,...  not Green, Blue, Red, etc.)
-    
     if(ncol(data) <= 2){ 
-      lvls <- unique(data[,-ncol(data)])
+      levls <- unique(data[,-ncol(data)])
     } else {
-      lvls <- lapply(data[,-ncol(data)], unique)
+      levls <- lapply(data[,-ncol(data)], unique)
     }
     # make configuration (model) matrix
-    A <- pmat(lvls, facets)
+    A <- pmat(levls, facets)
   }
   
   # check to see if all level configurations are there (need work here)
-  lvlsInData <- as.list(as.data.frame(t(expand.grid(lvls)))) %in% as.list(as.data.frame(t(data[,-ncol(data)])))
+  lvlsInData <- as.list(as.data.frame(t(expand.grid(levls)))) %in% as.list(as.data.frame(t(data[,-ncol(data)])))
   
   # subset A by levels that are present
   A <- A[,lvlsInData]
@@ -283,7 +282,7 @@ aglm <- function(model, data, family = poisson(),
   ##################################################  
   init <- unname(init) # init
   out <- metropolis(init, moves, suff_stats = suff_stats, config = unname(A), iter = iter, burn = burn, thin = thin, 
-                    engine = engine)  
+                    engine = engine, ...)  
 
   
   u <- t(t(data$sum))

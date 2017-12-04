@@ -11,7 +11,8 @@ metropolis(init, moves, suff_stats, config, iter = 1000, burn = 0,
   adaptive = FALSE)
 
 rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric",
-  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE)
+  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE,
+  adaptive = FALSE)
 }
 \arguments{
 \item{init}{the initial step}

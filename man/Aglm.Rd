@@ -11,7 +11,7 @@ aglm(model, data, family = poisson(), iter = 10000, burn = 10000,
 \item{model}{model specification, either in terms of a configuration matrix or a symbolic 
 description of the model to be fitted}
 
-\item{data}{data, as a data frame with raw data with discrete covariates}
+\item{data}{data, as a data frame of raw data with ordinal discrete covariates}
 
 \item{family}{a description of the error distirbution and link function used in the model}
 
