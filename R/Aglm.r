@@ -238,7 +238,7 @@ aglm <- function(model, data, family = poisson(),
     A <- lawrence(A)
   }
   # find the sufficient statistics
-  suff_stats <- unname(A %*% init)
+  suffStats <- unname(A %*% init)
   
   ## construct A matrix and compute moves
   ##################################################  
@@ -281,7 +281,7 @@ aglm <- function(model, data, family = poisson(),
   ## run metropolis-hastings
   ##################################################  
   init <- unname(init) # init
-  out <- metropolis(init, moves, suff_stats = suff_stats, config = unname(A), iter = iter, burn = burn, thin = thin, 
+  out <- metropolis(init, moves, suffStats = suffStats, config = unname(A), iter = iter, burn = burn, thin = thin, 
                     engine = engine, ...)  
 
   
@@ -298,7 +298,7 @@ aglm <- function(model, data, family = poisson(),
   out$call <- match.call()   
   out$obs <- data  
   out$A <- A
-  out$sufficientStatistics <- suff_stats
+  out$sufficientStatistics <- suffStats
   
   out$p.value <- c(
     PR = mean(PRs <= PR)

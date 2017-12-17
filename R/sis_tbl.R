@@ -1,32 +1,32 @@
-sis_table <- function(config_mat, suff_statistics){
-  #Need to check if config_mat is a mat, suff_statistics is vector/mat, 
-  #length of suff_statistics is same as number of rows of config_mat
+sis_table <- function(configMat, suffStatistics){
+  # need to check if configMat is a mat, suffStatistics is vector/mat, 
+  # length of suffStatistics is same as number of rows of configMat
   
-  #Matricies and vectors to work with!
-  work_A <- config_mat
-  work_suff <- suff_statistics
-  tbl_elts <- ncol(config_mat)
-  num_const <- nrow(config_mat)
-  tbl <- vector(mode = "numeric", length = tbl_elts)
+  # matricies and vectors to work with!
+  workA <- configMat
+  workSuff <- suffStatistics
+  tblElts <- ncol(configMat)
+  numConstraints <- nrow(configMat)
+  tbl <- vector(mode = "numeric", length = tblElts)
   
-  for(i in 1:tbl_elts){
-    constr <- unname(rbind(cbind(rep(1,num_const), work_suff, work_A),
-                           cbind(rep(0,tbl_elts), rep(0,tbl_elts), diag(-1,tbl_elts))))
-    objfun <- vector(mode = "numeric", length = tbl_elts)
+  for(i in 1:tblElts){
+    constr <- unname(rbind(cbind(rep(1,numConstraints), workSuff, workA),
+                           cbind(rep(0,tblElts), rep(0,tblElts), diag(-1,tblElts))))
+    objfun <- vector(mode = "numeric", length = tblElts)
     objfun[i] <- -1
-    min_lp <- lpcdd(constr, objfun)
-    max_lp <- lpcdd(constr, objfun, minimize = FALSE)
+    minLp <- lpcdd(constr, objfun)
+    maxLp <- lpcdd(constr, objfun, minimize = FALSE)
     
-    if(min_lp[1] == "Optimal" && max_lp[1] == "Optimal"){
-      minimum <- as.numeric(unname(min_lp[4]))
-      maximum <- as.numeric(unname(max_lp[4]))
+    if(minLp[1] == "Optimal" && maxLp[1] == "Optimal"){
+      minimum <- as.numeric(unname(minLp[4]))
+      maximum <- as.numeric(unname(maxLp[4]))
       tbl[i] <- if(isTRUE(all.equal(minimum, maximum))){minimum}
       else{sample(minimum:maximum, 1)}
     } else { tbl[i] <- 0 }
-    #Update constraints and sufficient statistics
-    index <- which(work_A[,i] == 1)
-    work_A[index,i] <- 0
-    work_suff[index] <- work_suff[index] - tbl[i]
+    # update constraints and sufficient statistics
+    index <- which(workA[,i] == 1)
+    workA[index,i] <- 0
+    workSuff[index] <- workSuff[index] - tbl[i]
   }
   return(tbl)
 }

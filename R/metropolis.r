@@ -15,9 +15,9 @@
 #' @param dist steady-state distribution; "hypergeometric" (default)
 #'   or "uniform"
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
-#' @param hit_and_run Whether or not to use the discrete hit and run algorithm in
+#' @param hitAndRun Whether or not to use the discrete hit and run algorithm in
 #'   the metropolis algorithm
-#' @param adaptive Option inside hit_and_run option. If TRUE, hit and run will choose a proposal distribution adaptively. Defaulted to FALSE.
+#' @param adaptive Option inside hitAndRun option. If TRUE, hit and run will choose a proposal distribution adaptively. Defaulted to FALSE.
 #' @param SIS If TRUE, with a small probability the move will be chosen randomly from the uniform distribution 
 #'  on the fiber using Sequential Importance "Like" Sampling methods. Defaulted to FALSE
 #' @name metropolis
@@ -148,9 +148,9 @@
 #' }
 #' 
 #' 
-metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, thin = 1,
+metropolis <- function(init, moves, suffStats, config, iter = 1E3, burn = 0, thin = 1,
                        dist = c("hypergeometric","uniform"), engine = c("Cpp","R"), 
-                       hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE, adaptive = FALSE
+                       hitAndRun = FALSE, SIS = FALSE, nonUniform = FALSE, adaptive = FALSE
 ){
   
   ## preliminary checking
@@ -176,53 +176,53 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
     message("Running chain (R)... ", appendLF = FALSE)
    
     #Setting up non-uniform move sampling framework
-    if(non_uniform == TRUE){
-      move_dist <- rep(1,nMoves)
+    if(nonUniform == TRUE){
+      moveDist <- rep(1,nMoves)
       counter <- nMoves
     }
     
     unifs <- runif(burn)
-    if(non_uniform == TRUE){
-       move_prob <- runif(burn)
+    if(nonUniform == TRUE){
+       moveProb <- runif(burn)
     }
     if(burn > 0) {
       for(k in 1:burn){
         #Hit and Run option
-        if(hit_and_run)
+        if(hitAndRun)
         {
           move <- sample(c(-1,1), 1) * moves[,sample(nMoves,1)]
-          w_move <- move[move != 0]
-          w_current <- current[move != 0]
-          w_moves <- -1 * w_current / w_move
-          lower_bound <- if(any(w_moves < 0)){max(subset(w_moves,subset = w_moves < 0))}else{1}
-          upper_bound <- if(any(w_moves > 0)){min(subset(w_moves,subset = w_moves > 0))}else{-1}
+          workMove <- move[move != 0]
+          workCurrent <- current[move != 0]
+          workMoves <- -1 * workCurrent / workMove
+          lowerBound <- if(any(workMoves < 0)){max(subset(workMoves,subset = workMoves < 0))}else{1}
+          upperBound <- if(any(workMoves > 0)){min(subset(workMoves,subset = workMoves > 0))}else{-1}
           
-          if(any(w_moves == 0)){
-          w_propStatelow <- current + lower_bound * move
-          w_propStateup <-  current + upper_bound * move
-          if(any(w_propStatelow < 0)){
-            lower_bound <- 1
+          if(any(workMoves == 0)){
+          workPropStatelow <- current + lowerBound * move
+          workPropStateup <-  current + upperBound * move
+          if(any(workPropStatelow < 0)){
+            lowerBound <- 1
           }
-          if(any(w_propStateup < 0)){
-            upper_bound <- -1
+          if(any(workPropStateup < 0)){
+            upperBound <- -1
           }
           }
           
-          c_s <- sample(lower_bound:upper_bound,1)
-          if(c_s == 0){
-            c_s <- 1
+          multiple  <- sample(lowerBound:upperBound,1)
+          if(multiple  == 0){
+            multiple  <- 1
           }
-          propState <- current + c_s * move
+          propState <- current + multiple  * move
         }
         
         #Non-uniform move sampling option
-        if(non_uniform == TRUE)
+        if(nonUniform == TRUE)
         {
           
           for(l in 1:nMoves){
-            if(move_prob[k] <= sum(move_dist[1:l])/counter){
+            if(moveProb[k] <= sum(moveDist[1:l])/counter){
               move <- moves[,l]
-              which_move <- l
+              whichMove <- l
             }
           }
           move <- sample(c(-1,1), 1) * move
@@ -245,10 +245,10 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           }
         }
         
-        if(non_uniform == TRUE){
+        if(nonUniform == TRUE){
           if(unifs[k] < prob){
             current  <- propState
-            move_dist[which_move] <- move_dist[which_move] + 1
+            moveDist[whichMove] <- moveDist[whichMove] + 1
             counter <- counter + 1
           }
         }else{
@@ -269,78 +269,78 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
       
       for(j in 1:thin){
         
-        if(hit_and_run)
+        if(hitAndRun)
         {
           move <- moves[,sample(nMoves,1)]
-          w_move <- move[move != 0]
-          w_current <- current[move != 0]
-          w_moves <- (-1 * w_current) / w_move
-          lower_bound <- if(any(w_moves < 0)){max(subset(w_moves,subset = w_moves < 0))}else{1}
-          upper_bound <- if(any(w_moves > 0)){min(subset(w_moves,subset = w_moves > 0))}else{-1} 
+          workMove <- move[move != 0]
+          workCurrent <- current[move != 0]
+          workMoves <- (-1 * workCurrent) / workMove
+          lowerBound <- if(any(workMoves < 0)){max(subset(workMoves,subset = workMoves < 0))}else{1}
+          upperBound <- if(any(workMoves > 0)){min(subset(workMoves,subset = workMoves > 0))}else{-1} 
         
           #New part 
          # #Option 1 Enumerate tables and 
-         # line <- lower_bound:upper_bound
+         # line <- lowerBound:upperBound
          # #Enumerate tables on the line
          # tables <- matrix(0L, nrow =length(init) , ncol = length(line))
          # for(i in 1:length(line)){
          #   tables[,i] <- current + line[i]*move
          # }
          # probs <- apply(tables, 2, function(x) 1/(sum(lfactorial(x))))
-         # prob_dist <- probs / sum(probs)
+         # probDist <- probs / sum(probs)
          # unif <- runif(1)
-         # dummy <- prob_dist[1]
-         # for(i in 1:(length(prob_dist) -1)){
+         # dummy <- probDist[1]
+         # for(i in 1:(length(probDist) -1)){
          #   if(unif < dummy){
          #     propState <- tables[,i]
          #     break()
          #   }
-         #   dummy <- dummy + prob_dist[i+1]
+         #   dummy <- dummy + probDist[i+1]
          # }
           #Option 2
-         # line <- lower_bound:upper_bound
-         # w_current <- current
+         # line <- lowerBound:upperBound
+         # workCurrent <- current
          # unifs2 <- runif(2*length(line))
          # for(i in 1:(2*length(line))){
-         #   w_propState <- w_current + sample(c(-1,1), 1)*move
-         #   if(any(w_propState < 0)){
+         #   workPropState <- workCurrent + sample(c(-1,1), 1)*move
+         #   if(any(workPropState < 0)){
          #     prob <- 0
          #   } else {
          #     if(dist == "hypergeometric"){
-         #       prob <- exp( sum(lfactorial(w_current)) - sum(lfactorial(w_propState)) )
+         #       prob <- exp( sum(lfactorial(workCurrent)) - sum(lfactorial(workPropState)) )
          #     } else { # dist == "uniform"
          #       prob <- 1
          #     }
          #   }
-         #   if(unifs2[i] < prob) w_current <- w_propState # else w_current
+         #   if(unifs2[i] < prob) workCurrent <- workPropState # else workCurrent
          # }
-         # propState <- w_current
+         # propState <- workCurrent
           
           
-          if(any(w_moves == 0)){
-            w_propStatelow <- current + lower_bound * move
-            w_propStateup <-  current + upper_bound * move
-            if(any(w_propStatelow < 0)){
-              lower_bound <- 1
+          if(any(workMoves == 0)){
+            workPropStatelow <- current + lowerBound * move
+            workPropStateup <-  current + upperBound * move
+            if(any(workPropStatelow < 0)){
+              lowerBound <- 1
             }
-            if(any(w_propStateup < 0)){
-              upper_bound <- -1
+            if(any(workPropStateup < 0)){
+              upperBound <- -1
             }
           }
          
-          c_s <- sample(lower_bound:upper_bound,1)
-          if(c_s == 0){
-            c_s <- 1
+          multiple  <- sample(lowerBound:upperBound,1)
+          if(multiple  == 0){
+            multiple  <- 1
           }
-          propState <- current + c_s * move
+          propState <- current + multiple  * move
         }
-        if(non_uniform == TRUE)
+        if(nonUniform)
         {
-          move_prob <- runif(1)
+          moveProb <- runif(1)
           for(l in 1:nMoves){
-            if(move_prob <= sum(move_dist[1:l])/counter){
+            if(moveProb <= sum(moveDist[1:l])/counter){
               move <- moves[,l]
-              which_move <- l
+              whichMove <- l
               break()
             }
           }
@@ -352,9 +352,9 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
           propState <- current + move
         }
         
-        if(SIS == TRUE){
+        if(SIS){
           if(runif(1) <= .05){
-            propState <- sis_table(config, suff_stats)
+            propState <- sis_table(config, suffStats)
           }
         }
         
@@ -369,10 +369,10 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
         }
         probTotal <- probTotal + min(1, prob)
         
-        if(non_uniform == TRUE){
+        if(nonUniform){
           if(unifs[k*(thin-1)+j] < prob){
             current  <- propState
-            move_dist[which_move] <- move_dist[which_move] + 1
+            moveDist[whichMove] <- moveDist[whichMove] + 1
             counter <- counter + 1
           }
         }else{
@@ -409,8 +409,8 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
       metropolis_uniform_cpp
     }
     message("Running chain (C++)... ", appendLF = FALSE)  
-    if (burn > 0) current <- sampler(current, allMoves, suff_stats, config, burn, 1, hit_and_run, SIS, non_uniform, adaptive)$steps[,burn]
-    out       <- sampler(current, allMoves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
+    if (burn > 0) current <- sampler(current, allMoves, suffStats, config, burn, 1, hitAndRun, SIS, nonUniform, adaptive)$steps[,burn]
+    out       <- sampler(current, allMoves, suffStats, config, iter, thin, hitAndRun, SIS, nonUniform, adaptive)
     out$moves <- moves
     message("done.")
     
@@ -432,7 +432,7 @@ metropolis <- function(init, moves, suff_stats, config, iter = 1E3, burn = 0, th
 
 #' @rdname metropolis
 #' @export
-rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE, adaptive = FALSE){
-  metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hit_and_run) 
+rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hitAndRun = FALSE, SIS = FALSE, nonUniform = FALSE, adaptive = FALSE){
+  metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hitAndRun) 
 }
 

@@ -9,7 +9,7 @@
 #' 4ti2 (through latter).
 #' 
 #' @import stringr mpoly reshape2 Rcpp lpSolve parallel memoise 
-#'   ggplot2 latter m2r
+#'   ggplot2 latter m2r 
 #' @importFrom stats deriv dmultinom loglin runif sd model.frame
 #' @importFrom utils combn download.file
 #' @importFrom plyr ddply

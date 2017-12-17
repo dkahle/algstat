@@ -672,7 +672,7 @@ loglinear <- function(model, data,
     A <- hmat(dim(data), facets)
   }
   
-  suff_stats <- unname(A %*% init)
+  suffStats <- unname(A %*% init)
 
   ## construct A matrix and compute moves
   ##################################################  
@@ -715,7 +715,7 @@ loglinear <- function(model, data,
   ## run metropolis-hastings
   ##################################################  
   init <- unname(init) # init
-  out <- metropolis(init, moves, suff_stats = suff_stats, config = unname(A), iter = iter, burn = burn, thin = thin, 
+  out <- metropolis(init, moves, suffStats = suffStats, config = unname(A), iter = iter, burn = burn, thin = thin, 
                     engine = engine, ...)  
 
 
