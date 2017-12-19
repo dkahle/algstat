@@ -1,6 +1,6 @@
 .onAttach <- function(...) {
   
-  packageStartupMessage('  Please cite algstat! See citation("algstat") for details.')  
+  packageStartupMessage('Please cite algstat! See citation("algstat") for details.')  
   
   if(is.mac()){ ## find the path on a mac	
 
