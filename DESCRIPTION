@@ -25,13 +25,11 @@ Imports:
     Rcpp,
     lpSolve,
     parallel,
-    memoise,
     ggplot2
 Suggests:
     vcd,
     microbenchmark
 License: GPL-2
-SystemRequirements: Optionally LattE, 4ti2, Bertini, and Macaulay2.  Cygwin
-    is required for each of the above for Windows users.  See INSTALL file for
-    details.
+SystemRequirements: 
+    Bertini <https://bertini.nd.edu/>
 RoxygenNote: 6.0.1
