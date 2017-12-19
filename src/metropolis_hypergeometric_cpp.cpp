@@ -18,7 +18,7 @@ List metropolis_hypergeometric_cpp(
   double prob;                             // the probability of transition
   bool anyIsNegative;
   IntegerVector move(n);
-  double acceptProb = 0;
+  double accept_prob = 0;
 
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -58,7 +58,7 @@ List metropolis_hypergeometric_cpp(
       }
 
       // store acceptance probability
-      acceptProb = acceptProb + prob / nTotalSamples;
+      accept_prob = accept_prob + prob / nTotalSamples;
 
       // make move
       if(unifs[thin*i+j] < prob){
@@ -78,7 +78,7 @@ List metropolis_hypergeometric_cpp(
   // create out list
   List out = List::create(
     Rcpp::Named("steps") = steps,
-    Rcpp::Named("acceptProb") = acceptProb
+    Rcpp::Named("accept_prob") = accept_prob
   );
 
   return out;

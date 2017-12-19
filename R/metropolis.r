@@ -261,7 +261,7 @@ metropolis <- function(init, moves, iter = 1E3, burn = 0, thin = 1,
   ## return output
   ##################################################  
 
-  out[c("steps", "moves", "acceptProb")]
+  out[c("steps", "moves", "accept_prob")]
 }
 
 

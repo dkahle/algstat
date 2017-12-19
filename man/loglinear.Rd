@@ -5,7 +5,7 @@
 \alias{hierarchical}
 \title{Fit a hierarchical log-linear model with algebraic methods}
 \usage{
-loglinear(model, data, init = tab2vec(data), iter = 10000, burn = 1000,
+loglinear(model, data, init = tab2vec(data), iter = 1e+05, burn = 1000,
   thin = 10, engine = c("Cpp", "R"), method = c("ipf", "mcmc"), moves,
   ...)
 }
@@ -41,7 +41,7 @@ a list containing named elements \itemize{ \item
   individual samples from the mcmc. \item \code{moves}: the moves
   used for the proposal distribution in the mcmc, computed with
   4ti2 (note that only the positive moves are given). \item
-  \code{acceptProb}: the average acceptance probability of the
+  \code{accept_prob}: the average acceptance probability of the
   moves, including the thinned moves. \item \code{param}: the
   fitted parameters of the log linear model. \item \code{df}:
   parameters per term in the model \item \code{quality}: model
@@ -268,7 +268,7 @@ tableau(loglinearFit$moves, dim(handy))
 
 
 # the acceptance probability of the MCMC is retained
-loglinearFit$acceptProb
+loglinearFit$accept_prob
 
 
 

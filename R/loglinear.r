@@ -87,7 +87,7 @@
 #'   individual samples from the mcmc. \item \code{moves}: the moves
 #'   used for the proposal distribution in the mcmc, computed with
 #'   4ti2 (note that only the positive moves are given). \item
-#'   \code{acceptProb}: the average acceptance probability of the
+#'   \code{accept_prob}: the average acceptance probability of the
 #'   moves, including the thinned moves. \item \code{param}: the
 #'   fitted parameters of the log linear model. \item \code{df}:
 #'   parameters per term in the model \item \code{quality}: model
@@ -264,7 +264,7 @@
 #' 
 #' 
 #' # the acceptance probability of the MCMC is retained
-#' loglinearFit$acceptProb
+#' loglinearFit$accept_prob
 #' 
 #' 
 #' 
@@ -591,7 +591,7 @@
 #' 
 loglinear <- function(model, data, 
                       init = tab2vec(data), 
-                      iter = 1E4, burn = 1000, 
+                      iter = 1e4, burn = 1000, 
                       thin = 10, engine = c("Cpp","R"), 
                       method = c("ipf", "mcmc"), moves, 
                       ...)
