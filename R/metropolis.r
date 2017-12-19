@@ -152,7 +152,7 @@ metropolis <- function(init, moves, iter = 1E3, burn = 0, thin = 1,
   dist <- match.arg(dist)
   engine <- match.arg(engine)
   if(thin == 0){
-    message("thin = 1 corresponds to no thinning, resetting thin = 0.")
+    message("thin = 1 corresponds to no thinning, resetting thin = 1.")
     thin <- 1
   }
   
