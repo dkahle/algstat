@@ -92,16 +92,6 @@ List metropolis_hypergeometric_cpp(
        lb = max(lowerBound);
        ub = min(upperBound);
      
-     // Enumerating all tables
-    // IntegerVector line = seq(lb, ub);
-    // int line_length = line.size();
-    // IntegerMatrix tables(n, line_length);
-    // for(int i = 0; i < line_length;++i){
-    //   for(int j = 0; j < n;++j){
-    //     tables(j,i) = current[j] + line[i] * move[j];
-    //   }
-    // }
-     
      // MCMC inside MCMC
       //IntegerVector line = seq(lb, ub);
       if(adaptive){
@@ -143,11 +133,7 @@ List metropolis_hypergeometric_cpp(
       for(int k = 0; k < n; ++k){
         proposal[k] = w_current[k];
       }
-      //Attempt at recursively calling MCMC routine 
-      //  List MCMC_out = metropolis_hypergeometric_cpp(current, as<IntegerMatrix>(move), suff_stats, config, 50, 1, false, false, false);
-      //  IntegerMatrix mini_steps = MCMC_out[0];
-      //  int step_length = mini_steps.ncol();
-      //  proposal = mini_steps(_, step_length);
+     
       } else {
    
      // Base Hit and Run

@@ -16,10 +16,14 @@
 #'   or "uniform"
 #' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
 #' @param hitAndRun Whether or not to use the discrete hit and run algorithm in
-#'   the metropolis algorithm
-#' @param adaptive Option inside hitAndRun option. If TRUE, hit and run will choose a proposal distribution adaptively. Defaulted to FALSE.
+#'   the metropolis algorithm. Defaulted to FALSE
 #' @param SIS If TRUE, with a small probability the move will be chosen randomly from the uniform distribution 
 #'  on the fiber using Sequential Importance "Like" Sampling methods. Defaulted to FALSE
+#' @param nonUniform If TRUE, moves will be chosen adaptively using a move weighting system that uses information 
+#' from previous steps. Defaulted to FALSE
+#' @param adaptive Option when hitAndRun = TRUE. If adaptive = TRUE, hit and run will choose a proposal distribution adaptively. 
+#' Defaulted to FALSE
+#' 
 #' @name metropolis
 #' @return a list
 #' @export metropolis
@@ -43,7 +47,7 @@
 #' # view convergence through trace plot
 #' qplot(1:1000, out$steps[1,])
 #' 
-#' # sampling from the hypergeometric distribution
+#' # sampling from the uniform distribution
 #' out <- metropolis(init, moves, dist = "uniform")
 #' qplot(out$steps[1,])
 #' 
@@ -112,13 +116,30 @@
 #' 
 #' 
 #' 
+#' # examples using the extra options inside metropolis 
 #' 
 #' 
+#' data("HairEyeColor")
+#' tbl <- tab2vec(apply(HairEyeColor, c(1, 2), sum))
+#' A <- hmat(c(4,4),1:2)
+#' moves <- markov(A)
+#' suffStats <- A %*% tbl
 #' 
+#' # base metropolis algorithm 
+#' base <- metropolis(tbl, moves, suffStats, A)
 #' 
+#' # hit and run option
+#' har <- metropolis(tbl, moves, suffStats, A, hitAndRun = TRUE)
 #' 
+#' # check convergence through trace plots
+#' baseStats <- copmuteUProbsCpp(base$steps)
+#' harStats <- computeUProbsCpp(har$steps)
 #' 
+#' data <- data.frame(baseStats = baseStats, harStats = harStats, steps = 1:1000)
 #' 
+#' ggplot(data = data) + geom_line(aes(steps, baseStats)) + 
+#' geom_line(aes(steps, harStats), color = "red") + 
+#' labs(x = "Steps", y = "UNLL value", title = "Base Algorithm vs. Algorithm with Hit and Run option in red")
 #' 
 #' 
 #' showSteps <- function(steps){
@@ -277,45 +298,6 @@ metropolis <- function(init, moves, suffStats, config, iter = 1E3, burn = 0, thi
           workMoves <- (-1 * workCurrent) / workMove
           lowerBound <- if(any(workMoves < 0)){max(subset(workMoves,subset = workMoves < 0))}else{1}
           upperBound <- if(any(workMoves > 0)){min(subset(workMoves,subset = workMoves > 0))}else{-1} 
-        
-          #New part 
-         # #Option 1 Enumerate tables and 
-         # line <- lowerBound:upperBound
-         # #Enumerate tables on the line
-         # tables <- matrix(0L, nrow =length(init) , ncol = length(line))
-         # for(i in 1:length(line)){
-         #   tables[,i] <- current + line[i]*move
-         # }
-         # probs <- apply(tables, 2, function(x) 1/(sum(lfactorial(x))))
-         # probDist <- probs / sum(probs)
-         # unif <- runif(1)
-         # dummy <- probDist[1]
-         # for(i in 1:(length(probDist) -1)){
-         #   if(unif < dummy){
-         #     propState <- tables[,i]
-         #     break()
-         #   }
-         #   dummy <- dummy + probDist[i+1]
-         # }
-          #Option 2
-         # line <- lowerBound:upperBound
-         # workCurrent <- current
-         # unifs2 <- runif(2*length(line))
-         # for(i in 1:(2*length(line))){
-         #   workPropState <- workCurrent + sample(c(-1,1), 1)*move
-         #   if(any(workPropState < 0)){
-         #     prob <- 0
-         #   } else {
-         #     if(dist == "hypergeometric"){
-         #       prob <- exp( sum(lfactorial(workCurrent)) - sum(lfactorial(workPropState)) )
-         #     } else { # dist == "uniform"
-         #       prob <- 1
-         #     }
-         #   }
-         #   if(unifs2[i] < prob) workCurrent <- workPropState # else workCurrent
-         # }
-         # propState <- workCurrent
-          
           
           if(any(workMoves == 0)){
             workPropStatelow <- current + lowerBound * move
@@ -433,6 +415,6 @@ metropolis <- function(init, moves, suffStats, config, iter = 1E3, burn = 0, thi
 #' @rdname metropolis
 #' @export
 rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hitAndRun = FALSE, SIS = FALSE, nonUniform = FALSE, adaptive = FALSE){
-  metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hitAndRun) 
+  metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hitAndRun, SIS, nonUniform, adaptive) 
 }
 
