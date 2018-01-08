@@ -90,7 +90,7 @@
 #'   )
 #'   
 #'   # aglm 
-#'   out <- aglm(y ~ x, data = df, family = binomial())
+#'   out <- aglm(y ~ x, data = df, family = binomial(), thin = 500)
 #'  
 #'   # check convergence through trace plot
 #'   qplot(1:10000, out$sampsStats$PRs, geom = "line")

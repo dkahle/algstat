@@ -132,8 +132,8 @@
 #' har <- metropolis(tbl, moves, suffStats, A, hitAndRun = TRUE)
 #' 
 #' # check convergence through trace plots
-#' baseStats <- copmuteUProbsCpp(base$steps)
-#' harStats <- computeUProbsCpp(har$steps)
+#' baseStats <- algstat:::computeUProbsCpp(base$steps)
+#' harStats <- algstat:::computeUProbsCpp(har$steps)
 #' 
 #' data <- data.frame(baseStats = baseStats, harStats = harStats, steps = 1:1000)
 #' 
