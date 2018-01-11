@@ -27,7 +27,7 @@ List metropolis_uniform_cpp(
   double prob2;
   bool anyIsNegative;
   IntegerVector move(n);
-  double acceptProb = 0;
+  double accept_prob = 0;
   IntegerVector current_num;
   IntegerVector move_num;
   IntegerVector stepSize;
@@ -39,7 +39,7 @@ List metropolis_uniform_cpp(
   IntegerVector w_current(n);
   IntegerVector w_proposal(n);
   IntegerVector run;
-  
+
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
   Function runif("runif");
@@ -191,7 +191,7 @@ List metropolis_uniform_cpp(
       }
 
       // store acceptance probability
-      acceptProb = acceptProb + prob / nTotalSamples;
+      accept_prob = accept_prob + prob / nTotalSamples;
 
       if(non_uniform == true){
         
@@ -225,7 +225,7 @@ List metropolis_uniform_cpp(
   // create out list
   List out = List::create(
     Rcpp::Named("steps") = steps,
-    Rcpp::Named("acceptProb") = acceptProb
+    Rcpp::Named("accept_prob") = accept_prob
   );
 
   return out;

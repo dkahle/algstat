@@ -7,11 +7,10 @@
 \alias{algstat-package}
 \title{algstat : Algebraic statistics in R}
 \description{
-algstat is a package for algebraic statistics in R.  Current 
-applications include exact inference in log-linear models for 
-contingency table data, analysis of ranked and partially ranked 
-data, and general purpose tools for multivariate polynomials, 
-building on the mpoly package.  To aid in the process, algstat 
-leverages ports to Macaulay2 (through m2r), Bertini, LattE and
-4ti2 (through latter).
+algstat is a package for algebraic statistics in R.  Current applications
+include exact inference in log-linear models for contingency table data,
+analysis of ranked and partially ranked data, and general purpose tools for
+multivariate polynomials, building on the mpoly package.  To aid in the
+process, algstat leverages ports to Macaulay2 (through m2r), Bertini, LattE
+and 4ti2 (through latter).
 }

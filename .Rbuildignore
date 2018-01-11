@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 ^.*\.png$
 ^README.Rmd$
+^README.md$
+^NEWS.md$

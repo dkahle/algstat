@@ -1,5 +1,6 @@
 .onAttach <- function(...) {
   
+  packageStartupMessage('Please cite algstat! See citation("algstat") for details.')  
   
   if(is.mac()){ ## find the path on a mac	
 
@@ -8,14 +9,14 @@
   } else if(is.win()){ ## find the path on a pc  	
   	
   	if(!any(str_detect(tolower(list.files("C:\\")), "cygwin"))){
-  	  psm("Cygwin is required to run most of algstat on a Windows platform.")
+  	  psm("  Cygwin is required to run most of algstat on a Windows platform.")
   	  psm("  It needs to be in your C:\\ drive, but wasn't found.")  	  
   	  return(invisible())
   	}
     
     if(!whereis_is_accessible()){ # check for whereis, return if not found
       psm(
-        "The whereis function was not found, so algstat can't find the required exe's.\n",
+        "  The whereis function was not found, so algstat can't find the required exe's.\n",
         "  Try setting the path with setBertiniPath()."
       )
       return()
@@ -117,12 +118,12 @@ startup_check_for_program <- function(optionName){
   setFun <- setFun(optionName)
   
   if(is.null(getOption(optionName))){
-    psms("%s not found. Set the location with %s", longName, setFun)
+    psms("  %s not found. Set the location with %s", longName, setFun)
     return(invisible(FALSE))
   }
     
   if(length(list.files(getOption(optionName))) == 0){
-    psms("%s appears to be installed, but it's not where it was expected.", longName)
+    psms("  %s appears to be installed, but it's not where it was expected.", longName)
     psms("  Suggestion : run %s", setFun)
     return(invisible(FALSE))    
   }	
@@ -141,7 +142,7 @@ program_not_found_stop <- function(optionName){
   setFun <- setFun(optionName)
   
   if(is.null(getOption(optionName))){
-    stop(sprintf("%s not found. Set the location with %s", longName, setFun))
+    stop(sprintf("  %s not found. Set the location with %s", longName, setFun))
     return(invisible(FALSE))
   }
   

@@ -179,7 +179,7 @@ metropolis <- function(init, moves, suffStats, config, iter = 1E3, burn = 0, thi
   dist <- match.arg(dist)
   engine <- match.arg(engine)
   if(thin == 0){
-    message("thin = 1 corresponds to no thinning, resetting thin = 0.")
+    message("thin = 1 corresponds to no thinning, resetting thin = 1.")
     thin <- 1
   }
   
@@ -401,8 +401,8 @@ metropolis <- function(init, moves, suffStats, config, iter = 1E3, burn = 0, thi
   
   ## return output
   ##################################################  
-  
-  out[c("steps", "moves", "acceptProb")]
+
+  out[c("steps", "moves", "accept_prob")]
 }
 
 

@@ -66,8 +66,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // metropolis_hypergeometric_cpp
+<<<<<<< HEAD
 List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, IntegerVector suff_stats, IntegerMatrix config, int iter, int thin, bool hit_and_run, bool SIS, bool non_uniform, bool adaptive);
 RcppExport SEXP _algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP suff_statsSEXP, SEXP configSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP, SEXP SISSEXP, SEXP non_uniformSEXP, SEXP adaptiveSEXP) {
+=======
+List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP _algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+>>>>>>> b84c9d57a6404c52843645b7db04e0d26e0e01af
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,8 +91,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // metropolis_uniform_cpp
+<<<<<<< HEAD
 List metropolis_uniform_cpp(IntegerVector current, IntegerMatrix moves, IntegerVector suff_stats, IntegerMatrix config, int iter, int thin, bool hit_and_run, bool SIS, bool non_uniform, bool adaptive);
 RcppExport SEXP _algstat_metropolis_uniform_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP suff_statsSEXP, SEXP configSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP, SEXP SISSEXP, SEXP non_uniformSEXP, SEXP adaptiveSEXP) {
+=======
+List metropolis_uniform_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP _algstat_metropolis_uniform_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+>>>>>>> b84c9d57a6404c52843645b7db04e0d26e0e01af
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

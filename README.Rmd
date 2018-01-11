@@ -7,7 +7,6 @@ output:
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, echo = FALSE}
-
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#",
@@ -17,50 +16,49 @@ knitr::opts_chunk$set(
 
 # algstat
 
-__algstat__ is a collection of tools to help do algebraic statistics in R.  Many (but not all) of the tools make use of back-end connections to software used in various math communities, such as [Macaulay2](http://www.math.uiuc.edu/Macaulay2/) (for algebraic computations), [Bertini](https://bertini.nd.edu) (for solving systems of polynomial equations), and [LattE](https://www.math.ucdavis.edu/~latte/) with [4ti2](http://www.4ti2.de) (for lattice problems and, in particular, the computation of Markov bases).
+__algstat__ is a collection of tools to help you use algebraic statistical methods in R.  It is intended to be an end user package for that purpose, and consequently depends on other packages that make connections to math software to do key computations.  Currently, [the __latter__ package](https://github.com/dkahle/latter.git) is used to connect R to [LattE](https://www.math.ucdavis.edu/~latte/) with [4ti2](http://www.4ti2.de) for lattice problems and the computation of Markov bases, and [the __m2r__ package](https://github.com/coneill-math/m2r.git) connects R to [Macaulay2](http://www.math.uiuc.edu/Macaulay2/) for algebraic computations.  In the future, __bertini__ will connect R to [Bertini](https://bertini.nd.edu), which is used to numerically solve systems of polynomial equations.  __m2r__ can be used for that purpose to some extent currently by using Macaulay2's connection to [PHCPack](http://homepages.math.uic.edu/~jan/download.html), so be sure to look there for now if that's what you're trying to do.
 
-This brief intro is currently under construction.
-
-
+If you have something you're wanting implemented here, please file an issue!
 
 
 
 
 # Exact inference with log-linear models
 
-_Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and algstat has registered them._
+_Note: this section assumes you have [__latter__](https://github.com/dkahle/latter.git) installed and working on your machine._
 
 One of the most well-developed parts of the package allows users to perform (conditional) exact tests for log-linear models.  There are several great references on the math behind this, such as [Diaconis and Sturmfels' original paper](http://projecteuclid.org/euclid.aos/1030563990), the [Lectures on Algebraic Statistics](http://smile.amazon.com/Lectures-Algebraic-Statistics-Oberwolfach-Seminars/dp/3764389044/ref=sr_1_1?ie=UTF8&qid=1430536908&sr=8-1&keywords=lectures+on+algebraic+statistics), and [Markov Bases in Algebraic Statistics](http://smile.amazon.com/Markov-Bases-Algebraic-Statistics-Springer/dp/1461437180/ref=sr_1_fkmr0_1?ie=UTF8&qid=1430536933&sr=8-1-fkmr0&keywords=aoki%2C+hada%2C+and+takemura), so we'll keep the technical discussion to a minimum.
 
 ### Fisher's exact test
 
 We'll begin by doing Fisher's exact test on a built-in dataset called politics.
-
-```{r fisher}
+```{r politics}
 library(algstat)
 data(politics)
 politics
+```
 
+Here's how you typically do Fisher's exact test in R:
+```{r fisher}
 fisher.test(politics)
 ```
 
-Since the independence model is log-linear, this exact same procedure can be done with __algstat__. The go-to function here is `loglinear()` (formerly `hierarchical()`):
-
+Since the independence model is log-linear, this exact same procedure can be done with __algstat__. The go-to function here is `loglinear()`:
 ```{r loglinearIntro}
 loglinear(~ Personality + Party, data = politics)
 ```
 
-Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model.  Consequently, the p-values estimated are only determined up to Monte Carlo error.  The standard p-value is given under the column `p.value` in the row labeled `P(samp)`.  The analogous asymptotic test can be done in either of two ways.  
+Exact inference in algebraic statistics is done using MCMC to sample from the conditional distribution of the data given its sufficient statistics under the model.  Consequently, the p-values estimated are only determined up to Monte Carlo error.  The standard p-value is given under the column `p.value` in the row labeled `P(samp)`.  
+
+The asymptotic test of independence analogous to Fisher's exact test (which does not condition on the marginals being known) can be done in either of two ways.  
 
 The first way uses the `loglin()` function from the __stats__ package.  It outputs the likelihood ratio statistic (`Likelihood G^2` in the output above) and Pearson's chi-squared statistic (`Pearson X^2` above), but you have to calculate the p-value yourself.
-
 ```{r loglin}
 (loglinMod <- stats::loglin(politics, list(1, 2)))
 pchisq(loglinMod$pearson, df = 1, lower.tail = FALSE)
 ```
 
 The second way is the `loglm()` function in the __MASS__ package, which is a nice wrapper of `loglin()` (in fact, __algstat__'s `loglinear()` function uses the IPF implementation from `loglin()`, although it doesn't need to).  It's syntax looks identical to `loglinear()`'s above:
-
 ```{r loglm}
 MASS::loglm(~ Personality + Party, data = politics)
 ```
@@ -69,7 +67,6 @@ MASS::loglm(~ Personality + Party, data = politics)
 ### Fisher's exact test on RxC tables
 
 Doing Fisher's exact test on larger problems is a significantly more complicated problem.  The documentation for `fisher.test()` illustrates how it can be used on RxC tables in general, not just on 2x2 tables.  Here's an example from its documentation drawn from Agresti (2002, p.57):
-
 ```{r bigFisher}
 Job <- matrix(
   c(1,2,1,0, 3,3,6,1, 10,10,14,9, 6,7,12,11), nrow = 4, ncol = 4,
@@ -84,21 +81,21 @@ Job
 fisher.test(Job)
 ```
 
-And the __algstat__ counterpart:
+Here's the __algstat__ counterpart:
 ```{r bigFisherLogLinear}
 loglinear(~ income + satisfaction, data = Job)
 ```
 
-Note that the asymptotic test can be performed as well.  The chi-square approximation is actually very good here:
+The asymptotic test can be performed as well.  The chi-square approximation is actually very good here:
 ```{r bigFisherLogLm}
 MASS::loglm(~ income + satisfaction, data = Job)
 ```
 
 
+
 ### Fisher's exact test on multi-way tables
 
-`fisher.test()` does not generalize to multi-way tables and is prone to crashing even in large-celled two-way tables (see `?loglinear` for an example).  Thus, the only way to do exact inference in multi-way tables (in general and in R) is to use an algebraic method.  We'll illustrate this using the drugs dataset from `loglinear()`'s documentation, taken from Agresti (2002, p.322), on which we'll test the no-three-way interaction model:
-
+`fisher.test()` does not work with multi-way tables and is prone to crashing even in large-celled two-way tables (see `?loglinear` for an example).  Thus, the only way to do exact inference in multi-way tables is to use `loglinear()`.  We'll illustrate this using the drugs dataset from `loglinear()`'s documentation, taken from Agresti (2002, p.322), on which we'll test the no-three-way interaction model:
 ```{r logLinearMultiWay}
 data(drugs)
 ftable(drugs)
@@ -106,8 +103,7 @@ ftable(drugs)
 loglinear(subsets(1:3, 2), data = drugs)
 ```
 
-Note that here we've used the more concise syntax of facet specification.  Doing the same with `loglm()` looks like this:
-
+Note that here we've used the more concise syntax of facet specification; if you want to understand the model specification better, read the documentation in `?loglinear`.  You can perform the asymptotic test with `loglm()` like this:
 ```{r logLmMultiWay}
 MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 ```
@@ -126,18 +122,16 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 
 # Statistical applications of LattE
 
-_Note: this section assumes you have [LattE](https://www.math.ucdavis.edu/~latte/) and [4ti2](http://www.4ti2.de) installed and latter has registered it._
+_Note: this section assumes you have [__latter__](https://github.com/dkahle/latter.git) installed and working on your machine._
 
 Most [LattE](https://www.math.ucdavis.edu/~latte/) programs are available as functions in __latter__, which is imported by __algstat__.  Checkout the readme for __latter__ [here](https://github.com/dkahle/latter).
 
 There are many statistical applications and potential applications of LattE in R.  One example is found in the `count` program, implemented in `latter::count()`.  `latter::count()` counts the number of integer points in a [convex polytope](https://en.wikipedia.org/wiki/Convex_polytope).  This can be useful for counting the number of contingency tables with fixed marginals.  __algstat__ uses `latter::count()` in the `countTables()` function, which determines the number of contingency tables in the [fiber (isostatistical region)](http://en.wikipedia.org/wiki/Fiber_(mathematics)) of a table given an [exponential family model](http://en.wikipedia.org/wiki/Exponential_family).
-
 ```{r countTables}
 countTables(politics) # the independence model is the default
 ```
 
 For example, we can determine the number of tables with the same row sums of `politics` as follows:
-
 ```{r countTables2}
 (A <- hmat(varlvls = c(2, 2), facets = 1:2)[1:2,])
 countTables(politics, A)
@@ -176,10 +170,22 @@ bertini(code)
 
 Even better, __algstat__ can team up with [__mpoly__](http://github.com/dkahle/mpoly) (working under the hood) to solve systems of polynomial equations using `polySolve()`:
 ```{r polySolve}
-curve(x^2, from = -2, to = 2, )
+curve(x^2, from = -2, to = 2)
 curve(2 - x^2, from = -2, to = 2, add = TRUE)
 polySolve(c("y = x^2", "y = 2 - x^2"), varOrder = c("x", "y"))
 ```
+
+
+
+
+
+
+# Acknowledgements
+
+This material is based upon work supported by the National Science Foundation under Grant Nos. [1622449](https://nsf.gov/awardsearch/showAward?AWD_ID=1622449) and [1622369](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1622369).
+
+
+
 
 
 
@@ -187,14 +193,17 @@ polySolve(c("y = x^2", "y = 2 - x^2"), varOrder = c("x", "y"))
 
 ## Installing algstat
 
-* From CRAN: `install.packages("algstat")` (this is not up-to-date)
+There are currently two ways to get __algstat__.  Here's the preferred way until we push a new release to CRAN:
 
-* From Github (dev version): 
-```R
-# install.packages("devtools")
-# install.packages("mpoly")
+* From Github: 
+```{r eval=FALSE}
+if(!requireNamespace("devtools")) install.packages("devtools")
+install.packages(c("mpoly", "m2r"))
+devtools::install_github("dkahle/latter")
 devtools::install_github("dkahle/algstat")
 ```
+
+* From CRAN: `install.packages("algstat")` (don't get this now; it's currently out of date)
 
 ## Installing supporting software
 

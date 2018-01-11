@@ -41,7 +41,7 @@ a list containing named elements \itemize{ \item
   individual samples from the mcmc. \item \code{moves}: the moves
   used for the proposal distribution in the mcmc, computed with
   4ti2 (note that only the positive moves are given). \item
-  \code{acceptProb}: the average acceptance probability of the
+  \code{accept_prob}: the average acceptance probability of the
   moves, including the thinned moves. \item \code{param}: the
   fitted parameters of the log linear model. \item \code{df}:
   parameters per term in the model \item \code{quality}: model
@@ -268,7 +268,7 @@ tableau(loglinearFit$moves, dim(handy))
 
 
 # the acceptance probability of the MCMC is retained
-loglinearFit$acceptProb
+loglinearFit$accept_prob
 
 
 

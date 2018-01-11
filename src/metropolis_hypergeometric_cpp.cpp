@@ -28,7 +28,7 @@ List metropolis_hypergeometric_cpp(
   double prob2;
   bool anyIsNegative;
   IntegerVector move(n);
-  double acceptProb = 0;
+  double accept_prob = 0;
   IntegerVector current_num;
   IntegerVector move_num;
   IntegerVector stepSize;
@@ -189,7 +189,7 @@ List metropolis_hypergeometric_cpp(
       }
 
       // store acceptance probability
-      acceptProb = acceptProb + prob / nTotalSamples;
+      accept_prob = accept_prob + prob / nTotalSamples;
       
       
       if(non_uniform == true){
@@ -204,12 +204,10 @@ List metropolis_hypergeometric_cpp(
         }
       }else{
         // make move
-        if(unifs[thin*i+j] < prob){
-          
+        if(unifs[thin*i+j] < prob){        
           for(int k = 0; k < n; ++k){
             current[k] = proposal[k];
           }
-          
         }
       }
     }
@@ -223,7 +221,7 @@ List metropolis_hypergeometric_cpp(
   // create out list
   List out = List::create(
     Rcpp::Named("steps") = steps,
-    Rcpp::Named("acceptProb") = acceptProb
+    Rcpp::Named("accept_prob") = accept_prob
   );
   
   return out;
