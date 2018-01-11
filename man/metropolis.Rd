@@ -5,14 +5,12 @@
 \alias{rawMetropolis}
 \title{The Metropolis Algorithm}
 \usage{
-metropolis(init, moves, suff_stats, config, iter = 1000, burn = 0,
+metropolis(init, moves, suffStats, config, iter = 1000, burn = 0,
   thin = 1, dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"),
-  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE,
-  adaptive = FALSE)
+  hitAndRun = FALSE, SIS = FALSE, nonUniform = FALSE, adaptive = FALSE)
 
 rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric",
-  hit_and_run = FALSE, SIS = FALSE, non_uniform = FALSE,
-  adaptive = FALSE)
+  hitAndRun = FALSE, SIS = FALSE, nonUniform = FALSE, adaptive = FALSE)
 }
 \arguments{
 \item{init}{the initial step}
@@ -31,13 +29,17 @@ or "uniform"}
 
 \item{engine}{C++ or R? (C++ yields roughly a 20-25x speedup)}
 
-\item{hit_and_run}{Whether or not to use the discrete hit and run algorithm in
-the metropolis algorithm}
+\item{hitAndRun}{Whether or not to use the discrete hit and run algorithm in
+the metropolis algorithm. Defaulted to FALSE}
 
 \item{SIS}{If TRUE, with a small probability the move will be chosen randomly from the uniform distribution 
 on the fiber using Sequential Importance "Like" Sampling methods. Defaulted to FALSE}
 
-\item{adaptive}{Option inside hit_and_run option. If TRUE, hit and run will choose a proposal distribution adaptively. Defaulted to FALSE.}
+\item{nonUniform}{If TRUE, moves will be chosen adaptively using a move weighting system that uses information 
+from previous steps. Defaulted to FALSE}
+
+\item{adaptive}{Option when hitAndRun = TRUE. If adaptive = TRUE, hit and run will choose a proposal distribution adaptively. 
+Defaulted to FALSE}
 }
 \value{
 a list
@@ -66,7 +68,7 @@ qplot(out$steps[1,])
 # view convergence through trace plot
 qplot(1:1000, out$steps[1,])
 
-# sampling from the hypergeometric distribution
+# sampling from the uniform distribution
 out <- metropolis(init, moves, dist = "uniform")
 qplot(out$steps[1,])
 
@@ -135,13 +137,30 @@ microbenchmark(
 
 
 
+# examples using the extra options inside metropolis 
 
 
+data("HairEyeColor")
+tbl <- tab2vec(apply(HairEyeColor, c(1, 2), sum))
+A <- hmat(c(4,4),1:2)
+moves <- markov(A)
+suffStats <- A \%*\% tbl
 
+# base metropolis algorithm 
+base <- metropolis(tbl, moves, suffStats, A)
 
+# hit and run option
+har <- metropolis(tbl, moves, suffStats, A, hitAndRun = TRUE)
 
+# check convergence through trace plots
+baseStats <- algstat:::computeUProbsCpp(base$steps)
+harStats <- algstat:::computeUProbsCpp(har$steps)
 
+data <- data.frame(baseStats = baseStats, harStats = harStats, steps = 1:1000)
 
+ggplot(data = data) + geom_line(aes(steps, baseStats)) + 
+geom_line(aes(steps, harStats), color = "red") + 
+labs(x = "Steps", y = "UNLL value", title = "Base Algorithm vs. Algorithm with Hit and Run option in red")
 
 
 showSteps <- function(steps){

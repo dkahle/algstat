@@ -16,7 +16,7 @@
 #'   element_blank
 #' @importFrom parallel mclapply makeCluster stopCluster parLapply detectCores
 #' @importFrom reshape2 melt
-#' @importFrom stats deriv dmultinom loglin runif sd
+#' @importFrom stats deriv dmultinom loglin runif sd model.frame
 #' @importFrom utils combn download.file
 #' @importFrom plyr ddply
 #' @useDynLib algstat
