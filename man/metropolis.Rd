@@ -5,9 +5,10 @@
 \alias{rawMetropolis}
 \title{The Metropolis Algorithm}
 \usage{
-metropolis(init, moves, suffStats, config, iter = 1000, burn = 0,
-  thin = 1, dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"),
-  hitAndRun = FALSE, SIS = FALSE, nonUniform = FALSE, adaptive = FALSE)
+metropolis(init, moves, suffStats = 0, config = matrix(0), iter = 1000,
+  burn = 0, thin = 1, dist = c("hypergeometric", "uniform"),
+  engine = c("Cpp", "R"), hitAndRun = FALSE, SIS = FALSE,
+  nonUniform = FALSE, adaptive = FALSE)
 
 rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric",
   hitAndRun = FALSE, SIS = FALSE, nonUniform = FALSE, adaptive = FALSE)
@@ -17,6 +18,10 @@ rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric",
 
 \item{moves}{the moves to be used (the negatives will be added); 
 they are arranged as the columns of a matrix.}
+
+\item{suffStats}{the sufficient statistics of the model. Only used when SIS = TRUE. Defaulted to 0.}
+
+\item{config}{the configuration matrix that encodes the model. Only used when SIS = TRUE. Defaulted to matrix(0).}
 
 \item{iter}{number of chain iterations}
 
@@ -118,9 +123,9 @@ fisher.test(handy)$p.value
 
 A <- hmat(c(2,2), as.list(1:2))
 moves <- markov(A)
-outC <- metropolis(tab2vec(handy), moves, 1e4, engine = "Cpp")
+outC <- metropolis(tab2vec(handy), moves, suffStats = tab2vec(handy) \%*\% A, config = A, 1e4, engine = "Cpp")
 str(outC)
-outR <- metropolis(tab2vec(handy), moves, 1e4, engine = "R", thin = 20)
+outR <- metropolis(tab2vec(handy), moves, suffStats = tab2vec(handy) \%*\% A, config = A, 1e4, engine = "R", thin = 20)
 str(outR)
 
 # showSteps(out$steps)
@@ -128,8 +133,8 @@ str(outR)
 
 library(microbenchmark)
 microbenchmark(
-  metropolis(tab2vec(handy), moves, engine = "Cpp"),
-  metropolis(tab2vec(handy), moves, engine = "R")
+  metropolis(tab2vec(handy), moves, suffStats = tab2vec(handy) \%*\% A, config = A,engine = "Cpp"),
+  metropolis(tab2vec(handy), moves, suffStats = tab2vec(handy) \%*\% A, config = A,engine = "R")
 )
 
 # cpp ~ 20-25x faster
