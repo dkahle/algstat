@@ -3,6 +3,7 @@ Version 0.1.1
 CHANGES
 
 * It also now imports all package instead of using dependencies.
+* Bertini is now moved to its own package bertini.
 
 
 Version 0.1.0

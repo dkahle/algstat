@@ -7,7 +7,7 @@
 #' process, algstat leverages ports to Macaulay2 (through m2r), Bertini, LattE
 #' and 4ti2 (through latter).
 #'
-#' @import Rcpp mpoly latter m2r
+#' @import Rcpp mpoly latter m2r bertini
 #' @importFrom stringr str_detect str_c str_dup str_replace str_replace_all
 #'   str_split str_sub str_sub<-
 #' @importFrom lpSolve lp
