@@ -61,7 +61,7 @@ pmat <- function(levels, facets){
      facetList <- facetList[-1]
    }
   #return the configuration matrix which includes only the elements need for the heirarchical model
-  return(fullMat[c(TRUE, facetList %in% facets),])
+  fullMat[c(TRUE, facetList %in% facets),]
 }
 
 

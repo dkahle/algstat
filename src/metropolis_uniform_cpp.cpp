@@ -128,11 +128,7 @@ List metropolis_uniform_cpp(
             for(int k = 0; k < n; ++k){
               proposal[k] = w_current[k];
             }
-            //Attempt at recursively calling MCMC routine 
-            //  List MCMC_out = metropolis_hypergeometric_cpp(current, as<IntegerMatrix>(move), suff_stats, config, 50, 1, false, false, false);
-            //  IntegerMatrix mini_steps = MCMC_out[0];
-            //  int step_length = mini_steps.ncol();
-            //  proposal = mini_steps(_, step_length);
+
           } else {
           
           if(is_true(any(stepSize == 0))){
@@ -144,7 +140,7 @@ List metropolis_uniform_cpp(
             }
           }
           if(lb > ub){
-            run[0] = 1;
+            run = Rcpp::sample(constant, 1);
           }else{
           
           IntegerVector range = seq(lb,ub);
@@ -153,7 +149,7 @@ List metropolis_uniform_cpp(
           
             }
           if(run[0] == 0){
-            run[0] = 1;
+            run = Rcpp::sample(constant, 1);
           }
         }
         if(hit_and_run == TRUE){

@@ -65,7 +65,7 @@
 #'     predict(mod, data.frame(x = 1:5), type = "response")
 #'     
 #'     # aglm predictions
-#'     rowMeans(out$steps) / ddply(df, "x", nrow)$V1
+#'     rowMeans(out$steps) / plry::ddply(df, "x", nrow)$V1
 #'     
 #'     
 #'     
@@ -105,7 +105,7 @@
 #'   predict(mod, data.frame(x = c(1:5)), type = "response")
 #'   
 #'   # aglm predictions 
-#'   rowMeans(out$steps) / ddply(df, "x", nrow)$V1
+#'   rowMeans(out$steps) / plyr::ddply(df, "x", nrow)$V1
 #'   
 #' @export 
 
@@ -176,13 +176,16 @@ aglm <- function(model, data, family = poisson(),
       
       ## format the data 
       names(data)[names(data) == response] <- "response"
-      
+
       if (method == "binomial") {
-        data <- rbind(ddply(data, unique(unlist(model)), summarise, sum = sum(response)), 
-                      ddply(data, unique(unlist(model)), summarise, sum = length(response) - sum(response))
-        )
+        data <- group_by_(data, unique(unlist(model)))
+        success <- dplyr::summarise(data, sum = sum(response))
+        failure <- dplyr::summarise(data, sum = length(response) - sum(response))
+        data <- bind_rows(success, failure)
+        
       } else {
-        data <- ddply(data, unique(unlist(model)), summarise, sum = sum(response))
+        data <- group_by_(data, unique(unlist(model)))
+        data <- dplyr::summarise(data, sum = sum(response))
       }
       
       ## any 0 levels
@@ -219,16 +222,16 @@ aglm <- function(model, data, family = poisson(),
     }
     ## levels (assuming all levels are numeric i.e. (1,2,3,...  not Green, Blue, Red, etc.)
     if(ncol(data) <= 2){ 
-      levls <- unique(data[,-ncol(data)])
+      levels <- unique(data[,-ncol(data)])
     } else {
-      levls <- lapply(data[,-ncol(data)], unique)
+      levels <- lapply(data[,-ncol(data)], unique)
     }
     # make configuration (model) matrix
-    A <- pmat(levls, facets)
+    A <- pmat(levels, facets)
   }
   
   # check to see if all level configurations are there (need work here)
-  lvlsInData <- as.list(as.data.frame(t(expand.grid(levls)))) %in% as.list(as.data.frame(t(data[,-ncol(data)])))
+  lvlsInData <- as.list(as.data.frame(t(expand.grid(levels)))) %in% as.list(as.data.frame(t(data[,-ncol(data)])))
   
   # subset A by levels that are present
   A <- A[,lvlsInData]
@@ -254,7 +257,7 @@ aglm <- function(model, data, family = poisson(),
     warning(
       "No moves were provided and 4ti2 is not found.\n",
       "  The resulting chain is likely not connected and strongly autocorrelated.\n",
-      "  See ?pois_reg.  Consider using rmove to generate SIS moves in advance.",
+      "  See ?aglm.  Consider using rmove to generate SIS moves in advance.",
       immediate. = TRUE
     )
     message("Computing 1000 SIS moves... ", appendLF = FALSE)    

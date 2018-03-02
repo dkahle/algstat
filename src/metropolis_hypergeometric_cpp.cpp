@@ -48,7 +48,6 @@ List metropolis_hypergeometric_cpp(
   unifs2 = runif(nTotalSamples);
   unifs3 = runif(nTotalSamples);
   Function print("print");
-  
 
   NumericVector move_dist = rep(10.0, nMoves);
   double counter = sum(move_dist);
@@ -77,7 +76,7 @@ List metropolis_hypergeometric_cpp(
             proposal[k] = current[k] + move[k];
           }
         
-      }else{
+      } else {
       
       // make move
       for(int k = 0; k < n; ++k){
@@ -91,49 +90,60 @@ List metropolis_hypergeometric_cpp(
        upperBound = stepSize[stepSize > 0];
        lb = max(lowerBound);
        ub = min(upperBound);
-     
+    
      // MCMC inside MCMC
       //IntegerVector line = seq(lb, ub);
       if(adaptive){
-      int line_length = ub-lb;
-      for(int m = 0; m < n;++m){
-        w_current[m] = current[m];
-      }
-      
-      for(int l = 0; l < line_length;++l){
-        int constant2 = as<int>(Rcpp::sample(constant, 1));
-        for(int k = 0; k < n;++k){
-          w_proposal[k] = w_current[k] + constant2 * move[k];
+        int line_length = ub-lb + 1;
+    
+        for(int m = 0; m < n;++m){
+          w_current[m] = current[m];
         }
-        bool anyIsNegative2;
-        anyIsNegative2 = false;
-        for(int k = 0; k < n; ++k){
-          if(w_proposal[k] < 0){
-            anyIsNegative2 = true;
+        
+        for(int l = 0; l < line_length; ++l){
+          int constant2 = as<int>(Rcpp::sample(constant, 1));
+          for(int k = 0; k < n;++k){
+            w_proposal[k] = w_current[k] + constant2 * move[k];
           }
-        }
-        
-        if(anyIsNegative2){
-          prob2 = 0;
-        } else {
-          prob2 = exp( sum(lgamma(w_current+1)) - sum(lgamma(w_proposal+1)) );
-        }
-        
-        if(prob2 > 1){
-          prob2 = 1;
-        }
-        
-        // make move
-        if(unifs[l] < prob2){
+          bool anyIsNegative2;
+          anyIsNegative2 = false;
           for(int k = 0; k < n; ++k){
-            w_current[k] = w_proposal[k];
+            if(w_proposal[k] < 0){
+              anyIsNegative2 = true;
+            }
+          }
+          
+          if(anyIsNegative2){
+            prob2 = 0;
+          } else {
+            prob2 = exp( sum(lgamma(w_current+1)) - sum(lgamma(w_proposal+1)) );
+          }
+          
+          if(prob2 > 1){
+            prob2 = 1;
+          }
+          
+          // make move
+          if(unifs2[l] < prob2) {
+            for(int k = 0; k < n; ++k){
+              w_current[k] = w_proposal[k];
+            }
           }
         }
-      }
-      for(int k = 0; k < n; ++k){
-        proposal[k] = w_current[k];
-      }
-     
+        bool didMove;
+        didMove = false;
+        for(int k = 0; k < n; ++k) {
+          if(w_current[k] != current[k]) didMove = true;
+        }
+        if(didMove == true) {
+          for(int k = 0; k < n; ++k) {
+            proposal[k] = w_current[k];
+          }
+        } else {
+          for(int k = 0; k < n; ++k){
+            proposal[k] = current[k] + move[k];
+          }
+        }
       } else {
    
      // Base Hit and Run
@@ -145,23 +155,23 @@ List metropolis_hypergeometric_cpp(
          if(test2[i] < 0) ub = -1;
         }
       }
-     if(lb > ub){
-       run[0] = 1;
-     }else{
-       IntegerVector range = seq(lb,ub);
-       
-       run = Rcpp::sample(range,1);
-     }
-      if(run[0] == 0){
-        run[0] = 1;
+      if(lb > ub){
+        run = Rcpp::sample(constant, 1);
+        
+      } else {
+        IntegerVector range = seq(lb,ub);
+        run = Rcpp::sample(range,1);
       }
-     if(hit_and_run){
-       for(int k = 0; k < n; ++k){
-         proposal[k] = current[k] + as<int>(run) * move[k];
+       if(run[0] == 0){
+         run = Rcpp::sample(constant, 1);
+       }
+      if(hit_and_run){
+        for(int k = 0; k < n; ++k){
+          proposal[k] = current[k] + as<int>(run) * move[k];
+         }
        }
      }
-      }
-    }else{
+   } else {
         for(int k = 0; k < n; ++k){
           proposal[k] = current[k] + move[k];
         }
@@ -170,6 +180,7 @@ List metropolis_hypergeometric_cpp(
       if(SIS){
         if(unifs2[i] < .01) proposal = sis_tbl(config, suff_stats);
       }
+      
       // compute probability of transition
       anyIsNegative = false;
       for(int k = 0; k < n; ++k){
