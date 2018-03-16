@@ -25,7 +25,8 @@ Imports:
     Rcpp,
     lpSolve,
     parallel,
-    ggplot2
+    ggplot2, 
+    dplyr
 Suggests:
     vcd,
     microbenchmark

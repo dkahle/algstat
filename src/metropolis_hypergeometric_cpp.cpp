@@ -27,6 +27,7 @@ List metropolis_hypergeometric_cpp(
   double prob;                             // the probability of transition
   double prob2;
   bool anyIsNegative;
+  bool anyIsNegative2;
   IntegerVector move(n);
   double accept_prob = 0;
   IntegerVector current_num;
@@ -40,6 +41,8 @@ List metropolis_hypergeometric_cpp(
   IntegerVector constant = IntegerVector::create(-1,1);
   IntegerVector w_current(n);
   IntegerVector w_proposal(n);
+  NumericVector prob_vec(nTotalSamples);
+
   
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -92,20 +95,20 @@ List metropolis_hypergeometric_cpp(
        ub = min(upperBound);
     
      // MCMC inside MCMC
-      //IntegerVector line = seq(lb, ub);
       if(adaptive){
         int line_length = ub-lb + 1;
-    
+
         for(int m = 0; m < n;++m){
           w_current[m] = current[m];
         }
         
         for(int l = 0; l < line_length; ++l){
+          
           int constant2 = as<int>(Rcpp::sample(constant, 1));
           for(int k = 0; k < n;++k){
             w_proposal[k] = w_current[k] + constant2 * move[k];
           }
-          bool anyIsNegative2;
+          
           anyIsNegative2 = false;
           for(int k = 0; k < n; ++k){
             if(w_proposal[k] < 0){
@@ -122,9 +125,8 @@ List metropolis_hypergeometric_cpp(
           if(prob2 > 1){
             prob2 = 1;
           }
-          
           // make move
-          if(unifs2[l] < prob2) {
+          if(unifs[l] < prob2) {
             for(int k = 0; k < n; ++k){
               w_current[k] = w_proposal[k];
             }
@@ -198,7 +200,7 @@ List metropolis_hypergeometric_cpp(
       if(prob > 1){
         prob = 1;
       }
-
+prob_vec[thin*i+j] = prob;
       // store acceptance probability
       accept_prob = accept_prob + prob / nTotalSamples;
       
@@ -232,7 +234,8 @@ List metropolis_hypergeometric_cpp(
   // create out list
   List out = List::create(
     Rcpp::Named("steps") = steps,
-    Rcpp::Named("accept_prob") = accept_prob
+    Rcpp::Named("accept_prob") = accept_prob, 
+    Rcpp::Named("prob_vec") = prob_vec
   );
   
   return out;
