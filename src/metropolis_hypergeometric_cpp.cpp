@@ -126,7 +126,7 @@ List metropolis_hypergeometric_cpp(
             prob2 = 1;
           }
           // make move
-          if(unifs[l] < prob2) {
+          if(unifs[l] < prob2 * 3) {
             for(int k = 0; k < n; ++k){
               w_current[k] = w_proposal[k];
             }

@@ -65,6 +65,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// greedy_preprocess
+List greedy_preprocess(IntegerVector current, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP _algstat_greedy_preprocess(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
+    rcpp_result_gen = Rcpp::wrap(greedy_preprocess(current, moves, iter, thin));
+    return rcpp_result_gen;
+END_RCPP
+}
 // metropolis_hypergeometric_cpp
 List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, IntegerVector suff_stats, IntegerMatrix config, int iter, int thin, bool hit_and_run, bool SIS, bool non_uniform, bool adaptive);
 RcppExport SEXP _algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP suff_statsSEXP, SEXP configSEXP, SEXP iterSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP, SEXP SISSEXP, SEXP non_uniformSEXP, SEXP adaptiveSEXP) {
@@ -150,6 +164,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_algstat_computeNMsCpp", (DL_FUNC) &_algstat_computeNMsCpp, 2},
     {"_algstat_computeUProbsCpp", (DL_FUNC) &_algstat_computeUProbsCpp, 1},
     {"_algstat_computeX2sCpp", (DL_FUNC) &_algstat_computeX2sCpp, 2},
+    {"_algstat_greedy_preprocess", (DL_FUNC) &_algstat_greedy_preprocess, 4},
     {"_algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &_algstat_metropolis_hypergeometric_cpp, 10},
     {"_algstat_metropolis_uniform_cpp", (DL_FUNC) &_algstat_metropolis_uniform_cpp, 10},
     {"_algstat_rfiberOne", (DL_FUNC) &_algstat_rfiberOne, 2},

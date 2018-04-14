@@ -21,6 +21,10 @@ computeX2sCpp <- function(x, exp) {
     .Call('_algstat_computeX2sCpp', PACKAGE = 'algstat', x, exp)
 }
 
+greedy_preprocess <- function(current, moves, iter, thin) {
+    .Call('_algstat_greedy_preprocess', PACKAGE = 'algstat', current, moves, iter, thin)
+}
+
 metropolis_hypergeometric_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive) {
     .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
 }
