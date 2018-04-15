@@ -89,8 +89,20 @@ List metropolis_uniform_cpp(
           lb = max(lowerBound);
           ub = min(upperBound);
           
+          if(is_true(any(stepSize == 0))){
+            IntegerVector test1 = current + lb * move;
+            IntegerVector test2 = current + ub * move;
+            for(int i = 0; i < n; ++i){
+              if(test1[i] < 0) lb = 1;
+              if(test2[i] < 0) ub = -1;
+            }
+          }
+          
           if(adaptive){
-            int line_length = ub-lb;
+            
+            int line_length = ub-lb + 1;
+            if(line_length < 0) line_length = 1;
+            
             for(int m = 0; m < n;++m){
               w_current[m] = current[m];
             }
@@ -131,14 +143,6 @@ List metropolis_uniform_cpp(
 
           } else {
           
-          if(is_true(any(stepSize == 0))){
-            IntegerVector test1 = current + lb * move;
-            IntegerVector test2 = current + ub * move;
-            for(int i = 0; i < n; ++i){
-              if(test1[i] < 0) lb = 1;
-              if(test2[i] < 0) ub = -1;
-            }
-          }
           if(lb > ub){
             run = Rcpp::sample(constant, 1);
           }else{

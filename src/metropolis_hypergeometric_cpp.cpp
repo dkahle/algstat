@@ -93,11 +93,22 @@ List metropolis_hypergeometric_cpp(
        upperBound = stepSize[stepSize > 0];
        lb = max(lowerBound);
        ub = min(upperBound);
+       
+       if(is_true(any(stepSize == 0))){
+         IntegerVector test1 = current + lb * move;
+         IntegerVector test2 = current + ub * move;
+         for(int i = 0; i < n; ++i){
+           if(test1[i] < 0) lb = 1;
+           if(test2[i] < 0) ub = -1;
+         }
+       }
     
      // MCMC inside MCMC
       if(adaptive){
+        
         int line_length = ub-lb + 1;
-
+        if(line_length < 0) line_length = 1;
+        
         for(int m = 0; m < n;++m){
           w_current[m] = current[m];
         }
@@ -108,20 +119,19 @@ List metropolis_hypergeometric_cpp(
           for(int k = 0; k < n;++k){
             w_proposal[k] = w_current[k] + constant2 * move[k];
           }
-          
+
           anyIsNegative2 = false;
           for(int k = 0; k < n; ++k){
             if(w_proposal[k] < 0){
               anyIsNegative2 = true;
             }
           }
-          
           if(anyIsNegative2){
             prob2 = 0;
           } else {
             prob2 = exp( sum(lgamma(w_current+1)) - sum(lgamma(w_proposal+1)) );
           }
-          
+  
           if(prob2 > 1){
             prob2 = 1;
           }
@@ -149,14 +159,7 @@ List metropolis_hypergeometric_cpp(
       } else {
    
      // Base Hit and Run
-       if(is_true(any(stepSize == 0))){
-       IntegerVector test1 = current + lb * move;
-       IntegerVector test2 = current + ub * move;
-       for(int i = 0; i < n; ++i){
-         if(test1[i] < 0) lb = 1;
-         if(test2[i] < 0) ub = -1;
-        }
-      }
+      
       if(lb > ub){
         run = Rcpp::sample(constant, 1);
         
