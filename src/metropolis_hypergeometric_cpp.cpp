@@ -136,7 +136,7 @@ List metropolis_hypergeometric_cpp(
             prob2 = 1;
           }
           // make move
-          if(unifs[l] < prob2 * 3) {
+          if(unifs[l] < prob2 * 3.14159) {
             for(int k = 0; k < n; ++k){
               w_current[k] = w_proposal[k];
             }
@@ -237,8 +237,7 @@ prob_vec[thin*i+j] = prob;
   // create out list
   List out = List::create(
     Rcpp::Named("steps") = steps,
-    Rcpp::Named("accept_prob") = accept_prob, 
-    Rcpp::Named("prob_vec") = prob_vec
+    Rcpp::Named("accept_prob") = accept_prob
   );
   
   return out;

@@ -399,12 +399,14 @@ metropolis <- function(init, moves, suffStats = 0, config = matrix(0), iter = 1E
     message("done.")
     
   }
-  
+  PRs <- computeUProbsCpp(out$steps)
+  acfs <- acf(PRs, plot = FALSE)
+  out$neff <- iter / (1 + 2 * sum(acfs$acf[-1]))
   
   ## return output
   ##################################################  
 
-  out[c("steps", "moves", "accept_prob")]
+  out[c("steps", "moves", "accept_prob", "neff")]
 }
 
 
