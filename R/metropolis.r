@@ -403,7 +403,7 @@ metropolis <- function(init, moves, suffStats = 0, config = matrix(0), iter = 1E
   ## return output
   ##################################################  
 
-  out[c("steps", "moves", "accept_prob", "neff")]
+  out[c("steps", "moves", "accept_prob")]
 }
 
 
