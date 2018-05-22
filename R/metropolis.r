@@ -399,25 +399,6 @@ metropolis <- function(init, moves, suffStats = 0, config = matrix(0), iter = 1E
     message("done.")
     
   }
-  PRs <- computeUProbsCpp(out$steps)
-  # acfs <- acf(PRs, plot = FALSE)$acf[,,1]
-  # if(any(acfs < 0)) {
-  #   first_neg <- which(acfs < 0)[1]
-  #   out$neff <- iter / (1 + 2 * sum(acfs[2:(first_neg - 1)]))
-  # } else {
-  #   out$neff <- iter / (1 + 2 * sum(acfs[-1]))
-  # }
-  auto_cov <- acf(PRs, lag.max = iter - 1, plot = FALSE, type = "covariance")$acf[,,1]
-  mean_var <- auto_cov[1] * iter / (iter - 1)
-  rho_hat_sum <- 0
-  for (t in 2:iter) {
-    rho_hat <- 1 - (mean_var - auto_cov[t]) / auto_cov[1]
-    if (is.nan(rho_hat)) rho_hat <- 0
-    if (rho_hat < 0) break
-    rho_hat_sum <- rho_hat_sum + rho_hat
-  }
-  ess <- iter
-  if (rho_hat_sum > 0) out$neff <- ess / (1 + 2 * rho_hat_sum)
   
   ## return output
   ##################################################  
