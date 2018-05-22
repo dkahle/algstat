@@ -400,9 +400,13 @@ metropolis <- function(init, moves, suffStats = 0, config = matrix(0), iter = 1E
     
   }
   PRs <- computeUProbsCpp(out$steps)
-  acfs <- acf(PRs, plot = FALSE)
-  out$neff <- iter / (1 + 2 * sum(acfs$acf[-1]))
-  
+  acfs <- acf(PRs, plot = FALSE)$acf[,,1]
+  if(any(acfs < 0)) {
+    first_neg <- which(acfs < 0)[1]
+    out$neff <- iter / (1 + 2 * sum(acfs[2:(first_neg - 1)]))
+  } else {
+    out$neff <- iter / (1 + 2 * sum(acfs[-1]))
+  }
   ## return output
   ##################################################  
 
