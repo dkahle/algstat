@@ -405,7 +405,6 @@ metropolis <- function(init, moves, suffStats = 0, config = matrix(0), iter = 1E
 
   out[c("steps", "moves", "accept_prob")]
   
-  # This is a change to the function.
 }
 
 
