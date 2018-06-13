@@ -118,7 +118,7 @@ aglm <- function(model, data, family = poisson(),
 {
   ## set/check args
   ##################################################
-  
+ 
   engine  <- match.arg(engine)
   argList <- as.list(match.call(expand.dots = TRUE))[-1]
   
@@ -179,13 +179,13 @@ aglm <- function(model, data, family = poisson(),
 
       if (method == "binomial") {
         data <- group_by_(data, unique(unlist(model)))
-        success <- dplyr::summarise(data, sum = sum(response))
-        failure <- dplyr::summarise(data, sum = length(response) - sum(response))
+        success <- summarise(data, sum = sum(response))
+        failure <- summarise(data, sum = length(response) - sum(response))
         data <- bind_rows(success, failure)
         
       } else {
         data <- group_by_(data, unique(unlist(model)))
-        data <- dplyr::summarise(data, sum = sum(response))
+        data <- summarise(data, sum = sum(response))
       }
       
       ## any 0 levels
@@ -220,6 +220,7 @@ aglm <- function(model, data, family = poisson(),
     } else {
       stop("Invalid model specification, see ?aglm")
     }
+    facets <- lapply(facets, unname)
     ## levels (assuming all levels are numeric i.e. (1,2,3,...  not Green, Blue, Red, etc.)
     if(ncol(data) <= 2){ 
       levels <- unique(data[,-ncol(data)])

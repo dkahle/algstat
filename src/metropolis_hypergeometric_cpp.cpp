@@ -41,8 +41,6 @@ List metropolis_hypergeometric_cpp(
   IntegerVector constant = IntegerVector::create(-1,1);
   IntegerVector w_current(n);
   IntegerVector w_proposal(n);
-  NumericVector prob_vec(nTotalSamples);
-
   
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -136,7 +134,7 @@ List metropolis_hypergeometric_cpp(
             prob2 = 1;
           }
           // make move
-          if(unifs[l] < prob2 * 3.14159) {
+          if(unifs[l] < prob2) {
             for(int k = 0; k < n; ++k){
               w_current[k] = w_proposal[k];
             }
@@ -203,7 +201,7 @@ List metropolis_hypergeometric_cpp(
       if(prob > 1){
         prob = 1;
       }
-prob_vec[thin*i+j] = prob;
+      
       // store acceptance probability
       accept_prob = accept_prob + prob / nTotalSamples;
       
