@@ -23,9 +23,9 @@
 #' @export pmat
 
 pmat <- function(levels, facets){
-  
+
   #Small function to make single covariate configuration matrix
-  func <- function(x) rbind(rep(1, length(x)), x)
+  func <- function(x) unname(rbind(rep(1, length(x)), x))
   
   if(!is.list(levels)){
     numCovariates <- 1
@@ -61,7 +61,7 @@ pmat <- function(levels, facets){
      facetList <- facetList[-1]
    }
   #return the configuration matrix which includes only the elements need for the heirarchical model
-  fullMat[c(TRUE, facetList %in% facets),]
+  fullMat[c(TRUE, facetList %in% type.convert(facets)),]
 }
 
 

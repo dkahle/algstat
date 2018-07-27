@@ -86,7 +86,7 @@ Fitting generalized linear models with algebraic methods
     predict(mod, data.frame(x = 1:5), type = "response")
     
     # aglm predictions
-    rowMeans(out$steps) / plry::ddply(df, "x", nrow)$V1
+    rowMeans(out$steps) / plyr::ddply(df, "x", nrow)$V1
     
     
     

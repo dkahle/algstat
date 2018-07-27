@@ -65,7 +65,7 @@
 #'     predict(mod, data.frame(x = 1:5), type = "response")
 #'     
 #'     # aglm predictions
-#'     rowMeans(out$steps) / plry::ddply(df, "x", nrow)$V1
+#'     rowMeans(out$steps) / plyr::ddply(df, "x", nrow)$V1
 #'     
 #'     
 #'     
@@ -118,7 +118,6 @@ aglm <- function(model, data, family = poisson(),
 {
   ## set/check args
   ##################################################
- 
   engine  <- match.arg(engine)
   argList <- as.list(match.call(expand.dots = TRUE))[-1]
   
@@ -178,13 +177,13 @@ aglm <- function(model, data, family = poisson(),
       names(data)[names(data) == response] <- "response"
 
       if (method == "binomial") {
-        data <- group_by_(data, unique(unlist(model)))
+        data <- group_by(data, .dots = unique(unlist(model)))
         success <- summarise(data, sum = sum(response))
         failure <- summarise(data, sum = length(response) - sum(response))
         data <- bind_rows(success, failure)
         
       } else {
-        data <- group_by_(data, unique(unlist(model)))
+        data <- group_by(data, .dots = unique(unlist(model)))
         data <- summarise(data, sum = sum(response))
       }
       
@@ -226,13 +225,14 @@ aglm <- function(model, data, family = poisson(),
       levels <- unique(data[,-ncol(data)])
     } else {
       levels <- lapply(data[,-ncol(data)], unique)
+      levels <- lapply(levels, sort)
     }
     # make configuration (model) matrix
     A <- pmat(levels, facets)
   }
   
-  # check to see if all level configurations are there (need work here)
-  lvlsInData <- as.list(as.data.frame(t(expand.grid(levels)))) %in% as.list(as.data.frame(t(data[,-ncol(data)])))
+ # check to see if all level configurations are there (need work here)
+  lvlsInData <- as.list(as.data.frame(t(expand.grid(levels)))) %in% as.list(as.data.frame(t(data[, -ncol(data)])))
   
   # subset A by levels that are present
   A <- A[,lvlsInData]
@@ -285,9 +285,19 @@ aglm <- function(model, data, family = poisson(),
   ## run metropolis-hastings
   ##################################################  
   init <- unname(init) # init
-  out <- metropolis(init, moves, suffStats = suffStats, config = unname(A), iter = iter, burn = burn, thin = thin, 
-                    engine = engine, ...)  
-
+  out <-
+    metropolis(
+      init,
+      moves,
+      suffStats = suffStats,
+      config = unname(A),
+      iter = iter,
+      burn = burn,
+      thin = thin,
+      engine = engine,
+      ...
+    )
+  
   
   u <- t(t(data$sum))
   PR <- computeUProbsCpp(matrix(u))  # unnormd prob; numers LAS 1.1.10
