@@ -22,25 +22,26 @@
 #' pmat(levels, facets)
 #' @export pmat
 
-pmat <- function(levels, facets){
-
+pmat <- function(levels, facets) {
   #Small function to make single covariate configuration matrix
-  func <- function(x) unname(rbind(rep(1, length(x)), x))
+  func <- function(x)
+    unname(rbind(rep(1, length(x)), x))
   
-  if(!is.list(levels)){
+  if (!is.list(levels)) {
     numCovariates <- 1
     fullMat <- func(levels)
-  }else{
-  numCovariates <- length(levels)
-  #Make single covariate configuration matrix for each covariate
-  matList <- lapply(levels, func)
-  #Full heirarchicial config matrix with all interactions included
-  fullMat <- do.call(kprod, matList)
+  } else{
+    numCovariates <- length(levels)
+    #Make single covariate configuration matrix for each covariate
+    matList <- lapply(levels, func)
+    #Full heirarchicial config matrix with all interactions included
+    fullMat <- do.call(kprod, matList)
+    # fullMat <- do.call(segre, matList)
   }
   expCov <- 1:numCovariates
-
+  
   #Checking heirarchical sturcture of facets
-  if(any(sapply(facets, length) > 1)){
+  if (any(sapply(facets, length) > 1)) {
     longListElts <- facets[which(sapply(facets, length) > 1)]
     
     uniqueVals <- unique(unlist(longListElts))
@@ -51,17 +52,19 @@ pmat <- function(levels, facets){
   }
   
   #All possible combinations of covariates (powerset like) to be compared to facets
-   if(length(expCov) == 1) {
-     facetList <- list(expCov)
-   }else{
-     facetList <- list(integer(0))
-   for(i in seq_along(expCov)){
-     facetList <- c(facetList, lapply(facetList, function(x) c(x,expCov[i])))
-   }
-     facetList <- facetList[-1]
-   }
+  if (length(expCov) == 1) {
+    facetList <- list(expCov)
+  } else{
+    facetList <- list(integer(0))
+    for (i in seq_along(expCov)) {
+      facetList <-
+        c(facetList, lapply(facetList, function(x)
+          c(x, expCov[i])))
+    }
+    facetList <- facetList[-1]
+  }
   #return the configuration matrix which includes only the elements need for the heirarchical model
-  fullMat[c(TRUE, facetList %in% type.convert(facets)),]
+  fullMat[c(TRUE, facetList %in% type.convert(facets)), ]
 }
 
 
