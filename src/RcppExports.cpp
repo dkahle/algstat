@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// adaptive_fun
+IntegerVector adaptive_fun(IntegerVector current, IntegerVector move);
+RcppExport SEXP _algstat_adaptive_fun(SEXP currentSEXP, SEXP moveSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type move(moveSEXP);
+    rcpp_result_gen = Rcpp::wrap(adaptive_fun(current, move));
+    return rcpp_result_gen;
+END_RCPP
+}
 // computeCRsCpp
 NumericVector computeCRsCpp(NumericMatrix x, NumericVector exp, double lambda);
 RcppExport SEXP _algstat_computeCRsCpp(SEXP xSEXP, SEXP expSEXP, SEXP lambdaSEXP) {
@@ -76,6 +88,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
     rcpp_result_gen = Rcpp::wrap(greedy_preprocess(current, moves, iter, thin));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hit_and_run_fun
+IntegerVector hit_and_run_fun(IntegerVector current, IntegerVector move);
+RcppExport SEXP _algstat_hit_and_run_fun(SEXP currentSEXP, SEXP moveSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type move(moveSEXP);
+    rcpp_result_gen = Rcpp::wrap(hit_and_run_fun(current, move));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -159,12 +183,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_algstat_adaptive_fun", (DL_FUNC) &_algstat_adaptive_fun, 2},
     {"_algstat_computeCRsCpp", (DL_FUNC) &_algstat_computeCRsCpp, 3},
     {"_algstat_computeG2sCpp", (DL_FUNC) &_algstat_computeG2sCpp, 2},
     {"_algstat_computeNMsCpp", (DL_FUNC) &_algstat_computeNMsCpp, 2},
     {"_algstat_computeUProbsCpp", (DL_FUNC) &_algstat_computeUProbsCpp, 1},
     {"_algstat_computeX2sCpp", (DL_FUNC) &_algstat_computeX2sCpp, 2},
     {"_algstat_greedy_preprocess", (DL_FUNC) &_algstat_greedy_preprocess, 4},
+    {"_algstat_hit_and_run_fun", (DL_FUNC) &_algstat_hit_and_run_fun, 2},
     {"_algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &_algstat_metropolis_hypergeometric_cpp, 10},
     {"_algstat_metropolis_uniform_cpp", (DL_FUNC) &_algstat_metropolis_uniform_cpp, 10},
     {"_algstat_rfiberOne", (DL_FUNC) &_algstat_rfiberOne, 2},

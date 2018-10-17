@@ -1,5 +1,7 @@
 #include <Rcpp.h>
 #include "sis_tbl.h"
+#include "hit_and_run_fun.h"
+#include "adaptive_fun.h"
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -25,22 +27,9 @@ List metropolis_hypergeometric_cpp(
   NumericVector unifs3(nTotalSamples);
   IntegerVector proposal(n);               // the proposed moves
   double prob;                             // the probability of transition
-  double prob2;
   bool anyIsNegative;
-  bool anyIsNegative2;
   IntegerVector move(n);
   double accept_prob = 0;
-  IntegerVector current_num;
-  IntegerVector move_num;
-  IntegerVector stepSize;
-  IntegerVector upperBound;
-  IntegerVector lowerBound;
-  int lb;
-  int ub;
-  IntegerVector run;
-  IntegerVector constant = IntegerVector::create(-1,1);
-  IntegerVector w_current(n);
-  IntegerVector w_proposal(n);
   
   Function sample("sample");
   whichMove = sample(nMoves, nTotalSamples, 1);
@@ -83,98 +72,13 @@ List metropolis_hypergeometric_cpp(
       for(int k = 0; k < n; ++k){
         move[k] = moves(k, whichMove[thin*i+j]-1);
       }
-      if(hit_and_run){
-       current_num = current[move != 0];
-       move_num = move[move != 0];
-       stepSize = (-1 * current_num) / move_num;
-       lowerBound = stepSize[stepSize < 0];
-       upperBound = stepSize[stepSize > 0];
-       lb = max(lowerBound);
-       ub = min(upperBound);
-       
-       if(is_true(any(stepSize == 0))){
-         IntegerVector test1 = current + lb * move;
-         IntegerVector test2 = current + ub * move;
-         for(int i = 0; i < n; ++i){
-           if(test1[i] < 0) lb = 1;
-           if(test2[i] < 0) ub = -1;
-         }
-       }
-    
-     // MCMC inside MCMC
-      if(adaptive){
-        
-        int line_length = ub-lb + 1;
-        if(line_length < 0) line_length = 1;
-        
-        for(int m = 0; m < n;++m){
-          w_current[m] = current[m];
-        }
-        
-        for(int l = 0; l < line_length; ++l){
-          
-          int constant2 = as<int>(Rcpp::sample(constant, 1));
-          for(int k = 0; k < n;++k){
-            w_proposal[k] = w_current[k] + constant2 * move[k];
-          }
 
-          anyIsNegative2 = false;
-          for(int k = 0; k < n; ++k){
-            if(w_proposal[k] < 0){
-              anyIsNegative2 = true;
-            }
-          }
-          if(anyIsNegative2){
-            prob2 = 0;
-          } else {
-            prob2 = exp( sum(lgamma(w_current+1)) - sum(lgamma(w_proposal+1)) );
-          }
-  
-          if(prob2 > 1){
-            prob2 = 1;
-          }
-          // make move
-          if(unifs[l] < prob2) {
-            for(int k = 0; k < n; ++k){
-              w_current[k] = w_proposal[k];
-            }
-          }
-        }
-        bool didMove;
-        didMove = false;
-        for(int k = 0; k < n; ++k) {
-          if(w_current[k] != current[k]) didMove = true;
-        }
-        if(didMove == true) {
-          for(int k = 0; k < n; ++k) {
-            proposal[k] = w_current[k];
-          }
-        } else {
-          for(int k = 0; k < n; ++k){
-            proposal[k] = current[k] + move[k];
-          }
-        }
-      } else {
-   
-     // Base Hit and Run
+      // make proposal
+      if(hit_and_run) proposal = hit_and_run_fun(current, move);
       
-      if(lb > ub){
-        run = Rcpp::sample(constant, 1);
-        
-      } else {
-        IntegerVector range = seq(lb,ub);
-        run = Rcpp::sample(range,1);
-      }
-       if(run[0] == 0){
-         run = Rcpp::sample(constant, 1);
-       }
-      if(hit_and_run){
-        for(int k = 0; k < n; ++k){
-          proposal[k] = current[k] + as<int>(run) * move[k];
-         }
-       }
-     }
-   } else {
+      if(adaptive) proposal = adaptive_fun(current, move);
+      
+      if(hit_and_run == false & adaptive == false & non_uniform == false) {
         for(int k = 0; k < n; ++k){
           proposal[k] = current[k] + move[k];
         }
@@ -216,7 +120,7 @@ List metropolis_hypergeometric_cpp(
           move_dist[which_move] = move_dist[which_move] + 1;
           ++counter;
         }
-      }else{
+      } else {
         // make move
         if(unifs[thin*i+j] < prob){        
           for(int k = 0; k < n; ++k){
