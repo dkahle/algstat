@@ -116,6 +116,7 @@ aglm <- function(model, data, family = poisson(),
                       moves, 
                      ...)
 {
+
   ## set/check args
   ##################################################
   engine  <- match.arg(engine)
