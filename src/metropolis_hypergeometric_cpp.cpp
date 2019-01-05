@@ -39,7 +39,7 @@ List metropolis_hypergeometric_cpp(
   unifs3 = runif(nTotalSamples);
   Function print("print");
 
-  NumericVector move_dist = rep(1.0, nMoves);
+  NumericVector move_dist = rep(10.0, nMoves);
   double counter = sum(move_dist);
   int which_move;
   
