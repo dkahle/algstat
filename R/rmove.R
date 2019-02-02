@@ -23,8 +23,7 @@
 #' @examples
 #' 
 #' 
-#' data(politics)
-#' politics
+#' data(politics); politics
 #' (x <- tab2vec(politics))
 #' 
 #' (A <- hmat(c(2,2), 1:2)) # independence model on 2x2 table
@@ -74,8 +73,7 @@
 #' 
 #' 
 #' ## politics example
-#' data(politics)
-#' politics
+#' data(politics); politics
 #' tab2vec(politics)
 #' (b <- A %*% tab2vec(politics))
 #' (tabs <- rfiber(1000, A = A, b = b, format = "vec"))

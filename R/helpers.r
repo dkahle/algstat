@@ -131,49 +131,33 @@ lower <- function(x) t(upper(x))
 
 
 
-#' Vector Projection onto col(A)
+#' Vector Projection
 #'
-#' Project a vector onto the column space of a matrix.
+#' Project a vector onto the column space of a matrix or the orthogonal complement of the column
+#' space of a matrix; the null space of A transpose.
 #' 
 #' @param A a matrix
 #' @param x a vector
 #' @return ...
-#' @export projectOnto
+#' @name project-onto
 #' @seealso \code{\link{qr.fitted}}
 #' @examples
 #' 
 #' A <- diag(5)[,1:2]
 #' x <- 1:5
-#' projectOnto(A, x)
+#' project_onto(A, x)
+#' project_onto_perp(A, x)
 #' 
-#'
-projectOnto <- function(A, x) qr.fitted(qr(A), x) 
 
 
+#' @rdname project-onto
+#' @export
+project_onto <- function(A, x) qr.fitted(qr(A), x) 
 
 
-
-
-
-
-
-#' Vector Projection onto the orthogonal complement of col(A)
-#' 
-#' Project a vector onto the orthogonal complement of the column
-#' space of a matrix; the null space of A transpose
-#' 
-#' @param A a matrix
-#' @param x a vector
-#' @return ...
-#' @export projectOnto
-#' @examples
-#' 
-#' A <- diag(5)[,1:2]
-#' x <- 1:5
-#' projectOnto(A, x)
-#' 
-#' 
-projectOntoPerp <- function(A, x) diag(length(x))%*%x - qr.fitted(qr(A), x) 
+#' @rdname project-onto
+#' @export
+project_onto_perp <- function(A, x) as.vector(diag(length(x))%*%x - qr.fitted(qr(A), x) )
 
 
 
@@ -188,24 +172,24 @@ projectOntoPerp <- function(A, x) diag(length(x))%*%x - qr.fitted(qr(A), x)
 
 
 #' Multinomial Coefficient
-#' 
+#'
 #' Compute the multinomial coefficient.
-#' 
-#' This function computes the multinomial coefficient by computing
-#' the factorial of each number on a log scale, differencing log(n!)
-#' - sum(log(x!)), and then exponentiating.  It then checks to see
-#' if this is an integer; if it's not, it issues a warning.
-#' 
+#'
+#' This function computes the multinomial coefficient by computing the factorial
+#' of each number on a log scale, differencing log(n!) - sum(log(x!)), and then
+#' exponentiating.  It then checks to see if this is an integer; if it's not, it
+#' issues a warning.
+#'
 #' @param n an integer
 #' @param x a vector of integers
 #' @return ...
 #' @export mchoose
 #' @examples
-#' 
+#'
 #' mchoose(6, c(2,2,1,1))
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' 
 mchoose <- function(n, x){
   lboth <- lfactorial(c(n,x))
@@ -281,7 +265,7 @@ is.unix <- function() .Platform$OS.type == "unix"
 
 
 
-sampleIntBetween <- function(l, u){
+sample_int_between <- function(l, u){
   if(l == u) return(l)
   sample(l:u, 1)
 }
@@ -310,6 +294,128 @@ capitalize <- function(s){
   if(length(elem) > 1) return(vapply(elem, `%notin%`, logical(1), set = set))
   !(elem %in% set)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' Test whether an mpoly object is linear.
+#'
+#' Test whether an mpoly object is linear.
+#'
+#' @param x an mpoly or mpolyList object
+#' @return a logical vector
+#' @examples
+#' 
+#' 
+#' is.linear(mp("0"))
+#' is.linear(mp("x + 1"))
+#' is.linear(mp("x + y"))
+#' is.linear(mp(c("0", "x + y")))
+#' 
+#' is.linear(mp("x + x y"))
+#' is.linear(mp(c("x + x y", "x")))
+#' 
+#' 
+is.linear <- function(x){
+  
+  stopifnot(is.mpoly(x) || is.mpolyList(x))
+  
+  if(is.mpolyList(x)) return(sapply(x, is.linear))
+  
+  all(
+    vapply(x, function(term){
+      if(all(length(term) <= 2)){
+        return(TRUE)
+      } else {
+        return(FALSE)
+      }
+    }, logical(1))
+  )  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' Fill a table with a number
+#' 
+#' Fill a table with a number
+#' 
+#' @param tab a contingency table
+#' @param fill the number to fill the contingency table with
+#' @param ... ...
+#' @return a named numeric vector
+#' @name tab-fill
+#' @examples
+#' 
+#' Titanic
+#' tab_fill(Titanic)
+#' tab_fill(Titanic, 1L)
+#' tab_fill(Titanic, 0L)
+#' 
+#' nCells <- prod(dim(Titanic))
+#' tab_fill(Titanic, rpois(nCells, 5))
+#' 
+
+
+
+
+#' @export
+#' @rdname tab-fill
+tab_fill <- function(tab, fill = 1L){
+  tab[] <- fill
+  tab
+}
+
+
+#' @export
+#' @rdname tab-fill
+tabFill <- function (...) {
+  .Deprecated("tab_fill")
+  tab_fill(...)
+}
+
+
+
+
+
+
+
+
+#' @importFrom latte tab2vec
+#' @export
+latte::tab2vec
+
+
+
+
+#' @importFrom latte vec2tab
+#' @export
+latte::vec2tab
+
+
+
+
 
 
 

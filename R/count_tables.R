@@ -1,63 +1,63 @@
 #' Count Similarly Margined Contingency Tables
-#' 
-#' Count the number of contingency tables with the same marginals as
-#' a given table.
-#' 
-#' \code{countTables} uses LattE's count function (via algstat's 
-#' \code{\link{count}} function) to count the tables.  In many
-#' cases, the number of such tables is enormous.  In these cases,
-#' instead of giving back an integer \code{countTables} provides a
-#' character string with the integer in it; see examples.
-#' 
+#'
+#' Count the number of contingency tables with the same marginals as a given
+#' table.
+#'
+#' \code{count_tables} uses LattE's count function (via algstat's
+#' \code{\link{latte_count}} function) to count the tables.  In many cases, the
+#' number of such tables is enormous.  In these cases, instead of giving back an
+#' integer \code{count_tables} provides a character string with the integer in
+#' it; see examples.
+#'
 #' @param table the table of interest
 #' @param A the configuration/transpose design matrix
 #' @param dir directory to place the files in, without an ending /
 #' @param quiet show latte output
 #' @param cache use count (default) or fcount
-#' @param ... arguments to pass to \code{\link{count}}
+#' @param ... arguments to pass to \code{\link{latte_count}}
 #' @return an integer
-#' @seealso \code{\link{count}}, \code{\link{countFiber}}
-#' @export
-#' @name countTables
+#' @seealso \code{\link{latte_count}}, \code{\link{count_fiber}}
+#' @name count-tables
 #' @examples
-#' \dontrun{ 
 #' 
 #' 
-#' data(politics)
-#' countTables(politics)
+#' \dontrun{ requires LattE
+#'
+#'
+#' data(politics); politics
+#' count_tables(politics)
 #' (A <- hmat(c(2,2), list(1, 2)))
-#' countTables(politics, A)
-#' 
-#' 
-#' 
-#' data(handy)
-#' countTables(handy)
-#' 
-#' 
-#' 
-#' data(HairEyeColor)
+#' count_tables(politics, A)
+#'
+#'
+#'
+#' data(handy); handy
+#' count_tables(handy)
+#'
+#'
+#'
+#' data(HairEyeColor); HairEyeColor
 #' eyeHairColor <- margin.table(HairEyeColor, 2:1)
-#' countTables(eyeHairColor)
-#' 
-#' system.time(countTables(eyeHairColor)) # it was computed above
-#' system.time(countTables(eyeHairColor)) # it was computed above
-#' system.time(countTables(eyeHairColor, cache = FALSE))
-#' system.time(countTables(eyeHairColor, cache = FALSE))
-#' 
-#' 
+#' count_tables(eyeHairColor)
+#'
+#' system.time(count_tables(eyeHairColor)) # it was computed above
+#' system.time(count_tables(eyeHairColor)) # it was computed above
+#' system.time(count_tables(eyeHairColor, cache = FALSE))
+#' system.time(count_tables(eyeHairColor, cache = FALSE))
+#'
+#'
 #' library(gmp)
-#' as.bigz(countTables(eyeHairColor))
-#' 
-#' 
-#' 
-#' # notice that even tables with small cells can have 
-#' # huge fibers
-#' data(drugs)
-#' countTables(drugs)
-#' 
-#' 
-#' 
-#' 
+#' as.bigz(count_tables(eyeHairColor))
+#'
+#'
+#'
+#' # notice that even tables with small cells can have huge fibers
+#' data(drugs); drugs
+#' count_tables(drugs)
+#'
+#'
+#'
+#'
 #' # 0-1 tables can be very hard and produce very large fibers
 #' # the 4x4 table below has 154 elements in its independence fiber
 #' # the 5x5 has 16830, and the compute times are on the order of
@@ -67,15 +67,19 @@
 #' tab <- matrix(sample(0:1, n^2, replace = TRUE), nrow = n)
 #' dimnames(tab) <- list(X = paste0("x", 1:n), Y = paste0("y", 1:n))
 #' tab
-#' countTables(tab)
-#' 
-#' countTables(eyeHairColor, quiet = FALSE)
-#' 
-#' 
-#' 
+#' count_tables(tab)
+#'
+#' count_tables(eyeHairColor, quiet = FALSE)
+#'
+#'
+#'
 #' }
 #' 
-countTables <- function(table, 
+
+
+#' @export
+#' @rdname count-tables
+count_tables <- function(table, 
     A = hmat(dim(table), as.list(1:length(dim(table)))), 
     dir = tempdir(), quiet = TRUE, cache = TRUE, ...
 ){
@@ -105,11 +109,17 @@ countTables <- function(table,
   
   
   ## count
-  f <- if(cache) latter::count else latter::fcount
+  f <- if(cache) latte::latte_count else latte::latte_fcount
   f(c(margConds, nonnegConds), dir, quiet, ...)  
 }
 
 
+
+
+countTables <- function(...) {
+  .Deprecated("count_tables")
+  count_tables(...)
+}
 
 
 

@@ -1,45 +1,36 @@
 #' Construct a Hierarchical Model Matrix
-#' 
-#' Determine the A matrix associated with a hierarchical model on a
-#' contingency table.  In algebraic statistics, the A matrix of a
-#' log-linear model is the transpose of the design matrix of the
-#' (cell-means parameterized) ANOVA corresponding to the model.
-#' 
-#' @param varlvls a vector containing the number of levels of each
-#'   variable
-#' @param facets the facets generating the hierarchical model, a
-#'   list of vectors of variable indices
+#'
+#' Determine the A matrix associated with a hierarchical model on a contingency
+#' table.  In algebraic statistics, the A matrix of a log-linear model is the
+#' transpose of the design matrix of the (cell-means parameterized) ANOVA
+#' corresponding to the model.
+#'
+#' @param varlvls a vector containing the number of levels of each variable
+#' @param facets the facets generating the hierarchical model, a list of vectors
+#'   of variable indices
 #' @seealso \code{\link{genmodel}}
 #' @return a named matrix
 #' @export hmat
-#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009).
-#'   \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
-#'   Verlag AG.
+#' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures
+#'   on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 #' @examples
-#' 
+#'
 #' # 2x2 independence example
 #' # following convention, the first index indicates rows
 #' varlvls <- c(2,2)
 #' facets <- list(1,2)
 #' ( A <- hmat(varlvls, facets) )
-#' 
+#'
 #' # alternatively:
 #' hmat(c(2, 2), 1:2)
-#' 
-#' 
+#'
+#'
 #' # LAS example 1.2.11, p.16
 #' varlvls <- c(2,2,2,2)
 #' facets <- list(c(1,2), c(1,4), c(2,3))
 #' ( A <- hmat(varlvls, facets) )
-#' 
-#' printForMarkov <- function(A){
-#'   cat(paste(nrow(A), ncol(A)))
-#'   cat("\n")
-#'   cat(apply(unname(A), 1, paste, collapse = " "), sep = "\n")
-#'   cat("\n")
-#' }
-#' printForMarkov(A)
-#' 
+#'
+#' cat(format_latte(A))
 #' 
 hmat <- function(varlvls, facets){
 

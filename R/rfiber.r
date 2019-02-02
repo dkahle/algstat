@@ -61,8 +61,7 @@
 #' 
 #' 
 #' 
-#' data(politics)
-#' politics
+#' data(politics); politics
 #' tab2vec(politics)
 #' b <- A %*% tab2vec(politics)
 #' tabs <- rfiber(1000, A = A, b = b)

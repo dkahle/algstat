@@ -23,22 +23,29 @@ Compute the Lawrence lifting of a configuration matrix
 
 
 (A <- hmat(c(2,2), 1:2))
+plot_matrix(A) # in package latte
+
 lawrence(A)
+plot_matrix(lawrence(A))
+
 lawrence(A, 2)
+plot_matrix(lawrence(A, 2))
+
 lawrence(A, extent = "tall")
+plot_matrix(lawrence(A, extent = "tall"))
+
+plot_matrix(A)
+plot_matrix(lawrence(A))
+plot_matrix(lawrence(A, 2))
+plot_matrix(lawrence(A, 3))
+plot_matrix(lawrence(A, 20))
+
+plot_matrix(lawrence(A))
+plot_matrix(lawrence(A, extent = "tall"))
 
 
-plotMatrix(A)
-plotMatrix(lawrence(A))
-plotMatrix(lawrence(A, 2))
-plotMatrix(lawrence(A, 3))
-plotMatrix(lawrence(A, 20))
+\dontrun{ # requires 4ti2
 
-plotMatrix(lawrence(A))
-plotMatrix(lawrence(A, extent = "tall"))
-
-
-\dontrun{ # requires 4ti2 installed
 J <- 10 # number of levels
 A <- rbind(1L, 1:J)
 markov(A)

@@ -21,14 +21,14 @@ List rfiberOne(IntegerMatrix A, IntegerVector b){
   
 
   Function sample("sample.int");
-  Function cellBounds("cellBounds");
+  Function cell_bounds("cell_bounds");
   
   
   // do main columns
   for(int i = 0; i < n; ++i){
   
     // compute cell bounds
-    bounds = cellBounds(A, b2, "lp", i+1); 
+    bounds = cell_bounds(A, b2, "lp", i+1); 
     L = bounds[0]; U = bounds[1]; 
     
     // sample cell; note NA_integer_ gets parsed to INT_MIN in cpp

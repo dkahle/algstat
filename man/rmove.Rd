@@ -4,9 +4,9 @@
 \alias{rmove}
 \title{Generate random moves on a fiber}
 \usage{
-rmove(n, A, b, x, method = c("sis", "walk", "hybrid"), dist = c("uniform",
-  "hypergeometric"), parallel = FALSE, format = c("mat", "vec", "tab"), dim,
-  ...)
+rmove(n, A, b, x, method = c("sis", "walk", "hybrid"),
+  dist = c("uniform", "hypergeometric"), parallel = FALSE,
+  format = c("mat", "vec", "tab"), dim, ...)
 }
 \arguments{
 \item{n}{the number of observations}
@@ -41,8 +41,7 @@ Generate random moves on a fiber
 \examples{
 
 
-data(politics)
-politics
+data(politics); politics
 (x <- tab2vec(politics))
 
 (A <- hmat(c(2,2), 1:2)) # independence model on 2x2 table
@@ -92,8 +91,7 @@ rmove(5, A, b, format = "tab", dim = c(2,2))
 
 
 ## politics example
-data(politics)
-politics
+data(politics); politics
 tab2vec(politics)
 (b <- A \%*\% tab2vec(politics))
 (tabs <- rfiber(1000, A = A, b = b, format = "vec"))

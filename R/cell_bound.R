@@ -1,30 +1,34 @@
 #' Compute the lower or upper bound
-#' 
-#' Compute the lower or upper bound of a cell in a vectorized
-#' contingency table.
-#' 
+#'
+#' Compute the lower or upper bound of a cell in a vectorized contingency table.
+#'
 #' @param A the configuration matrix of the model defining the fiber
-#' @param b solution vector in Ax = b (vector of sufficient
-#'   statistics)
+#' @param b solution vector in Ax = b (vector of sufficient statistics)
 #' @param side bound side to compute, "lower" or "upper"
-#' @param strategy "lp" for linear programming and "ip" for integer
-#'   programming. (both use \code{\link{lp}}.)
+#' @param strategy "lp" for linear programming and "ip" for integer programming.
+#'   (both use \code{\link{lp}}.)
+#' @param ... ...
 #' @return an integer
-#' @author Ruriko Yoshida \email{ruriko.yoshida@@uky.edu}, David
-#'   Kahle \email{david.kahle@@gmail.com}
-#' @export
+#' @author Ruriko Yoshida \email{ruriko.yoshida@@uky.edu}, David Kahle
+#'   \email{david.kahle@@gmail.com}
+#' @name cell-bound
 #' @examples
-#' 
-#' 
+#'
+#'
 #' A <- hmat(c(2,2), 1:2)
 #' b <- rep.int(4, 4)
-#' cellBound(A, b, "lower") # 0
-#' cellBound(A, b, "upper") # 4
+#' cell_bound(A, b, "lower") # 0
+#' cell_bound(A, b, "upper") # 4
+#'
+#'
 #' 
-#' 
-#' 
-#' 
-cellBound <- function(A, b, side = c("lower", "upper"), strategy = c("lp", "ip")){ 
+
+
+
+
+#' @export
+#' @rdname cell-bound
+cell_bound <- function(A, b, side = c("lower", "upper"), strategy = c("lp", "ip")){ 
   
   ## arg check
   side   <- match.arg(side)
@@ -63,5 +67,18 @@ cellBound <- function(A, b, side = c("lower", "upper"), strategy = c("lp", "ip")
   
   o
 }
+
+
+
+
+
+#' @export
+#' @rdname cell-bound
+cellBound <- function(...) {
+  .Deprecated("cell_bound")
+  cell_bound(...)
+}
+
+
 
 
