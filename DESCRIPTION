@@ -31,7 +31,5 @@ Suggests:
     vcd,
     microbenchmark
 License: GPL-2
-SystemRequirements: 
-    Bertini <https://bertini.nd.edu/>
 RoxygenNote: 6.1.0
 Encoding: UTF-8
