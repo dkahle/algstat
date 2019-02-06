@@ -2,11 +2,10 @@ Package: algstat
 Type: Package
 Title: Algebraic Statistics in R
 Version: 0.1.0.901
-Date: 2018-01-30
-Authors@R: c(person("David", "Kahle", email = "david.kahle@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9999-1558")),
+Authors@R: c(person("David", "Kahle", email = "david@kahle.io", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9999-1558")),
   person("Luis", "Garcia-Puente", email = "lgarcia@shsu.edu", role = "aut"),
   person("Ruriko", "Yoshida", email = "ryoshida@nps.edu", role = "aut", comment = "Starting v0.0.3"))
-Maintainer: David Kahle <david.kahle@gmail.com>
+Maintainer: David Kahle <david@kahle.io>
 Description: Connections and tools for algebraic statistics in R.
     Current applications include exact inference in log-linear models for
     contingency table data, analysis of ranked and partially ranked data, and
@@ -17,7 +16,7 @@ LinkingTo: Rcpp, rcdd
 Depends:
     R (>= 2.10),
     mpoly,
-    latter,
+    latte,
     bertini,
     m2r
 Imports:
@@ -32,6 +31,5 @@ Suggests:
     vcd,
     microbenchmark
 License: GPL-2
-SystemRequirements: 
-    Bertini <https://bertini.nd.edu/>
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
+Encoding: UTF-8

@@ -1,66 +1,66 @@
 #' Interconvert data structures
-#' 
-#' Interconvert an array, a raw data frame, and frequency
-#' distribution data.frame.
-#' 
-#' Multivariate categorical data can be represented in several ways.
-#' Three comon ways are : a contingency table, a data frame of raw
-#' observations (1 row = 1 subject), and a long data frame with a
-#' variable containing the counts in the contingency table.
-#' 
+#'
+#' Interconvert an array, a raw data frame, and frequency distribution
+#' data.frame.
+#'
+#' Multivariate categorical data can be represented in several ways. Three comon
+#' ways are : a contingency table, a data frame of raw observations (1 row = 1
+#' subject), and a long data frame with a variable containing the counts in the
+#' contingency table.
+#'
 #' @param data a data frame or array
 #' @param out the output format, see examples
-#' @param freqVar the name of the frequency variable in the dataset,
-#'   if not freq
-#' @return a matrix containing the Markov basis as its columns (for
-#'   easy addition to tables)
+#' @param var the name of the frequency variable in the dataset, if not freq
+#' @param ... ...
+#' @return a matrix containing the Markov basis as its columns (for easy
+#'   addition to tables)
 #' @export teshape
 #' @examples
-#' 
-#' 
-#' data(Titanic) 
-#' 
+#'
+#'
+#' data(Titanic)
+#'
 #' # array to others
 #' teshape(Titanic, "freq")
 #' teshape(Titanic, "tab") # what it was
 #' teshape(Titanic, "raw")
-#' 
-#' 
+#'
+#'
 #' # freq to others
 #' TitanicFreq <- teshape(Titanic, "freq")
 #' teshape(TitanicFreq, "freq") # what it was
 #' teshape(TitanicFreq, "tab")  # == Titanic
 #' teshape(TitanicFreq, "raw")
-#' 
+#'
 #' # raw to others
 #' TitanicRaw <- teshape(Titanic, "raw")
-#' teshape(TitanicRaw, "freq") 
-#' teshape(TitanicRaw, "tab")  
-#' teshape(TitanicRaw, "raw") 
-#' 
-#' 
-#' 
+#' teshape(TitanicRaw, "freq")
+#' teshape(TitanicRaw, "tab")
+#' teshape(TitanicRaw, "raw")
+#'
+#'
+#'
 #' # using "count" instead of "freq"
 #' TitanicFreq <- teshape(Titanic, "freq")
 #' TitanicFreq$count <- TitanicFreq$freq
-#' TitanicFreq$freq  <- NULL 
-#' teshape(TitanicFreq, "tab") 
-#' 
-#' 
+#' TitanicFreq$freq  <- NULL
+#' teshape(TitanicFreq, "tab")
+#'
+#'
 #' # a non-"freq" named frequency variable
 #' TitanicFreq <- teshape(Titanic, "freq")
 #' TitanicFreq$n <- TitanicFreq$freq
-#' TitanicFreq$freq  <- NULL 
-#' teshape(TitanicFreq, "tab", "n") 
+#' TitanicFreq$freq  <- NULL
+#' teshape(TitanicFreq, "tab", "n")
+#'
 #' 
-#' 
-teshape <- function(data, out = c("freq", "tab", "raw"), freqVar){
+teshape <- function(data, out = c("freq", "tab", "raw"), var){
   
   if(is.array(data)){
     input <- "tab"
-  } else if(any(tolower(names(data)) %in% c("freq", "count", "frequency")) || !missing(freqVar)){
+  } else if(any(tolower(names(data)) %in% c("freq", "count", "frequency")) || !missing(var)){
     input   <- "freq"
-    if(!missing(freqVar) && !is.character(freqVar)) freqVar <- deparse(substitute(freqVar))
+    if(!missing(var) && !is.character(var)) var <- deparse(substitute(var))
   } else if(is.data.frame(data)){
     input <- "raw"
   } else {
@@ -121,7 +121,7 @@ teshape <- function(data, out = c("freq", "tab", "raw"), freqVar){
   if(input == "freq"){
     
     # make sure a frequency variable is found
-  	if(!any(c("freq","count","frequency") %in% tolower(names(data))) && missing(freqVar)){
+  	if(!any(c("freq","count","frequency") %in% tolower(names(data))) && missing(var)){
   	  stop("frequency variable not found,  see ?teshape")
   	}
     
@@ -132,8 +132,8 @@ teshape <- function(data, out = c("freq", "tab", "raw"), freqVar){
   	  c <- which("count" == tolower(names(data)))
   	} else if("frequency" %in% tolower(names(data))){ 
   	  c <- which("frequency" == tolower(names(data)))
-  	} else if(!missing(freqVar) && freqVar %in% names(data)){
-      c <- which(freqVar == names(data))
+  	} else if(!missing(var) && var %in% names(data)){
+      c <- which(var == names(data))
   	}  	    		
   	df <- cbind(data[,(1:ncol(data))[-c]], freq = data[,c])
     p  <- ncol(data) - 1  	
