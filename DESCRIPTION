@@ -6,18 +6,16 @@ Authors@R: c(person("David", "Kahle", email = "david@kahle.io", role = c("aut", 
   person("Luis", "Garcia-Puente", email = "lgarcia@shsu.edu", role = "aut"),
   person("Ruriko", "Yoshida", email = "ryoshida@nps.edu", role = "aut", comment = "Starting v0.0.3"))
 Maintainer: David Kahle <david@kahle.io>
-Description: Connections and tools for algebraic statistics in R.
-    Current applications include exact inference in log-linear models for
-    contingency table data, analysis of ranked and partially ranked data, and
-    general purpose tools for multivariate polynomials, building on the mpoly
-    package. To aid in the process, algstat has ports to Macaulay2, Bertini,
-    LattE-integrale and 4ti2.
+Description: Functions enabling the use of algebraic methods on statistical 
+    problems. Prominent application domains are discrete multivariate analysis, 
+    discrete and Gaussian graphical models, algebraic pattern recognition, 
+    latent variable models, phylogenetics, and more.
 LinkingTo: Rcpp
 Depends:
     R (>= 2.10),
-    mpoly,
-    latte,
-    bertini,
+    mpoly (>= 1.1.0),
+    latte (>= 0.2.0),
+    bertini (>= 0.0.0),
     m2r
 Imports:
     stringr (>= 1.0.0),
