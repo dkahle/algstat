@@ -1,10 +1,14 @@
 Package: algstat
 Type: Package
 Title: Algebraic Statistics in R
-Version: 0.1.0.901
+Version: 0.1.0.902
 Authors@R: c(person("David", "Kahle", email = "david@kahle.io", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9999-1558")),
   person("Luis", "Garcia-Puente", email = "lgarcia@shsu.edu", role = "aut"),
-  person("Ruriko", "Yoshida", email = "ryoshida@nps.edu", role = "aut", comment = "Starting v0.0.3"))
+  person("Ruriko", "Yoshida", email = "ryoshida@nps.edu", role = "aut"),
+  person("Grant", "Innerst", email = "grant.innerst@gmail.com", role = "ctb"),
+  person("Philip", "Hossu", email = "", role = "ctb"),
+  person("Ryan", "Hebdon", email = "", role = "ctb"),
+  person("Sun", "Chong", email = "sonshicyu@gmail.com", role = "ctb"))
 Maintainer: David Kahle <david@kahle.io>
 Description: Functions enabling the use of algebraic methods on statistical 
     problems. Prominent application domains are discrete multivariate analysis, 
@@ -23,10 +27,14 @@ Imports:
     Rcpp,
     lpSolve,
     parallel,
-    ggplot2
+    ggplot2,
+    purrr,
+    dplyr,
+    magrittr,
+    tibble
 Suggests:
     vcd,
     microbenchmark
 License: GPL-2
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Encoding: UTF-8
