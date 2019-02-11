@@ -7,7 +7,7 @@ Authors@R: c(person("David", "Kahle", email = "david@kahle.io", role = c("aut", 
   person("Ruriko", "Yoshida", email = "ryoshida@nps.edu", role = "aut"),
   person("Grant", "Innerst", email = "grant.innerst@gmail.com", role = "ctb"),
   person("Philip", "Hossu", email = "", role = "ctb"),
-  person("Ryan", "Hebdon", email = "", role = "ctb"),
+  person("Ryan", "Hebdon", email = "ryan_hebdon@outlook.com", role = "ctb"),
   person("Sun", "Chong", email = "sonshicyu@gmail.com", role = "ctb"))
 Maintainer: David Kahle <david@kahle.io>
 Description: Functions enabling the use of algebraic methods on statistical 
