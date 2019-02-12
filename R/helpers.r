@@ -376,7 +376,13 @@ latte::vec2tab
 
 #' @importFrom magrittr %>%
 #' @export
-#' magrittr::%>%
+magrittr::`%>%`
+
+    
+#' @importFrom latte plot_matrix
+#' @export 
+latte::plot_matrix
+
 
 
 
