@@ -6,7 +6,7 @@ Authors@R: c(person("David", "Kahle", email = "david@kahle.io", role = c("aut", 
   person("Luis", "Garcia-Puente", email = "lgarcia@shsu.edu", role = "aut"),
   person("Ruriko", "Yoshida", email = "ryoshida@nps.edu", role = "aut"),
   person("Grant", "Innerst", email = "grant.innerst@gmail.com", role = "ctb"),
-  person("Philip", "Hossu", email = "", role = "ctb"),
+  person("Philip", "Hossu", email = "phossu@hawk.iit.edu", role = "ctb"),
   person("Ryan", "Hebdon", email = "ryan_hebdon@outlook.com", role = "ctb"),
   person("Sun", "Chong", email = "sonshicyu@gmail.com", role = "ctb"))
 Maintainer: David Kahle <david@kahle.io>
