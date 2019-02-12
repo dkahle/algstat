@@ -41,7 +41,7 @@
 #' markov(A)
 #'
 #' lawrence(A)
-#' plotMatrix(lawrence(A))
+#' plot_matrix(lawrence(A))
 #' markov(lawrence(A))
 #' # markov(lawrence(A, 2)) # takes unknown long time when J=10
 #' zbasis(lawrence(A))
