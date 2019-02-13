@@ -74,7 +74,7 @@ IntegerVector adaptive_fun(IntegerVector current, IntegerVector move) {
       prob = 1;
     }
     // make move
-    if(unifs[l] < prob * 14) {
+    if(unifs[l] < prob*3) {
       for(int k = 0; k < n; ++k){
         w_current[k] = w_proposal[k];
       }
