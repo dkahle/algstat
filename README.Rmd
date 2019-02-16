@@ -52,7 +52,7 @@ fisher.test(politics)
 ```
 
 Since the independence model is log-linear, this exact same procedure can be done with __algstat__. The go-to function here is `loglinear()`:
-```{r loglinearIntro}
+```{r loglinear-intro}
 loglinear(~ Personality + Party, data = politics)
 ```
 
@@ -75,7 +75,7 @@ MASS::loglm(~ Personality + Party, data = politics)
 ### Fisher's exact test on RxC tables
 
 Doing Fisher's exact test on larger problems is a significantly more complicated problem.  The documentation for `fisher.test()` illustrates how it can be used on RxC tables in general, not just on 2x2 tables.  Here's an example from its documentation drawn from Agresti (2002, p.57):
-```{r bigFisher}
+```{r big-fisher}
 Job <- matrix(
   c(1,2,1,0, 3,3,6,1, 10,10,14,9, 6,7,12,11), nrow = 4, ncol = 4,
   dimnames = list(
@@ -90,12 +90,12 @@ fisher.test(Job)
 ```
 
 Here's the __algstat__ counterpart:
-```{r bigFisherLogLinear}
+```{r big-fisher-log-linear}
 loglinear(~ income + satisfaction, data = Job)
 ```
 
 The asymptotic test can be performed as well.  The chi-square approximation is actually very good here:
-```{r bigFisherLogLm}
+```{r big-fisher-loglm}
 MASS::loglm(~ income + satisfaction, data = Job)
 ```
 
@@ -104,7 +104,7 @@ MASS::loglm(~ income + satisfaction, data = Job)
 ### Fisher's exact test on multi-way tables
 
 `fisher.test()` does not work with multi-way tables and is prone to crashing even in large-celled two-way tables (see `?loglinear` for an example).  Thus, the only way to do exact inference in multi-way tables is to use `loglinear()`.  We'll illustrate this using the drugs dataset from `loglinear()`'s documentation, taken from Agresti (2002, p.322), on which we'll test the no-three-way interaction model:
-```{r logLinearMultiWay}
+```{r log-linear-multi-way}
 data(drugs)
 ftable(drugs)
 
@@ -112,7 +112,7 @@ loglinear(subsets(1:3, 2), data = drugs)
 ```
 
 Note that here we've used the more concise syntax of facet specification; if you want to understand the model specification better, read the documentation in `?loglinear`.  You can perform the asymptotic test with `loglm()` like this:
-```{r logLmMultiWay}
+```{r log-lm-multi-way}
 MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 ```
 
@@ -128,7 +128,7 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 
 
 
-# Statistical applications of LattE
+# Other statistical applications of LattE and 4ti2
 
 _Note: this section assumes you have [__latte__](https://github.com/dkahle/latte.git) installed and working on your machine._
 

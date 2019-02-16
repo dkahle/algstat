@@ -112,12 +112,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3764 0.0048      0.2254
-#    Pearson X^2 1.8182  0.3764 0.0048      0.2254
-# Likelihood G^2 1.848   0.3764 0.0048      0.2254
-#  Freeman-Tukey 1.8749  0.3764 0.0048      0.2254
-#   Cressie-Read 1.8247  0.3764 0.0048      0.2254
-#     Neyman X^2 2.0089  0.3764 0.0048      0.3035
+#       P(table)         0.3638 0.0048      0.2171
+#    Pearson X^2 1.8182  0.3638 0.0048      0.2171
+# Likelihood G^2 1.848   0.3638 0.0048      0.2171
+#  Freeman-Tukey 1.8749  0.3638 0.0048      0.2171
+#   Cressie-Read 1.8247  0.3638 0.0048      0.2171
+#     Neyman X^2 2.0089  0.3638 0.0048      0.2926
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -224,12 +224,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.7827 0.0041      0.782 
-#    Pearson X^2 5.9655  0.769  0.0042      0.769 
-# Likelihood G^2 6.7641  0.7747 0.0042      0.7747
-#  Freeman-Tukey 8.6189  0.7745 0.0042      0.7745
-#   Cressie-Read 6.0752  0.7701 0.0042      0.7701
-#     Neyman X^2 6.2442  0.5975 0.0049      0.5975
+#       P(table)         0.7725 0.0042      0.7722
+#    Pearson X^2 5.9655  0.7634 0.0042      0.7634
+# Likelihood G^2 6.7641  0.7662 0.0042      0.7662
+#  Freeman-Tukey 8.6189  0.766  0.0042      0.766 
+#   Cressie-Read 6.0752  0.7653 0.0042      0.7653
+#     Neyman X^2 6.2442  0.5891 0.0049      0.5891
 ```
 
 The asymptotic test can be performed as well. The chi-square
@@ -278,12 +278,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.6024 0.0049      0.4614
-#    Pearson X^2 0.5279  0.6024 0.0049      0.4614
-# Likelihood G^2 0.4845  0.6024 0.0049      0.4614
-#  Freeman-Tukey 0.4672  0.6024 0.0049      0.4614
-#   Cressie-Read 0.512   0.6024 0.0049      0.4614
-#     Neyman X^2 0.4294  0.6024 0.0049      0.4614
+#       P(table)         0.6031 0.0049      0.4686
+#    Pearson X^2 0.5279  0.6031 0.0049      0.4686
+# Likelihood G^2 0.4845  0.6031 0.0049      0.4686
+#  Freeman-Tukey 0.4672  0.6031 0.0049      0.4686
+#   Cressie-Read 0.512   0.6031 0.0049      0.4686
+#     Neyman X^2 0.4294  0.6031 0.0049      0.4686
 ```
 
 Note that here we’ve used the more concise syntax of facet
@@ -302,8 +302,8 @@ MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 # Pearson          0.5279994  1 0.4674492
 ```
 
-Statistical applications of LattE
-=================================
+Other statistical applications of LattE and 4ti2
+================================================
 
 *Note: this section assumes you have
 [**latte**](https://github.com/dkahle/latte.git) installed and working
