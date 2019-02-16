@@ -3,3 +3,9 @@
 language: R
 sudo: false
 cache: packages
+  
+r_github_packages: 
+  - dkahle/mpoly
+  - dkahle/latte
+  - dkahle/bertini
+  - coneill-math/m2r
