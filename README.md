@@ -15,16 +15,18 @@ status](https://travis-ci.org/dkahle/algstat.svg?branch=master)](https://travis-
 statistical methods in R. It is intended to be an end user package for
 that purpose, and consequently depends on other packages that make
 connections to math software to do key computations. Currently, [the
-latte package](https://github.com/dkahle/latte.git) is used to connect R
-to [LattE](https://www.math.ucdavis.edu/~latte/) with
+**latte** package](https://github.com/dkahle/latte.git) is used to
+connect R to [LattE](https://www.math.ucdavis.edu/~latte/) with
 [4ti2](http://www.4ti2.de) for lattice problems and the computation of
-Markov bases, and [the **m2r**
+Markov bases, [the **m2r**
 package](https://github.com/coneill-math/m2r.git) connects R to
 [Macaulay2](http://www.math.uiuc.edu/Macaulay2/) for algebraic
-computations. In the future, **bertini** will connect R to
+computations, and [the **bertini**
+package](https://github.com/dkahle/bertini) connects R to
 [Bertini](https://bertini.nd.edu), which is used to numerically solve
-systems of polynomial equations. **m2r** can be used for that purpose to
-some extent currently by using Macaulay2’s connection to
+systems of polynomial equations. These are at varying stages of
+development. **m2r** can be used for that purpose to some extent
+currently by using Macaulay2’s connection to
 [PHCPack](http://homepages.math.uic.edu/~jan/download.html), so be sure
 to look there for now if that’s what you’re trying to do.
 
@@ -97,7 +99,7 @@ Since the independence model is log-linear, this exact same procedure
 can be done with **algstat**. The go-to function here is `loglinear()`:
 
 ``` r
-loglinear(~ Personality + Party, "data" = politics)
+loglinear(~ Personality + Party, data = politics)
 # Computing Markov moves (4ti2)... done.
 # Running chain (C++)... done.
 # Call:
@@ -110,12 +112,12 @@ loglinear(~ Personality + Party, "data" = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3684 0.0048      0.2198
-#    Pearson X^2 1.8182  0.3684 0.0048      0.2198
-# Likelihood G^2 1.848   0.3684 0.0048      0.2198
-#  Freeman-Tukey 1.8749  0.3684 0.0048      0.2198
-#   Cressie-Read 1.8247  0.3684 0.0048      0.2198
-#     Neyman X^2 2.0089  0.3684 0.0048      0.2924
+#       P(table)         0.3622 0.0048      0.2162
+#    Pearson X^2 1.8182  0.3622 0.0048      0.2162
+# Likelihood G^2 1.848   0.3622 0.0048      0.2162
+#  Freeman-Tukey 1.8749  0.3622 0.0048      0.2162
+#   Cressie-Read 1.8247  0.3622 0.0048      0.2162
+#     Neyman X^2 2.0089  0.3622 0.0048      0.2922
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -161,7 +163,7 @@ function uses the IPF implementation from `loglin()`, although it
 doesn’t need to). It’s syntax looks identical to `loglinear()`’s above:
 
 ``` r
-MASS::loglm(~ Personality + Party, "data" = politics)
+MASS::loglm(~ Personality + Party, data = politics)
 # Call:
 # MASS::loglm(formula = ~Personality + Party, data = politics)
 # 
@@ -181,7 +183,7 @@ p.57):
 
 ``` r
 Job <- matrix(
-  c(1,2,1,0, 3,3,6,1, 10,10,14,9, 6,7,12,11), "nrow" = 4, "ncol" = 4,
+  c(1,2,1,0, 3,3,6,1, 10,10,14,9, 6,7,12,11), nrow = 4, ncol = 4,
   dimnames = list(
     "income" = c("< 15k", "15-25k", "25-40k", "> 40k"),
     "satisfaction" = c("VeryD", "LittleD", "ModerateS", "VeryS")
@@ -208,7 +210,7 @@ fisher.test(Job)
 Here’s the **algstat** counterpart:
 
 ``` r
-loglinear(~ income + satisfaction, "data" = Job)
+loglinear(~ income + satisfaction, data = Job)
 # Care ought be taken with tables with sampling zeros to ensure the MLE exists.
 # Computing Markov moves (4ti2)... done.
 # Running chain (C++)... done.
@@ -222,19 +224,19 @@ loglinear(~ income + satisfaction, "data" = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.7878 0.0041      0.7872
-#    Pearson X^2 5.9655  0.7772 0.0042      0.7772
-# Likelihood G^2 6.7641  0.7811 0.0041      0.7811
-#  Freeman-Tukey 8.6189  0.7831 0.0041      0.7831
-#   Cressie-Read 6.0752  0.78   0.0041      0.78  
-#     Neyman X^2 6.2442  0.6068 0.0049      0.6068
+#       P(table)         0.7833 0.0041      0.7828
+#    Pearson X^2 5.9655  0.7746 0.0042      0.7746
+# Likelihood G^2 6.7641  0.7783 0.0042      0.7783
+#  Freeman-Tukey 8.6189  0.7805 0.0041      0.7805
+#   Cressie-Read 6.0752  0.7768 0.0042      0.7768
+#     Neyman X^2 6.2442  0.5976 0.0049      0.5976
 ```
 
 The asymptotic test can be performed as well. The chi-square
 approximation is actually very good here:
 
 ``` r
-MASS::loglm(~ income + satisfaction, "data" = Job)
+MASS::loglm(~ income + satisfaction, data = Job)
 # Call:
 # MASS::loglm(formula = ~income + satisfaction, data = Job)
 # 
@@ -263,7 +265,7 @@ ftable(drugs)
 # No        Yes                44   2
 #           No                456 279
 
-loglinear(subsets(1:3, 2), "data" = drugs)
+loglinear(subsets(1:3, 2), data = drugs)
 # Computing Markov moves (4ti2)... done.
 # Running chain (C++)... done.
 # Call:
@@ -276,12 +278,12 @@ loglinear(subsets(1:3, 2), "data" = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.6098 0.0049      0.4706
-#    Pearson X^2 0.5279  0.6098 0.0049      0.4706
-# Likelihood G^2 0.4845  0.6098 0.0049      0.4706
-#  Freeman-Tukey 0.4672  0.6098 0.0049      0.4706
-#   Cressie-Read 0.512   0.6098 0.0049      0.4706
-#     Neyman X^2 0.4294  0.6098 0.0049      0.4706
+#       P(table)         0.6047 0.0049        0.46
+#    Pearson X^2 0.5279  0.6047 0.0049        0.46
+# Likelihood G^2 0.4845  0.6047 0.0049        0.46
+#  Freeman-Tukey 0.4672  0.6047 0.0049        0.46
+#   Cressie-Read 0.512   0.6047 0.0049        0.46
+#     Neyman X^2 0.4294  0.6047 0.0049        0.46
 ```
 
 Note that here we’ve used the more concise syntax of facet
@@ -290,7 +292,7 @@ read the documentation in `?loglinear`. You can perform the asymptotic
 test with `loglm()` like this:
 
 ``` r
-MASS::loglm(~ 1*2 + 2*3 + 1*3, "data" = drugs)
+MASS::loglm(~ 1*2 + 2*3 + 1*3, data = drugs)
 # Call:
 # MASS::loglm(formula = ~1 * 2 + 2 * 3 + 1 * 3, data = drugs)
 # 
@@ -334,7 +336,7 @@ For example, we can determine the number of tables with the same row
 sums of `politics` as follows:
 
 ``` r
-(A <- hmat("varlvls" = c(2, 2), "facets" = 1:2)[1:2,])
+(A <- hmat(varlvls = c(2, 2), facets = 1:2)[1:2,])
 #    11 12 21 22
 # 1+  1  1  0  0
 # 2+  0  0  1  1
@@ -381,7 +383,8 @@ Even better, **algstat** can team up with
 solve systems of polynomial equations using `poly_solve()`:
 
 ``` r
-ggvariety(mp("(y - x^2) (y - (2 - x^2))"), "xlim" = c(-2,2), "ylim" = c(0,2), n = 251)
+ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351) +
+  ggplot2::theme_classic()
 ```
 
 ![](tools/poly-solve-1.png)
