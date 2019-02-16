@@ -112,12 +112,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3622 0.0048      0.2162
-#    Pearson X^2 1.8182  0.3622 0.0048      0.2162
-# Likelihood G^2 1.848   0.3622 0.0048      0.2162
-#  Freeman-Tukey 1.8749  0.3622 0.0048      0.2162
-#   Cressie-Read 1.8247  0.3622 0.0048      0.2162
-#     Neyman X^2 2.0089  0.3622 0.0048      0.2922
+#       P(table)         0.3764 0.0048      0.2254
+#    Pearson X^2 1.8182  0.3764 0.0048      0.2254
+# Likelihood G^2 1.848   0.3764 0.0048      0.2254
+#  Freeman-Tukey 1.8749  0.3764 0.0048      0.2254
+#   Cressie-Read 1.8247  0.3764 0.0048      0.2254
+#     Neyman X^2 2.0089  0.3764 0.0048      0.3035
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -224,12 +224,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.7833 0.0041      0.7828
-#    Pearson X^2 5.9655  0.7746 0.0042      0.7746
-# Likelihood G^2 6.7641  0.7783 0.0042      0.7783
-#  Freeman-Tukey 8.6189  0.7805 0.0041      0.7805
-#   Cressie-Read 6.0752  0.7768 0.0042      0.7768
-#     Neyman X^2 6.2442  0.5976 0.0049      0.5976
+#       P(table)         0.7827 0.0041      0.782 
+#    Pearson X^2 5.9655  0.769  0.0042      0.769 
+# Likelihood G^2 6.7641  0.7747 0.0042      0.7747
+#  Freeman-Tukey 8.6189  0.7745 0.0042      0.7745
+#   Cressie-Read 6.0752  0.7701 0.0042      0.7701
+#     Neyman X^2 6.2442  0.5975 0.0049      0.5975
 ```
 
 The asymptotic test can be performed as well. The chi-square
@@ -278,12 +278,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.6047 0.0049        0.46
-#    Pearson X^2 0.5279  0.6047 0.0049        0.46
-# Likelihood G^2 0.4845  0.6047 0.0049        0.46
-#  Freeman-Tukey 0.4672  0.6047 0.0049        0.46
-#   Cressie-Read 0.512   0.6047 0.0049        0.46
-#     Neyman X^2 0.4294  0.6047 0.0049        0.46
+#       P(table)         0.6024 0.0049      0.4614
+#    Pearson X^2 0.5279  0.6024 0.0049      0.4614
+# Likelihood G^2 0.4845  0.6024 0.0049      0.4614
+#  Freeman-Tukey 0.4672  0.6024 0.0049      0.4614
+#   Cressie-Read 0.512   0.6024 0.0049      0.4614
+#     Neyman X^2 0.4294  0.6024 0.0049      0.4614
 ```
 
 Note that here we’ve used the more concise syntax of facet
