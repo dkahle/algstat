@@ -56,11 +56,10 @@ rfiber(10, A = A, b = b, format = "tab", dim = c(2, 2))
 set.seed(1)
 (tab <- rfiber(1, A = A, b = b, format = "tab", dim = c(2, 2))[[1]])
 x <- tab2vec(tab)
+
+\dontrun{ # requires 4ti2
+
 rfiber(100, A = A, x = x, method = "walk")
-
-
-
-\dontrun{ # save R CMD check time and requires additional software
 
 library(microbenchmark)
 microbenchmark(
