@@ -47,6 +47,9 @@ data(politics); politics
 (A <- hmat(c(2,2), 1:2)) # independence model on 2x2 table
 (b <- A \%*\% x) # vector of sufficient statistics
 rmove(10, A = A, b = b)
+
+\dontrun{ # requires 4ti2
+
 rmove(10, A = A, x = x, method = "walk")
 
 
@@ -66,9 +69,6 @@ rfiber(10, A = A, b = b)
 unique(tabs)
 lapply(unique(tabs), vec2tab, dim = c(2, 2))
 
-
-
-\dontrun{ # save R CMD check time and requires outside software
 
 
 library(microbenchmark)
