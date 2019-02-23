@@ -85,14 +85,14 @@ count_tables <- function(table,
 ){
   
   ## make column names
-  cellNames <- paste0("t", colnames(A))
+  cellVars <- paste0("t", 1L:ncol(A))
   
   
   ## make the sums
   margConds <- unname(apply(A, 1, function(v){
     nonzero_ndcs <- unname(which(v > 0))
     one_ndcs     <- unname(which(v[nonzero_ndcs] == 1))
-    terms <- paste(v[nonzero_ndcs], cellNames[nonzero_ndcs])
+    terms <- paste(v[nonzero_ndcs], cellVars[nonzero_ndcs])
     terms[one_ndcs] <- str_sub(terms[one_ndcs], 3)
     paste(terms, collapse = " + ")
   }))
@@ -104,8 +104,8 @@ count_tables <- function(table,
   
   
   ## make the equalities and inqualities
-  margConds <- paste0(margConds, " == ", marginals)
-  nonnegConds <- paste0(cellNames, " >= 0")
+  margConds <- str_c(margConds, " == ", marginals)
+  nonnegConds <- str_c(cellVars, " >= 0")
   
   
   ## count
