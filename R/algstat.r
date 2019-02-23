@@ -16,10 +16,11 @@
 #'   element_blank aes geom_contour theme_void
 #' @importFrom parallel mclapply makeCluster stopCluster parLapply detectCores
 #' @importFrom reshape2 melt
-#' @importFrom purrr cross_df
-#' @importFrom dplyr mutate
+#' @importFrom purrr cross_df cross set_names map
+#' @importFrom dplyr mutate bind_rows bind_cols
 #' @importFrom magrittr %>%
-#' @importFrom tibble tibble
+#' @importFrom tibble tibble as_tibble
+#' @importFrom tidyr gather
 #' @importFrom stats deriv dmultinom loglin runif sd
 #' @importFrom utils combn download.file
 #' @useDynLib algstat

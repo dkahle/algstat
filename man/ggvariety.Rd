@@ -34,25 +34,32 @@ variety in 2D space.
 ## basic usage
 ##################################################
 
-ggvariety(mp("y - x"))
-ggvariety(mp("y - x^2"))
-ggvariety(mp("x^2 + y^2 - 1"))
+ggvariety("y - x")
+ggvariety("y - x^2")
+ggvariety("x^2 + y^2 - 1")
+ggvariety(c("x^2 + y^2 - 1", "y - x"))
+
 
 
 ## setting limits
 ##################################################
 
-ggvariety(mp("y - x^2"))
-ggvariety(mp("y - x^2"), xlim = c(-2,2), ylim = c(-2,2))
+ggvariety("y - x^2")
+ggvariety("y - x^2", xlim = c(-2,2), ylim = c(-2,2))
 
 
 ## ggplot2 styling
 ##################################################
 
 library("ggplot2")
-ggvariety(mp("x^2 + y^2 - 1")) + coord_equal()
-ggvariety(mp("x^2 + y^2 - 1")) + coord_equal() + theme_bw()
-ggvariety(mp("x^2 + y^2 - 1")) + coord_equal() + theme_void()
+ggvariety("x^2 + y^2 - 1") + coord_equal()
+ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_bw()
+ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_classic()
+ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_void()
+
+ggvariety(c("x^2 + y^2 - 1", "(x^2 + y^2)^3 - 4 x^2 y^2")) +
+  coord_equal() + theme_void() +
+  scale_color_manual(values = c("red", "blue"), guide = FALSE)
 
 
 
@@ -65,6 +72,7 @@ ggvariety(mp("x^2 + y^2 - 1")) + coord_equal() + theme_void()
 # the number of sampled points on the grid is recommended.
 ggvariety("y^2 - x^3 - x^2") + coord_equal()
 ggvariety("y^2 - x^3 - x^2", n = 201) + coord_equal()
+# ggvariety(mp(c("x^2 + y^2 - 1", "y - x")))
 
 }
 \author{
