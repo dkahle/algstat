@@ -9,6 +9,8 @@ algstat
 status](https://www.r-pkg.org/badges/version/algstat)](https://cran.r-project.org/package=algstat)
 [![Travis build
 status](https://travis-ci.org/dkahle/algstat.svg?branch=master)](https://travis-ci.org/dkahle/algstat)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/dkahle/algstat?branch=master&svg=true)](https://ci.appveyor.com/project/dkahle/algstat)
 <!-- badges: end -->
 
 **algstat** is a collection of tools to help you use algebraic
@@ -112,12 +114,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3638 0.0048      0.2171
-#    Pearson X^2 1.8182  0.3638 0.0048      0.2171
-# Likelihood G^2 1.848   0.3638 0.0048      0.2171
-#  Freeman-Tukey 1.8749  0.3638 0.0048      0.2171
-#   Cressie-Read 1.8247  0.3638 0.0048      0.2171
-#     Neyman X^2 2.0089  0.3638 0.0048      0.2926
+#       P(table)         0.3699 0.0048      0.2215
+#    Pearson X^2 1.8182  0.3699 0.0048      0.2215
+# Likelihood G^2 1.848   0.3699 0.0048      0.2215
+#  Freeman-Tukey 1.8749  0.3699 0.0048      0.2215
+#   Cressie-Read 1.8247  0.3699 0.0048      0.2215
+#     Neyman X^2 2.0089  0.3699 0.0048      0.2975
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -224,12 +226,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.7725 0.0042      0.7722
-#    Pearson X^2 5.9655  0.7634 0.0042      0.7634
-# Likelihood G^2 6.7641  0.7662 0.0042      0.7662
-#  Freeman-Tukey 8.6189  0.766  0.0042      0.766 
-#   Cressie-Read 6.0752  0.7653 0.0042      0.7653
-#     Neyman X^2 6.2442  0.5891 0.0049      0.5891
+#       P(table)         0.7813 0.0041      0.7809
+#    Pearson X^2 5.9655  0.7708 0.0042      0.7708
+# Likelihood G^2 6.7641  0.7745 0.0042      0.7745
+#  Freeman-Tukey 8.6189  0.7753 0.0042      0.7753
+#   Cressie-Read 6.0752  0.7719 0.0042      0.7719
+#     Neyman X^2 6.2442  0.6099 0.0049      0.6099
 ```
 
 The asymptotic test can be performed as well. The chi-square
@@ -278,12 +280,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.6031 0.0049      0.4686
-#    Pearson X^2 0.5279  0.6031 0.0049      0.4686
-# Likelihood G^2 0.4845  0.6031 0.0049      0.4686
-#  Freeman-Tukey 0.4672  0.6031 0.0049      0.4686
-#   Cressie-Read 0.512   0.6031 0.0049      0.4686
-#     Neyman X^2 0.4294  0.6031 0.0049      0.4686
+#       P(table)         0.6059 0.0049      0.4658
+#    Pearson X^2 0.5279  0.6059 0.0049      0.4658
+# Likelihood G^2 0.4845  0.6059 0.0049      0.4658
+#  Freeman-Tukey 0.4672  0.6059 0.0049      0.4658
+#   Cressie-Read 0.512   0.6059 0.0049      0.4658
+#     Neyman X^2 0.4294  0.6059 0.0049      0.4658
 ```
 
 Note that here we’ve used the more concise syntax of facet

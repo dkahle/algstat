@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/algstat)](https://cran.r-project.org/package=algstat)
 [![Travis build status](https://travis-ci.org/dkahle/algstat.svg?branch=master)](https://travis-ci.org/dkahle/algstat)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/dkahle/algstat?branch=master&svg=true)](https://ci.appveyor.com/project/dkahle/algstat)
 <!-- badges: end -->
 
 
