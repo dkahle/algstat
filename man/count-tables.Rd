@@ -19,7 +19,7 @@ count_tables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
 
 \item{cache}{use count (default) or fcount}
 
-\item{...}{arguments to pass to \code{\link{latte_count}}}
+\item{...}{arguments to pass to \code{\link[=latte_count]{latte_count()}}}
 }
 \value{
 an integer
@@ -29,11 +29,10 @@ Count the number of contingency tables with the same marginals as a given
 table.
 }
 \details{
-\code{count_tables} uses LattE's count function (via algstat's
-\code{\link{latte_count}} function) to count the tables.  In many cases, the
-number of such tables is enormous.  In these cases, instead of giving back an
-integer \code{count_tables} provides a character string with the integer in
-it; see examples.
+\code{count_tables} uses LattE's count function (via latte's \code{\link[=latte_count]{latte_count()}})
+to count the tables.  In many cases, the number of such tables is enormous.
+In these cases, instead of giving back an integer \code{count_tables}
+provides a character string with the integer in it; see examples.
 }
 \examples{
 
@@ -94,5 +93,5 @@ count_tables(eyeHairColor, quiet = FALSE)
 
 }
 \seealso{
-\code{\link{latte_count}}, \code{\link{count_fiber}}
+\code{\link[=latte_count]{latte_count()}}, \code{\link[=count_fiber]{count_fiber()}}
 }

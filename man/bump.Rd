@@ -50,15 +50,17 @@ the 20 triples to have 300/choose(6, 3) = 5 votes.
 Now suppose we learn that the six objects were voted for 30, 40, 50, 50, 60,
 and 70 times, respectively, but nothing more.  Obviously, we could then
 compute 300 votes had been cast (V0 = 100 voters), but "looking up" we could
-also guess that the pairing [12] was voted for 30/choose(5, 1) + 40/choose(5,
-1) = 14 times.  The reasoning is that if object 1 were observed 30 times and
+also guess that the pairing \link{12} was voted for 30/choose(5, 1) + 40/choose(5,
+\enumerate{
+\item = 14 times.  The reasoning is that if object 1 were observed 30 times and
 2 40 times, if each were paired evenly with each of the others 1 would
 contribute 30/choose(5, 1) votes to the pairing and 2 40/choose(5, 1).  The
 choose(5, 1) corresponds to the number of pairings that 1 (or 2) is present
-in: [12], [13], [14], [15], [16].  The same idea can be used to estimate the
+in: \link{12}, \link{13}, \link{14}, \link{15}, \link{16}.  The same idea can be used to estimate the
 number of votes for each of the choose(6, 2) = 15 pairs.  (See examples.)
 This is bumping up; for any level of summary, we can bump it up as far as we
 like (all the way up to the set itself).
+}
 
 Bumping down is easier.  The only thing needed to know is that it follows the
 order of the subsets function.  For example, in the above voting example, the
@@ -66,20 +68,20 @@ order of the subsets function.  For example, in the above voting example, the
 is given in the order of subsets(6, 1).
 
 If method = "even", exactly the above is done.  If method = "popular", then
-when bumping up the number of votes for [12] isn't determined by each of 1
+when bumping up the number of votes for \link{12} isn't determined by each of 1
 and 2 donating their samples evenly to each of their upstream pairs; but
-rather 1 and 2 donating to each other (as contributors of the pair [12])
+rather 1 and 2 donating to each other (as contributors of the pair \link{12})
 according to how popular it is amongst the alternatives.  In other words, 1
 is thought to have (in this case) 30 votes to "give" to either 2, 3, 4, 5, or
 6.  If method = "even", it donates 30/5 to each.  If method = "popular", it
-donates 40/(40+50+50+60+70) of the 30 votes to 2 (as a contributor of [12]),
+donates 40/(40+50+50+60+70) of the 30 votes to 2 (as a contributor of \link{12}),
 50/(40+50+50+60+70) of the 30 to 3, and so on.  The expected frequency of
-[12] is therefore made up as the sum of such contributions from each of the
-places the contribution might come.  Here, the contributors of [12] are [1]
-and [2], with contributions 30*40/(40+50+50+60+70) and
-40*30/(30+50+50+60+70), for a total of 9.06 expected [12] votes.  The same is
-done for higher order votes; e.g. [123] takes even or popular contributions
-from [12], [13], and [14].
+\link{12} is therefore made up as the sum of such contributions from each of the
+places the contribution might come.  Here, the contributors of \link{12} are \link{1}
+and \link{2}, with contributions 30\emph{40/(40+50+50+60+70) and
+40}30/(30+50+50+60+70), for a total of 9.06 expected \link{12} votes.  The same is
+done for higher order votes; e.g. \link{123} takes even or popular contributions
+from \link{12}, \link{13}, and \link{14}.
 }
 \examples{
 

@@ -14,10 +14,10 @@ personality.
 }
 \references{
 Sheskin, D. J. Handbook of Parametric and Nonparametric
-  Statistical Procedures. 4ed. Chapman and Hall/CRC Press, 2007.
+Statistical Procedures. 4ed. Chapman and Hall/CRC Press, 2007.
 }
 \author{
 David Kahle, simplifying the dataset found on p.622 of Sheskin (see
-  References)
+References)
 }
 \keyword{datasets}

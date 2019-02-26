@@ -17,10 +17,10 @@ cellBounds(...)
 \item{b}{solution vector in Ax = b (vector of sufficient statistics)}
 
 \item{strategy}{"lp" for linear programming and "ip" for integer programming.
-(both use \code{\link{lp}})}
+(both use \code{\link[lpSolve:lp]{lpSolve::lp()}})}
 
-\item{start}{reduce the size of the matrix A, i.e. use A[,start:ncol(A)]
-instead of A}
+\item{start}{reduce the size of the matrix A, i.e. use
+\code{A[,start:ncol(A)]} instead of A}
 
 \item{messaging}{TRUE for messages}
 
@@ -45,5 +45,5 @@ cell_bounds(A, b, messaging = TRUE)
 }
 \author{
 Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David Kahle
-  \email{david.kahle@gmail.com}
+\email{david@kahle.io}
 }

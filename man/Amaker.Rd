@@ -25,6 +25,5 @@ Amaker(4, 2)
 
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Emaker}}, \code{\link{Mmaker}},
-  \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link[=Tmaker]{Tmaker()}}, \code{\link[=Emaker]{Emaker()}}, \code{\link[=Mmaker]{Mmaker()}}, \code{\link[=Pmaker]{Pmaker()}}, \code{\link[=Smaker]{Smaker()}}
 }

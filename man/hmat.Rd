@@ -43,8 +43,8 @@ cat(format_latte(A))
 }
 \references{
 Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures
-  on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
+on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 }
 \seealso{
-\code{\link{genmodel}}
+\code{\link[=genmodel]{genmodel()}}
 }

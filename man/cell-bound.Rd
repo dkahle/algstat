@@ -18,7 +18,7 @@ cellBound(...)
 \item{side}{bound side to compute, "lower" or "upper"}
 
 \item{strategy}{"lp" for linear programming and "ip" for integer programming.
-(both use \code{\link{lp}}.)}
+(both use \code{\link[lpSolve:lp]{lpSolve::lp()}}.)}
 
 \item{...}{...}
 }
@@ -41,5 +41,5 @@ cell_bound(A, b, "upper") # 4
 }
 \author{
 Ruriko Yoshida \email{ruriko.yoshida@uky.edu}, David Kahle
-  \email{david.kahle@gmail.com}
+\email{david@kahle.io}
 }

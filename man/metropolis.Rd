@@ -13,7 +13,7 @@ rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric")
 \arguments{
 \item{init}{the initial step}
 
-\item{moves}{the moves to be used (the negatives will be added); 
+\item{moves}{the moves to be used (the negatives will be added);
 they are arranged as the columns of a matrix.}
 
 \item{iter}{number of chain iterations}
@@ -31,8 +31,8 @@ or "uniform"}
 a list
 }
 \description{
-Given a starting table (as a vector) and a collection of moves, 
-run the Metropolis-Hastings algorithm starting with the starting 
+Given a starting table (as a vector) and a collection of moves,
+run the Metropolis-Hastings algorithm starting with the starting
 table.
 }
 \details{
@@ -161,9 +161,9 @@ showSteps <- function(steps){
 
 }
 \references{
-Drton, M., B. Sturmfels, and S. Sullivant (2009). 
-  \emph{Lectures on Algebraic Statistics}, Basel: Birkhauser 
-  Verlag AG.
+Drton, M., B. Sturmfels, and S. Sullivant (2009).
+\emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
+Verlag AG.
 }
 \author{
 David Kahle

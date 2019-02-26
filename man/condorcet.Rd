@@ -37,8 +37,8 @@ condorcet(rowSums(city), colnames(city))    # overall winner
 }
 \references{
 Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
-  London: Chapman & Hall. p.20.
+London: Chapman & Hall. p.20.
 }
 \seealso{
-\code{\link{Pmaker}}
+\code{\link[=Pmaker]{Pmaker()}}
 }

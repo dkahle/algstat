@@ -10,7 +10,7 @@
 #'   (m is the length of data)
 #' @param names character vector of the names of the m objects
 #' @return ...
-#' @seealso \code{\link{Pmaker}}
+#' @seealso [Pmaker()]
 #' @export condorcet
 #' @references Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
 #'   London: Chapman & Hall. p.20.

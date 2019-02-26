@@ -53,9 +53,8 @@ apply(t(X) \%*\% rowSums(city), 2, function(x) x / sum(x) * factorial(3)) # aver
 }
 \references{
 Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
-  London: Chapman & Hall. p.41.
+London: Chapman & Hall. p.41.
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}},
-  \code{\link{Mmaker}}, \code{\link{Pmaker}}
+\code{\link[=Tmaker]{Tmaker()}}, \code{\link[=Amaker]{Amaker()}}, \code{\link[=Emaker]{Emaker()}}, \code{\link[=Mmaker]{Mmaker()}}, \code{\link[=Pmaker]{Pmaker()}}
 }

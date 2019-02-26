@@ -64,14 +64,13 @@ rvotes <- function(nVoters, nObjects, kSelected){
 
 
 
-#' Create an upper triangular matrix
+#' Create a triangular matrix
 #'
-#' Create an upper triangular matrix.
+#' Create a upper or lower triangular matrix.
 #' 
 #' @param x a vector
 #' @return ...
-#' @seealso \code{\link{lower}}
-#' @export upper
+#' @name triangular
 #' @examples
 #' upper(1:3)
 #' lower(1:3)
@@ -80,7 +79,12 @@ rvotes <- function(nVoters, nObjects, kSelected){
 #' lower(1:6)
 #' 
 #' upper(rnorm(6))
-#'
+#' 
+
+
+
+#' @rdname triangular
+#' @export
 upper <- function(x){
   l <- length(x)
   p <- round( (1+sqrt(1+8*l))/2 )	
@@ -102,24 +106,8 @@ upper <- function(x){
 
 
 
-
-#' Create a lower triangular matrix
-#'
-#' Create a lower triangular matrix.
-#' 
-#' @param x a vector
-#' @return ...
-#' @export lower
-#' @seealso \code{\link{upper}}
-#' @examples
-#' upper(1:3)
-#' lower(1:3)
-#'
-#' upper(1:6)
-#' lower(1:6)
-#' 
-#' upper(rnorm(6))
-#'
+#' @rdname triangular
+#' @export
 lower <- function(x) t(upper(x))
 
 
@@ -140,7 +128,7 @@ lower <- function(x) t(upper(x))
 #' @param x a vector
 #' @return ...
 #' @name project-onto
-#' @seealso \code{\link{qr.fitted}}
+#' @seealso [base::qr.fitted]
 #' @examples
 #' 
 #' A <- diag(5)[,1:2]

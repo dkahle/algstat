@@ -33,8 +33,8 @@ lambdas <- apply(partitions(4), 1, function(v) v[v != 0])
 }
 \references{
 Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
-  London: Chapman & Hall. pp.47--48.
+London: Chapman & Hall. pp.47--48.
 }
 \seealso{
-\code{\link{Mmaker}}, \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link[=Mmaker]{Mmaker()}}, \code{\link[=Pmaker]{Pmaker()}}, \code{\link[=Smaker]{Smaker()}}
 }

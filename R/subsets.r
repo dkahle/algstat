@@ -11,7 +11,7 @@
 #' @param include_null should the empty vector be included?
 #' @return a list of subsets as vectors
 #' @export subsets
-#' @seealso \code{\link{combn}}
+#' @seealso [utils::combn()]
 #' @examples
 #' 
 #' 

@@ -15,7 +15,7 @@ margins.
 }
 \references{
 Haberman, S. (1974). \emph{The Analysis of Frequency
-  Data} 1, 2. University of Chicago Press, Chicago, IL.
+Data} 1, 2. University of Chicago Press, Chicago, IL.
 }
 \author{
 unknown

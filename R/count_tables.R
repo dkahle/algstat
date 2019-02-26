@@ -3,24 +3,23 @@
 #' Count the number of contingency tables with the same marginals as a given
 #' table.
 #'
-#' \code{count_tables} uses LattE's count function (via algstat's
-#' \code{\link{latte_count}} function) to count the tables.  In many cases, the
-#' number of such tables is enormous.  In these cases, instead of giving back an
-#' integer \code{count_tables} provides a character string with the integer in
-#' it; see examples.
+#' \code{count_tables} uses LattE's count function (via latte's [latte_count()])
+#' to count the tables.  In many cases, the number of such tables is enormous.
+#' In these cases, instead of giving back an integer \code{count_tables}
+#' provides a character string with the integer in it; see examples.
 #'
 #' @param table the table of interest
 #' @param A the configuration/transpose design matrix
 #' @param dir directory to place the files in, without an ending /
 #' @param quiet show latte output
 #' @param cache use count (default) or fcount
-#' @param ... arguments to pass to \code{\link{latte_count}}
+#' @param ... arguments to pass to [latte_count()]
 #' @return an integer
-#' @seealso \code{\link{latte_count}}, \code{\link{count_fiber}}
+#' @seealso [latte_count()], [count_fiber()]
 #' @name count-tables
 #' @examples
-#' 
-#' 
+#'
+#'
 #' \dontrun{ requires LattE
 #'
 #'

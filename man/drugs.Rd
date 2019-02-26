@@ -14,10 +14,10 @@ marijuana use by high school students.
 }
 \references{
 Agresti, A. (2002). \emph{Categorical Data Analysis},
-  Basel: John Wiley & Sons, 2ed. (p.322)
+Basel: John Wiley & Sons, 2ed. (p.322)
 }
 \author{
 Wright State University School of Medicine and the United
-  Health Services in Dayton, Ohio
+Health Services in Dayton, Ohio
 }
 \keyword{datasets}

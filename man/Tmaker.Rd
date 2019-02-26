@@ -92,6 +92,5 @@ effectsOnV3 # = t(t(cookie$freq)) = the (freq) data
 
 }
 \seealso{
-\code{\link{Emaker}}, \code{\link{Amaker}}, \code{\link{Mmaker}},
-  \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link[=Emaker]{Emaker()}}, \code{\link[=Amaker]{Amaker()}}, \code{\link[=Mmaker]{Mmaker()}}, \code{\link[=Pmaker]{Pmaker()}}, \code{\link[=Smaker]{Smaker()}}
 }

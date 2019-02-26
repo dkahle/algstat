@@ -15,7 +15,7 @@ in a city, 500 in the suburbs, and 302 in the country.
 }
 \references{
 Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
-  London: Chapman & Hall. p.35.
+London: Chapman & Hall. p.35.
 }
 \author{
 1972 National Opinion Research Center Amalgam Survey

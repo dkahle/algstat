@@ -17,7 +17,7 @@ teshape(data, out = c("freq", "tab", "raw"), var)
 }
 \value{
 a matrix containing the Markov basis as its columns (for easy
-  addition to tables)
+addition to tables)
 }
 \description{
 Interconvert an array, a raw data frame, and frequency distribution

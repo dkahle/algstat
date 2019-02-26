@@ -42,6 +42,5 @@ Tmaker(6, 3, 1)
 
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Mmaker}},
-  \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link[=Tmaker]{Tmaker()}}, \code{\link[=Amaker]{Amaker()}}, \code{\link[=Mmaker]{Mmaker()}}, \code{\link[=Pmaker]{Pmaker()}}, \code{\link[=Smaker]{Smaker()}}
 }

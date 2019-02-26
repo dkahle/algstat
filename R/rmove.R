@@ -1,102 +1,100 @@
 #' Generate random moves on a fiber
-#' 
+#'
 #' Generate random moves on a fiber
-#' 
+#'
 #' @param n the number of observations
 #' @param A the configuration matrix of the model defining the fiber
 #' @param b integer vector; the vector of sufficient statistics
-#' @param x integer vector; a vector in the fiber to be used as an 
+#' @param x integer vector; a vector in the fiber to be used as an
 #'   initialization point for the "walk" method
 #' @param method "sis", "walk", or "hybrid"
 #' @param dist "uniform" or "hypergeometric"
 #' @param parallel parallelize the sampling?
 #' @param format format of the returned moves, "mat", "vec", or "tab"
-#' @param dim the dimensions of the table if "tab" is used, see 
-#'   \code{\link{vec2tab}}
-#' @param ... arguments to pass to \code{\link{rfiber}}, such as \code{parallel 
-#'   = TRUE}
+#' @param dim the dimensions of the table if "tab" is used, see [vec2tab()]
+#' @param ... arguments to pass to [rfiber()], such as \code{parallel = TRUE}
 #' @return a named numeric vector
-#' @author David Kahle \email{david.kahle@@gmail.com}, Ruriko Yoshida 
+#' @author David Kahle \email{david@@kahle.io}, Ruriko Yoshida
 #'   \email{ruriko.yoshida@@uky.edu}
-#' @seealso \code{\link{rfiber}}
+#' @seealso [rfiber()]
 #' @export rmove
 #' @examples
-#' 
-#' 
+#'
+#'
 #' data(politics); politics
 #' (x <- tab2vec(politics))
-#' 
+#'
 #' (A <- hmat(c(2,2), 1:2)) # independence model on 2x2 table
 #' (b <- A %*% x) # vector of sufficient statistics
 #' rmove(10, A = A, b = b)
-#' 
+#'
 #' \dontrun{ # requires 4ti2
-#' 
+#'
 #' rmove(10, A = A, x = x, method = "walk")
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
 #' moves <- rmove(10000, A = A, x = x, method = "walk")
 #' unique(t(moves))
-#' 
-#' 
+#'
+#'
 #' ## simple example
 #' (A <- hmat(c(2,2), 1:2))
 #' (x <- c(1, 3, 3, 1))
 #' (b <- rep.int(4, 4))
-#' 
+#'
 #' rfiber(10, A = A, b = b)
 #' (tabs <- rfiber(10, A = A, b = b, format = "vec"))
 #' unique(tabs)
 #' lapply(unique(tabs), vec2tab, dim = c(2, 2))
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' library(microbenchmark)
 #' microbenchmark(
 #'   rmove(100, A = A, b = b),
 #'   rmove(100, A = A, x = x, method = "walk")
 #' )
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' markov(A)
 #' markov(A, "vec")
 #' markov(A, "tab", c(2,2))
-#' 
+#'
 #' rmove(5, A, b)
 #' rmove(5, A, b, format = "vec")
 #' rmove(5, A, b, format = "tab", dim = c(2,2))
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
 #' ## politics example
 #' data(politics); politics
 #' tab2vec(politics)
 #' (b <- A %*% tab2vec(politics))
 #' (tabs <- rfiber(1000, A = A, b = b, format = "vec"))
 #' lapply(unique(tabs), vec2tab, dim = c(2, 2))
-#' 
+#'
 #' rmove(5, A, b)
 #' rmove(5, A, b, format = "tab", dim = c(2,2))
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' ## parallelizing
 #' system.time(rmove(1e4, A, b))                  # ~35s
 #' system.time(rmove(1e4, A, b, parallel = TRUE)) # ~ 8s, 8 cores
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#'
 #' ## drugs example
 #' data(drugs)
 #' (A <- hmat(c(2,2,2), 1:3))
@@ -104,9 +102,9 @@
 #' markovMoves <- markov(A)
 #' rmove(5, A, b)
 #' rmove(5, A, b, format = "tab", dim = c(2,2,2))
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' }
 #' 
 rmove <- function(n, A, b, x,

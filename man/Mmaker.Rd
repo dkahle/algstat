@@ -29,9 +29,8 @@ Mmaker(3) \%*\% city
 }
 \references{
 Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
-  London: Chapman & Hall. p.42.
+London: Chapman & Hall. p.42.
 }
 \seealso{
-\code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}},
-  \code{\link{Pmaker}}, \code{\link{Smaker}}
+\code{\link[=Tmaker]{Tmaker()}}, \code{\link[=Amaker]{Amaker()}}, \code{\link[=Emaker]{Emaker()}}, \code{\link[=Pmaker]{Pmaker()}}, \code{\link[=Smaker]{Smaker()}}
 }

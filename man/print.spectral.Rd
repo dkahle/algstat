@@ -26,5 +26,5 @@ Pretty printing of spectral's output.
 
 }
 \seealso{
-\code{\link{spectral}}
+\code{\link[=spectral]{spectral()}}
 }

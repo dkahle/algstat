@@ -27,15 +27,14 @@ initialization point for the "walk" method}
 
 \item{parallel}{parallelize the sampling?}
 
-\item{includeRejections}{should rejections be returned? (note: rejection 
+\item{includeRejections}{should rejections be returned? (note: rejection
 tables aren't completed in the SIS procedure.)}
 
 \item{thin}{thinning argument (if using walk method)}
 
 \item{format}{format of the returned moves, "mat", "vec", or "tab"}
 
-\item{dim}{the dimensions of the table if "tab" is used, see 
-\code{\link{vec2tab}}}
+\item{dim}{the dimensions of the table if "tab" is used, see \code{\link[=vec2tab]{vec2tab()}}}
 }
 \value{
 a named numeric vector
@@ -108,6 +107,6 @@ system.time(rfiber(1e4, A = A, b = b, parallel = TRUE))
 
 }
 \author{
-David Kahle \email{david.kahle@gmail.com}, Ruriko Yoshida 
-  \email{ruriko.yoshida@uky.edu}
+David Kahle \email{david@kahle.io}, Ruriko Yoshida
+\email{ruriko.yoshida@uky.edu}
 }
