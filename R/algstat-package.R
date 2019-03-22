@@ -1,4 +1,4 @@
-#' algstat : Algebraic statistics in R
+#' algstat: Algebraic Statistics in R
 #'
 #' algstat is a package for algebraic statistics in R.  Current applications
 #' include exact inference in log-linear models for contingency table data,
