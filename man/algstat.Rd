@@ -5,7 +5,7 @@
 \alias{algstat}
 \alias{package-algstat}
 \alias{algstat-package}
-\title{algstat : Algebraic statistics in R}
+\title{algstat: Algebraic Statistics in R}
 \description{
 algstat is a package for algebraic statistics in R.  Current applications
 include exact inference in log-linear models for contingency table data,
