@@ -37,7 +37,7 @@ provides a character string with the integer in it; see examples.
 \examples{
 
 
-\dontrun{ requires LattE
+if (has_latte()) {
 
 
 data(politics); politics
@@ -78,12 +78,17 @@ count_tables(drugs)
 # the 4x4 table below has 154 elements in its independence fiber
 # the 5x5 has 16830, and the compute times are on the order of
 # 1 and 10 seconds, respectively.
+# the following block is omited for faster R check time
+if (FALSE) {
 set.seed(1)
 n <- 5
 tab <- matrix(sample(0:1, n^2, replace = TRUE), nrow = n)
 dimnames(tab) <- list(X = paste0("x", 1:n), Y = paste0("y", 1:n))
 tab
 count_tables(tab)
+}
+
+
 
 count_tables(eyeHairColor, quiet = FALSE)
 
