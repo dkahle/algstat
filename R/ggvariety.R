@@ -54,8 +54,10 @@
 #' # to numerically detect zero crossings. this is an imperfect process,
 #' # so you may see gaps where none exist. as a general strategy, upping
 #' # the number of sampled points on the grid is recommended.
-#' ggvariety("y^2 - x^3 - x^2") + coord_equal()
-#' ggvariety("y^2 - x^3 - x^2", n = 201) + coord_equal()
+#' # the below are commented to cut check time; they run
+#' 
+#' # ggvariety("y^2 - x^3 - x^2") + coord_equal()
+#' # ggvariety("y^2 - x^3 - x^2", n = 201) + coord_equal()
 #' # ggvariety(mp(c("x^2 + y^2 - 1", "y - x")))
 #' 
 
