@@ -9,7 +9,7 @@
 #' @param n number of mesh points in each dimension
 #' @param nx number of mesh points in the abcissa (x)
 #' @param ny number of mesh points in the ordinate (y)
-#' @param ... additional parameters
+#' @param ... additional parameters to pass to [geom_contour()]
 #' @name ggvariety
 #' @return A ggplot object containing variety plot
 #' @author Phillip Hossu, Ryan Hebdon, Chong Sun, Grant Innerst, David Kahle
@@ -37,6 +37,10 @@
 #' 
 #' library("ggplot2")
 #' ggvariety("x^2 + y^2 - 1") + coord_equal()
+#' ggvariety("x^2 + y^2 - 1", color = "red") + coord_equal()
+#' ggvariety("x^2 + y^2 - 1", size = 2) + coord_equal()
+#' ggvariety("x^2 + y^2 - 1", size = 2, alpha = .2) + coord_equal()
+#' ggvariety("x^2 + y^2 - 1", linetype = 2) + coord_equal()
 #' ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_bw()
 #' ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_classic()
 #' ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_void()
@@ -97,7 +101,7 @@ ggvariety <- function(
       cross_df() %>% 
       mutate("z" = f(x, y)) %>% 
       ggplot(aes(x, y, "z" = z)) + 
-        geom_contour(breaks = 0)
+        geom_contour(breaks = 0, ...)
     
   } else { # several varieties
     
@@ -126,7 +130,7 @@ ggvariety <- function(
     # make plot
     xy_poly_tb %>% 
       ggplot(aes(x, y, z = `p(x,y)`, color = poly)) +
-        geom_contour(breaks = 0)    
+        geom_contour(breaks = 0, ...)    
   }
   
 }

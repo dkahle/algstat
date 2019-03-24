@@ -20,7 +20,7 @@ ggvariety(mp, xlim = c(-1, 1), ylim = c(-1, 1), n = 101, nx = n,
 
 \item{ny}{number of mesh points in the ordinate (y)}
 
-\item{...}{additional parameters}
+\item{...}{additional parameters to pass to \code{\link[=geom_contour]{geom_contour()}}}
 }
 \value{
 A ggplot object containing variety plot
@@ -53,6 +53,10 @@ ggvariety("y - x^2", xlim = c(-2,2), ylim = c(-2,2))
 
 library("ggplot2")
 ggvariety("x^2 + y^2 - 1") + coord_equal()
+ggvariety("x^2 + y^2 - 1", color = "red") + coord_equal()
+ggvariety("x^2 + y^2 - 1", size = 2) + coord_equal()
+ggvariety("x^2 + y^2 - 1", size = 2, alpha = .2) + coord_equal()
+ggvariety("x^2 + y^2 - 1", linetype = 2) + coord_equal()
 ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_bw()
 ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_classic()
 ggvariety("x^2 + y^2 - 1") + coord_equal() + theme_void()
