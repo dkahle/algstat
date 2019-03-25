@@ -5,16 +5,16 @@
 \alias{rawMetropolis}
 \title{The Metropolis Algorithm}
 \usage{
-metropolis(init, moves, iter = 1000, burn = 0, thin = 1,
-  dist = c("hypergeometric", "uniform"), engine = c("Cpp", "R"))
+metropolis(init, moves, iter = 1000L, burn = 0L, thin = 1L,
+  dist = c("hypergeometric", "uniform"), engine = c("C++", "R"))
 
 rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric")
 }
 \arguments{
 \item{init}{the initial step}
 
-\item{moves}{the moves to be used (the negatives will be added);
-they are arranged as the columns of a matrix.}
+\item{moves}{the moves to be used (the negatives will be added); they are
+arranged as the columns of a matrix.}
 
 \item{iter}{number of chain iterations}
 
@@ -22,148 +22,84 @@ they are arranged as the columns of a matrix.}
 
 \item{thin}{thinning}
 
-\item{dist}{steady-state distribution; "hypergeometric" (default)
-or "uniform"}
+\item{dist}{steady-state distribution; "hypergeometric" (default) or
+"uniform"}
 
-\item{engine}{C++ or R? (C++ yields roughly a 20-25x speedup)}
+\item{engine}{\code{"C++"} or \code{"R"}? (C++ is significantly faster)}
 }
 \value{
 a list
 }
 \description{
-Given a starting table (as a vector) and a collection of moves,
-run the Metropolis-Hastings algorithm starting with the starting
-table.
+Given a starting table (as a vector) and a collection of moves, run the
+Metropolis-Hastings algorithm starting with the starting table.
 }
 \details{
 See Algorithm 1.1.13 in LAS, the reference below.
 }
 \examples{
 
-\dontrun{
-
-library(ggplot2); theme_set(theme_bw())
+## basic use
+############################################################
 
 # move up and down integer points on the line y = 100 - x
 # sampling from the hypergeometric distribution
-init <- c(10,90)
+# note: negative moves are added internally
+init <- c(10L, 90L)
 moves <- matrix(c(1,-1), ncol = 1)
-out <- metropolis(init, moves)
-qplot(out$steps[1,])
+
+# it helps running each of these lines several times to get a feel for things
+metropolis(init, moves, iter = 10, burn = 0, thin = 1)
+metropolis(init, moves, iter = 10, burn = 0, thin = 1, dist = "uniform")
+metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
+metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R", dist = "uniform")
+
+# a bigger simulation
+iter <- 1e3
+out <- metropolis(init, moves, iter = iter, burn = 0, thin = 1)
+hist(out$steps[1,], breaks = 100)
 
 # view convergence through trace plot
-qplot(1:1000, out$steps[1,])
+plot(1:iter, out$steps[1,1:iter])
 
 # sampling from the hypergeometric distribution
-out <- metropolis(init, moves, dist = "uniform")
-qplot(out$steps[1,])
-
-# view convergence through trace plot
-qplot(1:1000, out$steps[1,])
+out <- metropolis(init, moves, iter = iter, dist = "uniform")
+hist(out$steps[1,], breaks = 100)
+plot(1:iter, out$steps[1,1:iter])
 
 # look at autocorrelation
 acf(out$steps[1,])
-# thin
-out <- metropolis(init, moves, dist = "uniform", thin = 2500)
+
+
+## thinning to reduce autocorrelation with the thin argument
+############################################################
+
+out <- metropolis(init, moves, iter = iter, dist = "uniform", thin = 2500)
 acf(out$steps[1,])
-qplot(out$steps[1,])
+hist(out$steps[1,], breaks = 100)
 
 
 
+## burn in with the burn argument
+############################################################
 
+set.seed(1L)
+metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
 
+set.seed(1L)
+metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
 
+set.seed(1L)
+metropolis(init, moves, iter =  5, burn = 5, thin = 1, engine = "R")
 
+# this can't be shown as easily with the C++ engine because of seed issues
 
-
-
-
-
-
-
-
-
-
-
-data(handy)
-
-exp   <- loglin(handy, as.list(1:2), fit = TRUE)$fit
-e <- unname(tab2vec(exp))
-h <- t(t(unname(tab2vec(handy))))
-chisq <- algstat:::computeX2sCpp(h, e)
-
-out <- loglinear(~ Gender + Handedness, data = handy)
-chisqs <- algstat:::computeX2sCpp(out$steps, e)
-
-mean(chisqs >= chisq)
-fisher.test(handy)$p.value
-
-
-
-
-
-A <- hmat(c(2,2), as.list(1:2))
-moves <- markov(A)
-outC <- metropolis(tab2vec(handy), moves, 1e4, engine = "Cpp")
-str(outC)
-outR <- metropolis(tab2vec(handy), moves, 1e4, engine = "R", thin = 20)
-str(outR)
-
-# showSteps(out$steps)
-
-
-library(microbenchmark)
-microbenchmark(
-  metropolis(tab2vec(handy), moves, engine = "Cpp"),
-  metropolis(tab2vec(handy), moves, engine = "R")
-)
-
-# cpp ~ 20-25x faster
-
-
-
-
-
-
-
-
-
-
-
-
-
-showSteps <- function(steps){
-  apply(steps, 2, function(x){
-    x <- format(x)
-    tab <- vec2tab(x, dim(handy))
-    message(
-      paste(
-        apply(tab, 1, paste, collapse = " "),
-        collapse = " "
-      )
-    )
-    message("
-", appendLF = F)
-  })
-  invisible()
-}
-# showSteps(out$steps)
-
-
-
-
-
-
-
-
-}
 
 
 }
 \references{
-Drton, M., B. Sturmfels, and S. Sullivant (2009).
-\emph{Lectures on Algebraic Statistics}, Basel: Birkhauser
-Verlag AG.
+Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures
+on Algebraic Statistics}, Basel: Birkhauser Verlag AG.
 }
 \author{
 David Kahle

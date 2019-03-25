@@ -3,76 +3,76 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List metropolis_hypergeometric_cpp(
-    IntegerVector current, 
+    IntegerVector init, 
     IntegerMatrix moves, 
-    int iter, int thin
+    int iter, 
+    int thin
 ){
 
-  int nTotalSamples = iter * thin;         // total number of steps
-  int n = current.size();                  // number of cells
-  int nMoves = moves.ncol();               // number of moves
-  IntegerMatrix steps(n, iter);            // columns are states
-  IntegerVector whichMove(nTotalSamples);  // move selection
-  NumericVector unifs(nTotalSamples);      // for transition probabilities
-  IntegerVector proposal(n);               // the proposed moves
-  double prob;                             // the probability of transition
-  bool anyIsNegative;
-  IntegerVector move(n);
+  IntegerVector current = clone(init);
+  int n_total_samples = iter * thin;         // total number of steps
+  int n_cells = current.size();              // number of cells
+  int n_moves = moves.ncol();                // number of moves
+  IntegerMatrix steps(n_cells, iter);        // columns are states
+  IntegerVector which_move(n_total_samples); // move selection
+  NumericVector unifs(n_total_samples);      // for transition probabilities
+  IntegerVector proposal(n_cells);           // the proposed moves
+  double prob;                               // the probability of transition
+  bool any_negative_cells;
+  IntegerVector move(n_cells);
   double accept_prob = 0;
 
   Function sample("sample");
-  whichMove = sample(nMoves, nTotalSamples, 1);
+  which_move = sample(n_moves, n_total_samples, 1);
   Function runif("runif");
-  unifs = runif(nTotalSamples);
-  Function print("print");
+  unifs = runif(n_total_samples);
+  
+  
+  // set first step
+  for (int k = 0; k < n_cells; ++k) steps(k,0) = current[k];
+  
+  
+  // run main chain 
+  for (int i = 1; i < iter; ++i) {
+    
+    // cycle through thinning moves, the last of which is kept
+    for (int j = 0; j < thin; ++j) {
 
-  for(int i = 0; i < iter; ++i){
-    for(int j = 0; j < thin; ++j){
-
-      // make move
-      for(int k = 0; k < n; ++k){
-        move[k] = moves(k, whichMove[thin*i+j]-1);
-      }
+      // determine move
+      for (int k = 0; k < n_cells; ++k) move[k] = moves(k, which_move[thin*i+j]-1);
 
       // compute proposal
-      for(int k = 0; k < n; ++k){
-        proposal[k] = current[k] + move[k];
-      }
+      for (int k = 0; k < n_cells; ++k) proposal[k] = current[k] + move[k];
 
       // compute probability of transition
-      anyIsNegative = false;
-      for(int k = 0; k < n; ++k){
-        if(proposal[k] < 0){
-          anyIsNegative = true;
-        }
+      any_negative_cells = false;
+      for (int k = 0; k < n_cells; ++k) {
+        if (proposal[k] < 0) any_negative_cells = true;
       }
 
-      if(anyIsNegative){
+      // compute transition probability
+      if (any_negative_cells) {
         prob = 0;
       } else {
         prob = exp( sum(lgamma(current+1)) - sum(lgamma(proposal+1)) );
       }
 
-      if(prob > 1){
-        prob = 1;
-      }
+      // round down to 1 for computing acceptance probabilities
+      if (prob > 1) prob = 1;
 
       // store acceptance probability
-      accept_prob = accept_prob + prob / nTotalSamples;
+      accept_prob = accept_prob + prob / n_total_samples;
 
       // make move
-      if(unifs[thin*i+j] < prob){
-        for(int k = 0; k < n; ++k){
-          current[k] = proposal[k];
-        }
+      if (unifs[thin*i+j] < prob) {
+        for (int k = 0; k < n_cells; ++k) current[k] = proposal[k];
       }
 
     }
 
-    // assign state move
-    for(int k = 0; k < n; ++k){
-      steps(k,i) = current[k];
-    }
+    // record current position in steps
+    for (int k = 0; k < n_cells; ++k) steps(k,i) = current[k];
+    
   }
 
   // create out list

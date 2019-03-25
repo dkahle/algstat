@@ -21,12 +21,12 @@ computeX2sCpp <- function(x, exp) {
     .Call('_algstat_computeX2sCpp', PACKAGE = 'algstat', x, exp)
 }
 
-metropolis_hypergeometric_cpp <- function(current, moves, iter, thin) {
-    .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, iter, thin)
+metropolis_hypergeometric_cpp <- function(init, moves, iter, thin) {
+    .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', init, moves, iter, thin)
 }
 
-metropolis_uniform_cpp <- function(current, moves, iter, thin) {
-    .Call('_algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', current, moves, iter, thin)
+metropolis_uniform_cpp <- function(init, moves, iter, thin) {
+    .Call('_algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', init, moves, iter, thin)
 }
 
 rfiberOne <- function(A, b) {

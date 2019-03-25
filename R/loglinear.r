@@ -64,7 +64,7 @@
 #' @param iter number of chain iterations
 #' @param burn burn-in
 #' @param thin thinning
-#' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
+#' @param engine \code{"C++"} or \code{"R"}? (C++ is significantly faster)
 #' @param method should the expected value (exp) be fit using iterative
 #'   proportional fitting (via loglin) or the MCMC as the average of the steps?
 #' @param moves the markov moves for the mcmc (as columns of a matrix).
@@ -597,7 +597,7 @@
 loglinear <- function(model, data, 
                       init = tab2vec(data), 
                       iter = 1e4, burn = 1000, 
-                      thin = 10, engine = c("Cpp","R"), 
+                      thin = 10, engine = c("C++","R"), 
                       method = c("ipf", "mcmc"), moves, 
                       ...)
 {

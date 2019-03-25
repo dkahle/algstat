@@ -66,30 +66,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // metropolis_hypergeometric_cpp
-List metropolis_hypergeometric_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
-RcppExport SEXP _algstat_metropolis_hypergeometric_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+List metropolis_hypergeometric_cpp(IntegerVector init, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP _algstat_metropolis_hypergeometric_cpp(SEXP initSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type init(initSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
-    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(current, moves, iter, thin));
+    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(init, moves, iter, thin));
     return rcpp_result_gen;
 END_RCPP
 }
 // metropolis_uniform_cpp
-List metropolis_uniform_cpp(IntegerVector current, IntegerMatrix moves, int iter, int thin);
-RcppExport SEXP _algstat_metropolis_uniform_cpp(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+List metropolis_uniform_cpp(IntegerVector init, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP _algstat_metropolis_uniform_cpp(SEXP initSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type init(initSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
-    rcpp_result_gen = Rcpp::wrap(metropolis_uniform_cpp(current, moves, iter, thin));
+    rcpp_result_gen = Rcpp::wrap(metropolis_uniform_cpp(init, moves, iter, thin));
     return rcpp_result_gen;
 END_RCPP
 }
