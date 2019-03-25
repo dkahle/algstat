@@ -63,11 +63,8 @@ library("algstat")
 # Loading required package: mpoly
 # Loading required package: latte
 #   Please cite latte! See citation("latte") for details.
-#   LattE found in /Applications/latte/bin
-#   4ti2 found in /Applications/latte/bin
 # Loading required package: bertini
 #   Please cite bertini! See citation("bertini") for details.
-#   Bertini found in /usr/local/bin
 # Loading required package: m2r
 #   Please cite m2r! See citation("m2r") for details.
 #   M2 found in /Applications/Macaulay2-1.10/bin
@@ -114,12 +111,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3699 0.0048      0.2215
-#    Pearson X^2 1.8182  0.3699 0.0048      0.2215
-# Likelihood G^2 1.848   0.3699 0.0048      0.2215
-#  Freeman-Tukey 1.8749  0.3699 0.0048      0.2215
-#   Cressie-Read 1.8247  0.3699 0.0048      0.2215
-#     Neyman X^2 2.0089  0.3699 0.0048      0.2975
+#       P(table)         0.3739 0.0048      0.2219
+#    Pearson X^2 1.8182  0.3739 0.0048      0.2219
+# Likelihood G^2 1.848   0.3739 0.0048      0.2219
+#  Freeman-Tukey 1.8749  0.3739 0.0048      0.2219
+#   Cressie-Read 1.8247  0.3739 0.0048      0.2219
+#     Neyman X^2 2.0089  0.3739 0.0048      0.2962
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -226,12 +223,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.7813 0.0041      0.7809
-#    Pearson X^2 5.9655  0.7708 0.0042      0.7708
-# Likelihood G^2 6.7641  0.7745 0.0042      0.7745
-#  Freeman-Tukey 8.6189  0.7753 0.0042      0.7753
-#   Cressie-Read 6.0752  0.7719 0.0042      0.7719
-#     Neyman X^2 6.2442  0.6099 0.0049      0.6099
+#       P(table)         0.789  0.0041      0.7884
+#    Pearson X^2 5.9655  0.782  0.0041      0.782 
+# Likelihood G^2 6.7641  0.7849 0.0041      0.7849
+#  Freeman-Tukey 8.6189  0.7813 0.0041      0.7813
+#   Cressie-Read 6.0752  0.7837 0.0041      0.7837
+#     Neyman X^2 6.2442  0.6087 0.0049      0.6087
 ```
 
 The asymptotic test can be performed as well. The chi-square
@@ -280,12 +277,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.6059 0.0049      0.4658
-#    Pearson X^2 0.5279  0.6059 0.0049      0.4658
-# Likelihood G^2 0.4845  0.6059 0.0049      0.4658
-#  Freeman-Tukey 0.4672  0.6059 0.0049      0.4658
-#   Cressie-Read 0.512   0.6059 0.0049      0.4658
-#     Neyman X^2 0.4294  0.6059 0.0049      0.4658
+#       P(table)         0.6065 0.0049      0.4667
+#    Pearson X^2 0.5279  0.6065 0.0049      0.4667
+# Likelihood G^2 0.4845  0.6065 0.0049      0.4667
+#  Freeman-Tukey 0.4672  0.6065 0.0049      0.4667
+#   Cressie-Read 0.512   0.6065 0.0049      0.4667
+#     Neyman X^2 0.4294  0.6065 0.0049      0.4667
 ```
 
 Note that here we’ve used the more concise syntax of facet
@@ -392,7 +389,7 @@ ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 35
 ![](tools/poly-solve-1.png)
 
 ``` r
-poly_solve(c("y = x^2", "y = 2 - x^2"), var_order = c("x", "y"))
+poly_solve(c("y = x^2", "y = 2 - x^2"), varorder = c("x", "y"))
 # 2 solutions (x,y) found. (2 real, 0 complex)
 #     (-1,1) (R)
 #     ( 1,1) (R)
