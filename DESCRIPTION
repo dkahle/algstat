@@ -32,7 +32,10 @@ Imports:
     dplyr,
     magrittr,
     tibble,
-    tidyr
+    tidyr,
+    glue,
+    rstan,
+    gmp
 Suggests:
     vcd,
     microbenchmark
