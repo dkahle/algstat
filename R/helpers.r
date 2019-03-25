@@ -1,3 +1,11 @@
+# https://github.com/stan-dev/rstan/issues/176
+#' @export
+Rcpp::cpp_object_initializer
+
+
+
+
+
 #' Lp Norm
 #' 
 #' Compute the Lp norm of a vector.
