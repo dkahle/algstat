@@ -28,7 +28,23 @@ arranged as the columns of a matrix.}
 \item{engine}{\code{"C++"} or \code{"R"}? (C++ is significantly faster)}
 }
 \value{
-a list
+a list containing named elements
+
+\itemize{
+
+\item \code{steps}: an integer matrix whose columns represent individual
+samples from the mcmc.
+
+\item \code{moves}: the moves supplied.
+
+\item \code{accept_prob}: the empirical transition probability of the
+moves, including the thinned moves.
+
+\item \code{accept_count}: the numerator of \code{accept_prob}.
+
+\item \code{total_count}: the numerator of \code{total_prob}.
+
+}
 }
 \description{
 Given a starting table (as a vector) and a collection of moves, run the
@@ -55,16 +71,11 @@ metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
 metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R", dist = "uniform")
 
 # a bigger simulation
-iter <- 1e3
-out <- metropolis(init, moves, iter = iter, burn = 0, thin = 1)
+iter <- 1e4
+out <- metropolis(init, moves, iter = iter, burn = 0)
 hist(out$steps[1,], breaks = 100)
 
 # view convergence through trace plot
-plot(1:iter, out$steps[1,1:iter])
-
-# sampling from the hypergeometric distribution
-out <- metropolis(init, moves, iter = iter, dist = "uniform")
-hist(out$steps[1,], breaks = 100)
 plot(1:iter, out$steps[1,1:iter])
 
 # look at autocorrelation
@@ -74,7 +85,7 @@ acf(out$steps[1,])
 ## thinning to reduce autocorrelation with the thin argument
 ############################################################
 
-out <- metropolis(init, moves, iter = iter, dist = "uniform", thin = 2500)
+out <- metropolis(init, moves, iter = iter, thin = 200)
 acf(out$steps[1,])
 hist(out$steps[1,], breaks = 100)
 
@@ -84,17 +95,24 @@ hist(out$steps[1,], breaks = 100)
 ############################################################
 
 set.seed(1L)
-metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
+metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")$steps
 
 set.seed(1L)
-metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
+metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")$steps
 
 set.seed(1L)
-metropolis(init, moves, iter =  5, burn = 5, thin = 1, engine = "R")
-
-# this can't be shown as easily with the C++ engine because of seed issues
+metropolis(init, moves, iter =  5, burn = 5, thin = 1, engine = "R")$steps
 
 
+# to do, align these:
+set.seed(1L)
+metropolis(init, moves, iter = 10, burn = 0, thin = 1)$steps
+
+set.seed(1L)
+metropolis(init, moves, iter = 10, burn = 0, thin = 1)$steps
+
+set.seed(1L)
+metropolis(init, moves, iter =  5, burn = 5, thin = 1)$steps
 
 }
 \references{

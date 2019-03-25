@@ -15,7 +15,23 @@
 #'   "uniform"
 #' @param engine \code{"C++"} or \code{"R"}? (C++ is significantly faster)
 #' @name metropolis
-#' @return a list
+#' @return a list containing named elements
+#'
+#'   \itemize{
+#'
+#'   \item \code{steps}: an integer matrix whose columns represent individual
+#'   samples from the mcmc.
+#'
+#'   \item \code{moves}: the moves supplied.
+#'
+#'   \item \code{accept_prob}: the empirical transition probability of the
+#'   moves, including the thinned moves.
+#'   
+#'   \item \code{accept_count}: the numerator of \code{accept_prob}.
+#'   
+#'   \item \code{total_count}: the numerator of \code{total_prob}.
+#'   
+#'   }
 #' @export metropolis
 #' @author David Kahle
 #' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures
@@ -38,16 +54,11 @@
 #' metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R", dist = "uniform")
 #'
 #' # a bigger simulation
-#' iter <- 1e3
-#' out <- metropolis(init, moves, iter = iter, burn = 0, thin = 1)
+#' iter <- 1e4
+#' out <- metropolis(init, moves, iter = iter, burn = 0)
 #' hist(out$steps[1,], breaks = 100)
 #'
 #' # view convergence through trace plot
-#' plot(1:iter, out$steps[1,1:iter])
-#'
-#' # sampling from the hypergeometric distribution
-#' out <- metropolis(init, moves, iter = iter, dist = "uniform")
-#' hist(out$steps[1,], breaks = 100)
 #' plot(1:iter, out$steps[1,1:iter])
 #'
 #' # look at autocorrelation
@@ -57,7 +68,7 @@
 #' ## thinning to reduce autocorrelation with the thin argument
 #' ############################################################
 #'
-#' out <- metropolis(init, moves, iter = iter, dist = "uniform", thin = 2500)
+#' out <- metropolis(init, moves, iter = iter, thin = 200)
 #' acf(out$steps[1,])
 #' hist(out$steps[1,], breaks = 100)
 #'
@@ -67,17 +78,24 @@
 #' ############################################################
 #'
 #' set.seed(1L)
-#' metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
+#' metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")$steps
 #'
 #' set.seed(1L)
-#' metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")
+#' metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R")$steps
 #'
 #' set.seed(1L)
-#' metropolis(init, moves, iter =  5, burn = 5, thin = 1, engine = "R")
-#'
-#' # this can't be shown as easily with the C++ engine because of seed issues
+#' metropolis(init, moves, iter =  5, burn = 5, thin = 1, engine = "R")$steps
 #'
 #'
+#' # to do, align these:
+#' set.seed(1L)
+#' metropolis(init, moves, iter = 10, burn = 0, thin = 1)$steps
+#'
+#' set.seed(1L)
+#' metropolis(init, moves, iter = 10, burn = 0, thin = 1)$steps
+#'
+#' set.seed(1L)
+#' metropolis(init, moves, iter =  5, burn = 5, thin = 1)$steps
 #' 
 metropolis <- function(
   init, 
@@ -149,7 +167,8 @@ metropolis <- function(
     ## main sampler
     #########################
   
-    totalRuns <- 0L
+    total_count <- 0L
+    accept_count <- 0L
     prob_total <- 0
     
     for(k in 2:iter){
@@ -168,11 +187,15 @@ metropolis <- function(
             prob <- 1
           }
         }
-        prob_total <- prob_total + min(1, prob)
+        # prob_total <- prob_total + min(1, prob)
   
-        if(main_unifs[k*(thin-1)+j] < prob) current <- prop_state # else current
+        if(main_unifs[k*(thin-1)+j] < prob) {
+          current <- prop_state # else current
+          accept_count <- accept_count + 1L
+        }
         
-        totalRuns <- totalRuns + 1L     
+        total_count <- total_count + 1L     
+        
       }
   
       state[,k] <- current    
@@ -181,9 +204,11 @@ metropolis <- function(
     
     ## format output
     out <- list(
-      steps = state, 
-      moves = moves, 
-      accept_prob = prob_total / totalRuns
+      "steps" = state, 
+      "moves" = moves, 
+      "accept_prob" = accept_count / total_count,
+      "accept_count" = accept_count,
+      "total_count" = total_count
     )
   
 
@@ -193,8 +218,6 @@ metropolis <- function(
   ##################################################
   if (engine == "C++") {
     
-    current   <- unname(init)  
-    allMoves  <- cbind(moves, -moves)  
     sampler   <- if (dist == "hypergeometric") {
       metropolis_hypergeometric_cpp
     } else {
@@ -202,8 +225,7 @@ metropolis <- function(
     }
     
     message("Running chain (C++)... ", appendLF = FALSE)  
-    if (burn > 0) current <- sampler(current, allMoves, burn, 1)$steps[,burn]
-    out       <- sampler(current, allMoves, iter, thin)
+    out       <- sampler(unname(init), cbind(moves, -moves), iter, burn, thin)
     out$moves <- moves
     message("done.")
 
@@ -213,7 +235,7 @@ metropolis <- function(
   ## return output
   ##################################################  
 
-  out[c("steps", "moves", "accept_prob")]
+  out[c("steps", "moves", "accept_prob", "accept_count", "total_count")]
 }
 
 

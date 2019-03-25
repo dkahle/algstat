@@ -44,8 +44,8 @@ samples from the mcmc.
 \item \code{moves}: the moves used for the proposal distribution in the
 mcmc, computed with 4ti2 (note that only the positive moves are given).
 
-\item \code{accept_prob}: the average acceptance probability of the moves,
-including the thinned moves.
+\item \code{accept_prob}: the empirical transition probability of the
+moves, including the thinned moves.
 
 \item \code{param}: the fitted parameters of the log linear model.
 

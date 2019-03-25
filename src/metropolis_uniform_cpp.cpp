@@ -6,30 +6,62 @@ List metropolis_uniform_cpp(
     IntegerVector init, 
     IntegerMatrix moves, 
     int iter, 
+    int burn, 
     int thin
 ){
   
   IntegerVector current = clone(init);
-  int n_total_samples = iter * thin;         // total number of steps
-  int n_cells = current.size();              // number of cells
-  int n_moves = moves.ncol();                // number of moves
-  IntegerMatrix steps(n_cells, iter);        // columns are states
-  IntegerVector which_move(n_total_samples); // move selection
-  NumericVector unifs(n_total_samples);      // for transition probabilities
-  IntegerVector proposal(n_cells);           // the proposed moves
-  double prob;                               // the probability of transition
+  int n_total_samples = iter * thin;              // total number of steps
+  int n_cells = current.size();                   // number of cells
+  int n_moves = moves.ncol();                     // number of moves
+  IntegerMatrix steps(n_cells, iter);             // columns are states
+  IntegerVector which_move(burn+n_total_samples); // move selection
+  IntegerVector proposal(n_cells);                // the proposed moves
+  double transition_prob;                         // the probability of transition
+  int accept_count = 0;
+  int total_count = 0;
   bool any_negative_cells;
   IntegerVector move(n_cells);
-  double accept_prob = 0;
   
   Function sample("sample");
-  which_move = sample(n_moves, n_total_samples, 1);
-  Function runif("runif");
-  unifs = runif(n_total_samples);
+  which_move = sample(n_moves, burn + n_total_samples, 1);
+  
+  
+  
+  // enforce burn-in
+  if (burn > 0) for (int j = 0; j < burn; ++j) {
+    
+    // determine move
+    for (int k = 0; k < n_cells; ++k) move[k] = moves(k, which_move[j] - 1);
+    
+    // compute proposal
+    for (int k = 0; k < n_cells; ++k) proposal[k] = current[k] + move[k];
+    
+    // compute probability of transition
+    any_negative_cells = false;
+    for (int k = 0; k < n_cells; ++k) {
+      if (proposal[k] < 0) any_negative_cells = true;
+    }
+    
+    // compute transition probability
+    if (any_negative_cells) {
+      transition_prob = 0.;
+    } else {
+      transition_prob = 1.;
+    }
+    
+    // make move
+    if (runif(1)[0] < transition_prob) {
+      for (int k = 0; k < n_cells; ++k) current[k] = proposal[k];
+    }
+    
+  }
+  
   
   
   // set first step
   for (int k = 0; k < n_cells; ++k) steps(k,0) = current[k];
+  
   
   
   // run main chain 
@@ -39,7 +71,9 @@ List metropolis_uniform_cpp(
     for (int j = 0; j < thin; ++j) {
       
       // determine move
-      for (int k = 0; k < n_cells; ++k) move[k] = moves(k, which_move[thin*i+j]-1);
+      for (int k = 0; k < n_cells; ++k) {
+        move[k] = moves(k, which_move[burn + thin*i + j] - 1); 
+      }
       
       // compute proposal
       for (int k = 0; k < n_cells; ++k) proposal[k] = current[k] + move[k];
@@ -52,21 +86,19 @@ List metropolis_uniform_cpp(
       
       // compute transition probability
       if (any_negative_cells) {
-        prob = 0;
+        transition_prob = 0.;
       } else {
-        prob = 1;
+        transition_prob = 1.;
       }
-      
-      
-      
-      
-      // store acceptance probability
-      accept_prob = accept_prob + prob / n_total_samples;
       
       // make move
-      if (unifs[thin*i+j] < prob) {
+      if (runif(1)[0] < transition_prob) {
         for (int k = 0; k < n_cells; ++k) current[k] = proposal[k];
+        accept_count++;
       }
+      
+      // update counter
+      total_count++;
       
     }
     
@@ -78,7 +110,9 @@ List metropolis_uniform_cpp(
   // create out list
   List out = List::create(
     Rcpp::Named("steps") = steps,
-    Rcpp::Named("accept_prob") = accept_prob
+    Rcpp::Named("accept_count") = accept_count,
+    Rcpp::Named("total_count") = total_count,
+    Rcpp::Named("accept_prob") = (accept_count + 0.) / (total_count + 0.)
   );
   
   return out;
