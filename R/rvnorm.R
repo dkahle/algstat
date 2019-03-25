@@ -20,6 +20,7 @@
 #'   see [stan()].
 #' @param cores The number of CPU cores to distribute the chains across, see
 #'   [stan()].
+#' @param warmup Number of warmup iterations in [stan()].
 #' @param keep_warmup If \code{TRUE}, the MCMC warmup steps are included in the
 #'   output.
 #' @param normalized If \code{TRUE}, the polynomial is gradient-normalized. This

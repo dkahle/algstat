@@ -27,6 +27,8 @@ see \code{\link[=stan]{stan()}}.}
 \item{cores}{The number of CPU cores to distribute the chains across, see
 \code{\link[=stan]{stan()}}.}
 
+\item{warmup}{Number of warmup iterations in \code{\link[=stan]{stan()}}.}
+
 \item{keep_warmup}{If \code{TRUE}, the MCMC warmup steps are included in the
 output.}
 
