@@ -53,6 +53,9 @@ fisher.test(politics)
 ```
 
 Since the independence model is log-linear, this exact same procedure can be done with __algstat__. The go-to function here is `loglinear()`:
+```{r loglinear-intro-prep, echo=FALSE}
+set.seed(1L)
+```
 ```{r loglinear-intro}
 loglinear(~ Personality + Party, data = politics)
 ```
@@ -206,7 +209,7 @@ There are currently two ways to get __algstat__.  Here's the preferred way until
 
 * From Github: 
 ```{r eval=FALSE}
-if(!requireNamespace("devtools")) install.packages("devtools")
+if (!requireNamespace("devtools")) install.packages("devtools")
 devtools::install_github("dkahle/mpoly")
 devtools::install_github("coneill-math/m2r")
 devtools::install_github("dkahle/latte")

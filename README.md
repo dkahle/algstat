@@ -111,12 +111,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3739 0.0048      0.2219
-#    Pearson X^2 1.8182  0.3739 0.0048      0.2219
-# Likelihood G^2 1.848   0.3739 0.0048      0.2219
-#  Freeman-Tukey 1.8749  0.3739 0.0048      0.2219
-#   Cressie-Read 1.8247  0.3739 0.0048      0.2219
-#     Neyman X^2 2.0089  0.3739 0.0048      0.2962
+#       P(table)         0.3671 0.0048      0.2193
+#    Pearson X^2 1.8182  0.3671 0.0048      0.2193
+# Likelihood G^2 1.848   0.3671 0.0048      0.2193
+#  Freeman-Tukey 1.8749  0.3671 0.0048      0.2193
+#   Cressie-Read 1.8247  0.3671 0.0048      0.2193
+#     Neyman X^2 2.0089  0.3671 0.0048      0.2931
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -223,12 +223,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.789  0.0041      0.7884
-#    Pearson X^2 5.9655  0.782  0.0041      0.782 
-# Likelihood G^2 6.7641  0.7849 0.0041      0.7849
-#  Freeman-Tukey 8.6189  0.7813 0.0041      0.7813
-#   Cressie-Read 6.0752  0.7837 0.0041      0.7837
-#     Neyman X^2 6.2442  0.6087 0.0049      0.6087
+#       P(table)         0.7868 0.0041      0.7865
+#    Pearson X^2 5.9655  0.7724 0.0042      0.7724
+# Likelihood G^2 6.7641  0.7785 0.0042      0.7785
+#  Freeman-Tukey 8.6189  0.7782 0.0042      0.7782
+#   Cressie-Read 6.0752  0.7745 0.0042      0.7745
+#     Neyman X^2 6.2442  0.6109 0.0049      0.6109
 ```
 
 The asymptotic test can be performed as well. The chi-square
@@ -277,12 +277,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.6065 0.0049      0.4667
-#    Pearson X^2 0.5279  0.6065 0.0049      0.4667
-# Likelihood G^2 0.4845  0.6065 0.0049      0.4667
-#  Freeman-Tukey 0.4672  0.6065 0.0049      0.4667
-#   Cressie-Read 0.512   0.6065 0.0049      0.4667
-#     Neyman X^2 0.4294  0.6065 0.0049      0.4667
+#       P(table)          0.611 0.0049      0.4678
+#    Pearson X^2 0.5279   0.611 0.0049      0.4678
+# Likelihood G^2 0.4845   0.611 0.0049      0.4678
+#  Freeman-Tukey 0.4672   0.611 0.0049      0.4678
+#   Cressie-Read 0.512    0.611 0.0049      0.4678
+#     Neyman X^2 0.4294   0.611 0.0049      0.4678
 ```
 
 Note that here we’ve used the more concise syntax of facet
@@ -415,7 +415,7 @@ way until we push a new release to CRAN:
 -   From Github:
 
 ``` r
-if(!requireNamespace("devtools")) install.packages("devtools")
+if (!requireNamespace("devtools")) install.packages("devtools")
 devtools::install_github("dkahle/mpoly")
 devtools::install_github("coneill-math/m2r")
 devtools::install_github("dkahle/latte")
