@@ -45,6 +45,8 @@
 #' @examples
 #'
 #' \dontrun{ contains runs rstan
+#' 
+#' library("ggplot2")
 #'
 #' ## basic usage
 #' ########################################
@@ -53,9 +55,55 @@
 #' samps <- rvnorm(2000, p, sd = .1)
 #' head(samps)
 #'
-#' samps <- rvnorm(2000, p, sd = .1, output = "tibble")
+#' (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 #' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
-#'
+#' 
+#' 
+#' ## using refresh to get more info
+#' ########################################
+#' 
+#' p <- mp("x^2 + (4 y)^2 - 1")
+#' samps <- rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
+#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#' 
+#' 
+#' ## many chains in parallel
+#' ########################################
+#' 
+#' options("mc.cores" = 8L)
+#' p <- mp("x^2 + (4 y)^2 - 1")
+#' samps <- rvnorm(1000, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
+#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#' 
+#' 
+#' ## windowing for non-compact varieties
+#' ########################################
+#' 
+#' p <- mp("y^2 - (x^3 + x^2)")
+#' samps <- rvnorm(400, p, sd = .05, "tibble", chains = 8, w = 1.15)
+#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#' 
+#' 
+#' ## the importance of normalizing 
+#' ########################################
+#' # one of the effects of the normalizing is to stabilize variances.
+#' # thus, the variance below is inflated to create a similar amount
+#' # of variability.
+#' 
+#' samps <- rvnorm(400, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
+#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#'  
+#' 
+#' ## keeping the warmup / the importance of multiple chains
+#' ########################################
+#' 
+#' p <- mp("((x + 1.5)^2 + y^2 - 1) ((x - 1.5)^2 + y^2 - 1)")
+#' ggvariety(p, xlim = c(-3,3)) + coord_equal()
+#' samps <- rvnorm(400, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
+#' ggplot(samps, aes(x, y, color = factor(chain))) + 
+#'   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) + 
+#'   coord_equal() + facet_wrap(~ factor(chain))
+#' 
 #'
 #' }
 #' 
@@ -100,7 +148,7 @@ rvnorm <- function(
   ng <- NULL; rm(ng)
   lp__ <- NULL; rm(lp__)
   iter <- NULL; rm(iter)
-  if (missing(refresh)) if (verbose) refresh <- max(iter/10L, 1) else refresh <- 0L
+  if (missing(refresh)) if (verbose) refresh <- max(n/10L, 1) else refresh <- 0L
   if(!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
   
   # check args
