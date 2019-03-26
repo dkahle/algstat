@@ -6,11 +6,12 @@
 \usage{
 rvnorm(n, poly, sd, output = "simple", normalized = TRUE,
   chains = 4L, cores = getOption("mc.cores", 1L),
-  warmup = floor(n/2), keep_warmup = FALSE, inject_direct = FALSE,
-  verbose = FALSE, w, vars, numerator, denominator, refresh, ...)
+  warmup = floor(n/2), keep_warmup = FALSE, thin = 1L,
+  inject_direct = FALSE, verbose = FALSE, w, vars, numerator,
+  denominator, refresh, ...)
 }
 \arguments{
-\item{n}{The number of draws desired from each chain.}
+\item{n}{The number of draws desired from each chain after warmup.}
 
 \item{poly}{An mpoly object.}
 
@@ -31,6 +32,8 @@ see \code{\link[=stan]{stan()}}.}
 
 \item{keep_warmup}{If \code{TRUE}, the MCMC warmup steps are included in the
 output.}
+
+\item{thin}{\code{\link[=stan]{stan()}} \code{thin} parameter.}
 
 \item{inject_direct}{Directly specify printed polynomial to string inject
 into the stan code. Requires you specify \code{vars}, \code{numerator}, and
@@ -72,7 +75,7 @@ varieties of varying dimensions?
 }
 \examples{
 
-\dontrun{ contains runs rstan
+\dontrun{ runs rstan
 
 library("ggplot2")
 
@@ -82,34 +85,40 @@ library("ggplot2")
 p <- mp("x^2 + y^2 - 1")
 samps <- rvnorm(2000, p, sd = .1)
 head(samps)
+str(samps) # 2000 * (4 chains)
 
 (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
-ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+ggplot(samps, aes(x, y, color = num > 0)) + 
+  geom_point(size = .5) + 
+  coord_equal()
 
 
 ## using refresh to get more info
 ########################################
 
-p <- mp("x^2 + (4 y)^2 - 1")
-samps <- rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
-ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
+rvnorm(2000, p, sd = .1, "tibble", refresh = 100)
+rvnorm(2000, p, sd = .1, "tibble", refresh = 500)
+rvnorm(2000, p, sd = .1, "tibble", refresh = 0)
+rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
 
 
 ## many chains in parallel
 ########################################
 
-options("mc.cores" = 8L)
+options(mc.cores = parallel::detectCores())
 p <- mp("x^2 + (4 y)^2 - 1")
 samps <- rvnorm(1000, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
 ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 
 
-## windowing for non-compact varieties
+## windowing for unbounded varieties
 ########################################
 
 p <- mp("y^2 - (x^3 + x^2)")
-samps <- rvnorm(400, p, sd = .05, "tibble", chains = 8, w = 1.15)
-ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, w = 1.15)
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 
 
 ## the importance of normalizing 
@@ -118,7 +127,7 @@ ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 # thus, the variance below is inflated to create a similar amount
 # of variability.
 
-samps <- rvnorm(400, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
+samps <- rvnorm(500, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
 ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
  
 
@@ -127,8 +136,9 @@ ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 
 p <- mp("((x + 1.5)^2 + y^2 - 1) ((x - 1.5)^2 + y^2 - 1)")
 ggvariety(p, xlim = c(-3,3)) + coord_equal()
-samps <- rvnorm(400, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
-ggplot(samps, aes(x, y, color = factor(chain))) + 
+
+samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
+ggplot(samps, aes(x, y, color = iter)) + 
   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) + 
   coord_equal() + facet_wrap(~ factor(chain))
 

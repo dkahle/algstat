@@ -12,7 +12,7 @@
 #' of length, on different components? How does this generalize to more
 #' varieties of varying dimensions?
 #'
-#' @param n The number of draws desired from each chain.
+#' @param n The number of draws desired from each chain after warmup.
 #' @param poly An mpoly object.
 #' @param sd The "standard deviation" component of the normal kernel.
 #' @param output \code{"simple"}, \code{"more"}, \code{"stanfit"}.
@@ -23,6 +23,7 @@
 #' @param warmup Number of warmup iterations in [stan()].
 #' @param keep_warmup If \code{TRUE}, the MCMC warmup steps are included in the
 #'   output.
+#' @param thin [stan()] \code{thin} parameter.
 #' @param normalized If \code{TRUE}, the polynomial is gradient-normalized. This
 #'   is highly recommended.
 #' @param inject_direct Directly specify printed polynomial to string inject
@@ -44,7 +45,7 @@
 #' @author David Kahle
 #' @examples
 #'
-#' \dontrun{ contains runs rstan
+#' \dontrun{ runs rstan
 #' 
 #' library("ggplot2")
 #'
@@ -54,34 +55,40 @@
 #' p <- mp("x^2 + y^2 - 1")
 #' samps <- rvnorm(2000, p, sd = .1)
 #' head(samps)
+#' str(samps) # 2000 * (4 chains)
 #'
 #' (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
-#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' ggplot(samps, aes(x, y, color = num > 0)) + 
+#'   geom_point(size = .5) + 
+#'   coord_equal()
 #' 
 #' 
 #' ## using refresh to get more info
 #' ########################################
 #' 
-#' p <- mp("x^2 + (4 y)^2 - 1")
-#' samps <- rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
-#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#' rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
+#' rvnorm(2000, p, sd = .1, "tibble", refresh = 100)
+#' rvnorm(2000, p, sd = .1, "tibble", refresh = 500)
+#' rvnorm(2000, p, sd = .1, "tibble", refresh = 0)
+#' rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
 #' 
 #' 
 #' ## many chains in parallel
 #' ########################################
 #' 
-#' options("mc.cores" = 8L)
+#' options(mc.cores = parallel::detectCores())
 #' p <- mp("x^2 + (4 y)^2 - 1")
 #' samps <- rvnorm(1000, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
 #' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 #' 
 #' 
-#' ## windowing for non-compact varieties
+#' ## windowing for unbounded varieties
 #' ########################################
 #' 
 #' p <- mp("y^2 - (x^3 + x^2)")
-#' samps <- rvnorm(400, p, sd = .05, "tibble", chains = 8, w = 1.15)
-#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#' samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, w = 1.15)
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #' 
 #' 
 #' ## the importance of normalizing 
@@ -90,7 +97,7 @@
 #' # thus, the variance below is inflated to create a similar amount
 #' # of variability.
 #' 
-#' samps <- rvnorm(400, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
+#' samps <- rvnorm(500, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
 #' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 #'  
 #' 
@@ -99,8 +106,9 @@
 #' 
 #' p <- mp("((x + 1.5)^2 + y^2 - 1) ((x - 1.5)^2 + y^2 - 1)")
 #' ggvariety(p, xlim = c(-3,3)) + coord_equal()
-#' samps <- rvnorm(400, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
-#' ggplot(samps, aes(x, y, color = factor(chain))) + 
+#' 
+#' samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
+#' ggplot(samps, aes(x, y, color = iter)) + 
 #'   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) + 
 #'   coord_equal() + facet_wrap(~ factor(chain))
 #' 
@@ -128,9 +136,10 @@ rvnorm <- function(
   output = "simple", 
   normalized = TRUE,
   chains = 4L, 
-  cores = getOption("mc.cores", 1L), 
+  cores = getOption("mc.cores", 1L),
   warmup = floor(n/2), 
   keep_warmup = FALSE, 
+  thin = 1L,
   inject_direct = FALSE, 
   verbose = FALSE,
   w, 
@@ -204,14 +213,15 @@ model {
     model_code = stan_code, 
     data = list("zero" = 0), 
     chains = chains, 
-    iter = n, 
+    iter = n + warmup, 
     warmup = warmup, 
     control = list("adapt_delta" = .999, "max_treedepth" = 20L),
     cores = cores,
+    thin = thin,
     refresh = refresh,
     ...
   )
-
+  
   # return
   if (output == "stanfit") {
     
@@ -227,7 +237,7 @@ model {
       ) %>% 
       bind_rows() %>% 
       mutate(
-        iter = rep((as.integer(!keep_warmup)*warmup+1):n, chains),
+        iter = rep((as.integer(!keep_warmup)*warmup+1):(n+warmup), chains),
         chain = as.integer(str_sub(chain, 7L))
       )
     
@@ -241,7 +251,7 @@ model {
       ) %>% 
       bind_rows() %>% 
       mutate(
-        iter = rep((as.integer(!keep_warmup)*warmup+1):n, chains),
+        iter = rep((as.integer(!keep_warmup)*warmup+1):(n+warmup), chains),
         chain = as.integer(str_sub(chain, 7L))
       ) %>% 
       dplyr::select(-num, -denom, -ng, -lp__, -chain, -iter) %>% 
