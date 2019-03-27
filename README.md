@@ -382,6 +382,12 @@ Even better, **algstat** can team up with
 solve systems of polynomial equations using `poly_solve()`:
 
 ``` r
+library("ggplot2"); theme_set(theme_minimal())
+# 
+# Attaching package: 'ggplot2'
+# The following object is masked from 'package:mpoly':
+# 
+#     vars
 ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351)
 ```
 
@@ -415,12 +421,6 @@ p <- mp("y^2 - (x^3 + x^2)")
 # 10 0.853 1.08  -0.178    4.45 -0.0401  -2.58      1  1010
 # # … with 7,990 more rows
 
-library("ggplot2")
-# 
-# Attaching package: 'ggplot2'
-# The following object is masked from 'package:mpoly':
-# 
-#     vars
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 ```
 
