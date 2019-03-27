@@ -111,12 +111,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3671 0.0048      0.2193
-#    Pearson X^2 1.8182  0.3671 0.0048      0.2193
-# Likelihood G^2 1.848   0.3671 0.0048      0.2193
-#  Freeman-Tukey 1.8749  0.3671 0.0048      0.2193
-#   Cressie-Read 1.8247  0.3671 0.0048      0.2193
-#     Neyman X^2 2.0089  0.3671 0.0048      0.2931
+#       P(table)         0.3713 0.0048      0.2185
+#    Pearson X^2 1.8182  0.3713 0.0048      0.2185
+# Likelihood G^2 1.848   0.3713 0.0048      0.2185
+#  Freeman-Tukey 1.8749  0.3713 0.0048      0.2185
+#   Cressie-Read 1.8247  0.3713 0.0048      0.2185
+#     Neyman X^2 2.0089  0.3713 0.0048      0.2951
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -223,12 +223,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.7868 0.0041      0.7865
-#    Pearson X^2 5.9655  0.7724 0.0042      0.7724
-# Likelihood G^2 6.7641  0.7785 0.0042      0.7785
-#  Freeman-Tukey 8.6189  0.7782 0.0042      0.7782
-#   Cressie-Read 6.0752  0.7745 0.0042      0.7745
-#     Neyman X^2 6.2442  0.6109 0.0049      0.6109
+#       P(table)         0.7855 0.0041      0.785 
+#    Pearson X^2 5.9655  0.7722 0.0042      0.7722
+# Likelihood G^2 6.7641  0.7761 0.0042      0.7761
+#  Freeman-Tukey 8.6189  0.7768 0.0042      0.7768
+#   Cressie-Read 6.0752  0.7735 0.0042      0.7735
+#     Neyman X^2 6.2442  0.6057 0.0049      0.6057
 ```
 
 The asymptotic test can be performed as well. The chi-square
@@ -277,12 +277,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)          0.611 0.0049      0.4678
-#    Pearson X^2 0.5279   0.611 0.0049      0.4678
-# Likelihood G^2 0.4845   0.611 0.0049      0.4678
-#  Freeman-Tukey 0.4672   0.611 0.0049      0.4678
-#   Cressie-Read 0.512    0.611 0.0049      0.4678
-#     Neyman X^2 0.4294   0.611 0.0049      0.4678
+#       P(table)         0.6016 0.0049      0.4598
+#    Pearson X^2 0.5279  0.6016 0.0049      0.4598
+# Likelihood G^2 0.4845  0.6016 0.0049      0.4598
+#  Freeman-Tukey 0.4672  0.6016 0.0049      0.4598
+#   Cressie-Read 0.512   0.6016 0.0049      0.4598
+#     Neyman X^2 0.4294  0.6016 0.0049      0.4598
 ```
 
 Note that here we’ve used the more concise syntax of facet
@@ -382,8 +382,7 @@ Even better, **algstat** can team up with
 solve systems of polynomial equations using `poly_solve()`:
 
 ``` r
-ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351) +
-  ggplot2::theme_classic()
+ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351)
 ```
 
 ![](tools/poly-solve-1.png)
@@ -394,6 +393,38 @@ poly_solve(c("y = x^2", "y = 2 - x^2"), varorder = c("x", "y"))
 #     (-1,1) (R)
 #     ( 1,1) (R)
 ```
+
+Variety normal distribution
+===========================
+
+``` r
+p <- mp("y^2 - (x^3 + x^2)")
+(samps <- rvnorm(2000, p, .025, "tibble", w = 1.15))
+# # A tibble: 8,000 x 8
+#        x     y      num denom       ng   lp__ chain  iter
+#    <dbl> <dbl>    <dbl> <dbl>    <dbl>  <dbl> <int> <int>
+#  1 0.559 0.691 -0.0103   2.48 -0.00417  0.931     1  1001
+#  2 0.459 0.567  0.0144   1.92  0.00748  1.17      1  1002
+#  3 0.450 0.552  0.0108   1.87  0.00579  1.21      1  1003
+#  4 0.683 0.903  0.0296   3.31  0.00897  0.204     1  1004
+#  5 0.606 0.793  0.0389   2.81  0.0139   0.538     1  1005
+#  6 0.621 0.785 -0.00974  2.87 -0.00340  0.682     1  1006
+#  7 0.555 0.716  0.0336   2.49  0.0135   0.762     1  1007
+#  8 0.578 0.713 -0.0197   2.59 -0.00762  0.841     1  1008
+#  9 0.825 1.08  -0.0714   4.28 -0.0167  -1.44      1  1009
+# 10 0.853 1.08  -0.178    4.45 -0.0401  -2.58      1  1010
+# # … with 7,990 more rows
+
+library("ggplot2")
+# 
+# Attaching package: 'ggplot2'
+# The following object is masked from 'package:mpoly':
+# 
+#     vars
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+```
+
+![](tools/rvnorm-1.png)
 
 Acknowledgements
 ================
