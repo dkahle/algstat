@@ -428,6 +428,15 @@ ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 
 ![](tools/rvnorm-1.png)
 
+``` r
+
+ggplot(samps, aes(x, y, color = iter)) + 
+  geom_point(size = .5) + geom_path(alpha = .3) +
+  coord_equal() + facet_wrap(~ factor(chain), nrow = 2)
+```
+
+![](tools/rvnorm-2.png)
+
 Acknowledgements
 ================
 

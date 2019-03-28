@@ -201,6 +201,10 @@ p <- mp("(x^2 + y^2 - 1)^3 - x^2 y^3")
 (samps <- rvnorm(500, p, .025, "tibble", w = 2, chains = 8))
 
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+
+ggplot(samps, aes(x, y, color = iter)) + 
+  geom_point(size = .5) + geom_path(alpha = .3) +
+  coord_equal() + facet_wrap(~ factor(chain), nrow = 2)
 ```
 
 
