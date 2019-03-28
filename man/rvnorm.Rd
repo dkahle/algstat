@@ -109,7 +109,7 @@ rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
 
 options(mc.cores = parallel::detectCores())
 p <- mp("x^2 + (4 y)^2 - 1")
-samps <- rvnorm(1000, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
+samps <- rvnorm(250, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
 ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 
 
@@ -117,7 +117,7 @@ ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 ########################################
 
 p <- mp("y^2 - (x^3 + x^2)")
-samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, w = 1.15)
+samps <- rvnorm(250, p, sd = .05, "tibble", chains = 8, w = 1.15)
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 
 
@@ -127,8 +127,8 @@ ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 # thus, the variance below is inflated to create a similar amount
 # of variability.
 
-samps <- rvnorm(500, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
-ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+samps <- rvnorm(250, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
  
 
 ## keeping the warmup / the importance of multiple chains
@@ -141,6 +141,24 @@ samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 
 ggplot(samps, aes(x, y, color = iter)) + 
   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) + 
   coord_equal() + facet_wrap(~ factor(chain))
+
+
+## ideal-variety correspondence considerations
+########################################
+
+p <- mp("x^2 + y^2 - 1")
+
+samps_1 <- rvnorm(250, p^1, sd = .1, output = "tibble", chains = 8)
+samps_2 <- rvnorm(250, p^2, sd = .1, output = "tibble", chains = 8)
+samps_3 <- rvnorm(250, p^3, sd = .1, output = "tibble", chains = 8)
+samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
+samps <- bind_rows(mget(apropos("samps_")))
+samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
+
+ggplot(samps, aes(x, y, color = num < 0)) + 
+  geom_point(size = .5) + 
+  coord_equal(xlim = c(-3,3), ylim = c(-3,3)) +
+  facet_wrap(~ power)
 
 
 }

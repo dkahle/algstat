@@ -79,7 +79,7 @@
 #' 
 #' options(mc.cores = parallel::detectCores())
 #' p <- mp("x^2 + (4 y)^2 - 1")
-#' samps <- rvnorm(1000, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
+#' samps <- rvnorm(250, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
 #' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 #' 
 #' 
@@ -87,7 +87,7 @@
 #' ########################################
 #' 
 #' p <- mp("y^2 - (x^3 + x^2)")
-#' samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, w = 1.15)
+#' samps <- rvnorm(250, p, sd = .05, "tibble", chains = 8, w = 1.15)
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #' 
 #' 
@@ -97,8 +97,8 @@
 #' # thus, the variance below is inflated to create a similar amount
 #' # of variability.
 #' 
-#' samps <- rvnorm(500, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
-#' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
+#' samps <- rvnorm(250, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #'  
 #' 
 #' ## keeping the warmup / the importance of multiple chains
@@ -111,6 +111,24 @@
 #' ggplot(samps, aes(x, y, color = iter)) + 
 #'   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) + 
 #'   coord_equal() + facet_wrap(~ factor(chain))
+#' 
+#' 
+#' ## ideal-variety correspondence considerations
+#' ########################################
+#' 
+#' p <- mp("x^2 + y^2 - 1")
+#' 
+#' samps_1 <- rvnorm(250, p^1, sd = .1, output = "tibble", chains = 8)
+#' samps_2 <- rvnorm(250, p^2, sd = .1, output = "tibble", chains = 8)
+#' samps_3 <- rvnorm(250, p^3, sd = .1, output = "tibble", chains = 8)
+#' samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
+#' samps <- bind_rows(mget(apropos("samps_")))
+#' samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
+#' 
+#' ggplot(samps, aes(x, y, color = num < 0)) + 
+#'   geom_point(size = .5) + 
+#'   coord_equal(xlim = c(-3,3), ylim = c(-3,3)) +
+#'   facet_wrap(~ power)
 #' 
 #'
 #' }
@@ -207,20 +225,30 @@ model {
     ",  .open = "{{", .close = "}}"
   )
   if (verbose) cat(stan_code, "\n")
-
-  # compile and run stan code
-  fit <- rstan::stan(
-    model_code = stan_code, 
-    data = list("zero" = 0), 
-    chains = chains, 
-    iter = n + warmup, 
-    warmup = warmup, 
-    control = list("adapt_delta" = .999, "max_treedepth" = 20L),
-    cores = cores,
-    thin = thin,
-    refresh = refresh,
+  
+  # compile
+  if (!verbose) message("Compiling model... ", appendLF = FALSE)
+  model <- rstan::stan_model(
+    "model_code" = stan_code, 
     ...
   )
+  if (!verbose) message("done.")
+  
+  # sample
+  if (!verbose) message("Sampling... ", appendLF = FALSE)
+  fit <- rstan::sampling(
+    "object" = model,
+    "data" = list("zero" = 0),
+    "chains" = chains,
+    "iter" = n + warmup,
+    "warmup" = warmup,
+    "thin" = thin,
+    "refresh" = refresh,
+    "control" = list("adapt_delta" = .999, "max_treedepth" = 20L),
+    "cores" = cores,
+    ...
+  )
+  if (!verbose) message("done.")
   
   # return
   if (output == "stanfit") {
@@ -233,7 +261,7 @@ model {
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
       purrr::imap(
-        ~ tibble::as_data_frame(.x) %>% mutate(chain = .y)
+        ~ tibble::as_tibble(.x) %>% mutate(chain = .y)
       ) %>% 
       bind_rows() %>% 
       mutate(
@@ -247,7 +275,7 @@ model {
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
       purrr::imap(
-        ~ tibble::as_data_frame(.x) %>% mutate(chain = .y)
+        ~ tibble::as_tibble(.x) %>% mutate(chain = .y)
       ) %>% 
       bind_rows() %>% 
       mutate(
