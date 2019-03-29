@@ -226,19 +226,15 @@ model {
   )
   if (verbose) cat(stan_code, "\n")
   
-  # compile
+  # compile (right now necessary)
   if (!verbose) message("Compiling model... ", appendLF = FALSE)
-  model <- rstan::stan_model(
-    "model_code" = stan_code, 
-    ...
-  )
+  model <- rstan::stan_model("model_code" = stan_code, ...)
   if (!verbose) message("done.")
   
   # sample
-  if (!verbose) message("Sampling... ", appendLF = FALSE)
   fit <- rstan::sampling(
     "object" = model,
-    "data" = list("zero" = 0),
+    # "data" = list("zero" = 0),
     "chains" = chains,
     "iter" = n + warmup,
     "warmup" = warmup,
@@ -248,7 +244,6 @@ model {
     "cores" = cores,
     ...
   )
-  if (!verbose) message("done.")
   
   # return
   if (output == "stanfit") {
