@@ -175,10 +175,10 @@ rvnorm <- function(
   ng <- NULL; rm(ng)
   lp__ <- NULL; rm(lp__)
   iter <- NULL; rm(iter)
-  if (missing(refresh)) if (verbose) refresh <- max(n/10L, 1) else refresh <- 0L
-  if(!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
   
-  # check args
+  ## check arguments
+  ########################################
+  
   if (inject_direct) {
     
     if(missing(vars) || missing(numerator) || missing(denominator)) 
@@ -201,40 +201,58 @@ rvnorm <- function(
     
   }
   
-  # make stan code
-  if (missing(w)) {
-    parms <- glue::glue("real {vars};") %>% str_c(collapse = "\n  ") 
-  } else {
-    parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") %>% str_c(collapse = "\n  ") 
-  }
-
-  stan_code <- glue::glue("
-parameters {
-  {{parms}}
-} 
-
-transformed parameters {
-  real num = {{numerator}};
-  real denom = {{denominator}};
-  real ng = num / denom;
-} 
-
-model {
-  target += normal_lpdf(ng | 0.00, {{sd}});
-}
+  if (missing(refresh)) if (verbose) refresh <- max(n/10L, 1) else refresh <- 0L
+  if(!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
+  
+  
+  
+  ## create stan code
+  ########################################
+  
+  needs_to_compile_new_model <- TRUE
+  
+  if (needs_to_compile_new_model) {
+  
+    # create stan code
+    if (missing(w)) {
+      parms <- glue::glue("real {vars};") %>% str_c(collapse = "\n  ") 
+    } else {
+      parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") %>% str_c(collapse = "\n  ") 
+    }
+    
+    stan_code <- glue::glue("
+      parameters {
+        {{parms}}
+      } 
+      
+      transformed parameters {
+        real num = {{numerator}};
+        real denom = {{denominator}};
+        real ng = num / denom;
+      } 
+      
+      model {
+        target += normal_lpdf(ng | 0.00, {{sd}});
+      }
     ",  .open = "{{", .close = "}}"
-  )
-  if (verbose) cat(stan_code, "\n")
+    )
+    if (verbose) cat(stan_code, "\n")  
+    
+    
+    # compile code
+    if (!verbose) message("Compiling model... ", appendLF = FALSE)
+    model <- rstan::stan_model("model_code" = stan_code, ...)
+    if (!verbose) message("done.")
+    
+  }
   
-  # compile (right now necessary)
-  if (!verbose) message("Compiling model... ", appendLF = FALSE)
-  model <- rstan::stan_model("model_code" = stan_code, ...)
-  if (!verbose) message("done.")
   
-  # sample
+  ## sample from the distribution
+  ######################################## 
+  
   fit <- rstan::sampling(
     "object" = model,
-    # "data" = list("zero" = 0),
+    # "data" = data, # will be list of coefficients?
     "chains" = chains,
     "iter" = n + warmup,
     "warmup" = warmup,
@@ -245,14 +263,15 @@ model {
     ...
   )
   
-  # return
-  if (output == "stanfit") {
+  
+  ## return, parse output as desired 
+  ########################################
+  
+  if (output == "stanfit") return(fit)
     
-    return(fit)
+  if(output == "tibble") {
     
-  } else if(output == "tibble") {
-    
-    fit %>% 
+    samps <- fit %>% 
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
       purrr::imap(
@@ -264,9 +283,13 @@ model {
         chain = as.integer(str_sub(chain, 7L))
       )
     
-  } else if (output == "simple") { 
+    return(samps)
     
-    fit %>% 
+  } 
+  
+  if (output == "simple") { 
+    
+    samps <- fit %>% 
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
       purrr::imap(
@@ -279,6 +302,8 @@ model {
       ) %>% 
       dplyr::select(-num, -denom, -ng, -lp__, -chain, -iter) %>% 
       as.matrix()
+    
+    return(samps)
     
   }
   
