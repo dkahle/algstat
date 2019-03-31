@@ -4,11 +4,11 @@
 \alias{rvnorm}
 \title{The Variety Normal Distribution}
 \usage{
-rvnorm(n, poly, sd, output = "simple", normalized = TRUE,
-  chains = 4L, cores = getOption("mc.cores", 1L),
+rvnorm(n, poly, sd, output = "simple", chains = 4L,
   warmup = floor(n/2), keep_warmup = FALSE, thin = 1L,
-  inject_direct = FALSE, verbose = FALSE, w, vars, numerator,
-  denominator, refresh, ...)
+  inject_direct = FALSE, verbose = FALSE,
+  cores = getOption("mc.cores", 1L), normalized = TRUE, w, vars,
+  numerator, denominator, refresh, ...)
 }
 \arguments{
 \item{n}{The number of draws desired from each chain after warmup.}
@@ -19,14 +19,8 @@ rvnorm(n, poly, sd, output = "simple", normalized = TRUE,
 
 \item{output}{\code{"simple"}, \code{"more"}, \code{"stanfit"}.}
 
-\item{normalized}{If \code{TRUE}, the polynomial is gradient-normalized. This
-is highly recommended.}
-
 \item{chains}{The number of chains to run for the random number generation,
 see \code{\link[=stan]{stan()}}.}
-
-\item{cores}{The number of CPU cores to distribute the chains across, see
-\code{\link[=stan]{stan()}}.}
 
 \item{warmup}{Number of warmup iterations in \code{\link[=stan]{stan()}}.}
 
@@ -40,6 +34,12 @@ into the stan code. Requires you specify \code{vars}, \code{numerator}, and
 \code{denominator}.}
 
 \item{verbose}{\code{TRUE} or \code{FALSE}; determines level of messaging.}
+
+\item{cores}{The number of CPU cores to distribute the chains across, see
+\code{\link[=stan]{stan()}}.}
+
+\item{normalized}{If \code{TRUE}, the polynomial is gradient-normalized. This
+is highly recommended.}
 
 \item{w}{A box window (-w,w) of the same dimension as the number of
 variables.}

@@ -152,14 +152,14 @@ rvnorm <- function(
   poly, 
   sd, 
   output = "simple", 
-  normalized = TRUE,
   chains = 4L, 
-  cores = getOption("mc.cores", 1L),
   warmup = floor(n/2), 
   keep_warmup = FALSE, 
   thin = 1L,
   inject_direct = FALSE, 
   verbose = FALSE,
+  cores = getOption("mc.cores", 1L),
+  normalized = TRUE,
   w, 
   vars, 
   numerator, 
@@ -187,8 +187,8 @@ rvnorm <- function(
   } else {
     
     if (!is.mpoly(poly)) poly <- mp(poly)
-    poly <- mpoly:::reorder.mpoly(poly, varorder = sort(mpoly::vars(poly)))
-    vars <- mpoly::vars(poly)
+    if (missing(vars)) vars <- mpoly::vars(poly)
+    poly <- mpoly:::reorder.mpoly(poly, varorder = sort(vars))
 
     numerator <- print(poly, stars = TRUE, silent = TRUE, plus_pad = 0L, times_pad = 0L) %>% str_replace_all("[*]{2}", "^")
     if (normalized) {
