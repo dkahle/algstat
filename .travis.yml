@@ -1,38 +1,38 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-language: R
+language: r
 sudo: false
 cache: packages
 
-# from rstantools
-dist: trusty
-latex: true
-
-nv:
-  global:
-    - MAKEFLAGS="-j 2"
-
-matrix:
-  include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-      env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-        
 before_install:
-  - mkdir -p ~/.R/
-  - echo "CXX14 = g++-7 -fPIC -flto=2" >> ~/.R/Makevars
-  - echo "CXX14FLAGS = -mtune=native -march=native -Wno-unused-variable -Wno-unused-function -Wno-unused-local-typedefs -Wno-ignored-attributes -Wno-deprecated-declarations -Wno-attributes -O3" >> ~/.R/Makevars
+  - sudo apt-get update
+  - sudo apt-get -y install curl
+  - sudo apt-get -y install wget
+  - sudo apt-get -y install build-essential
+  - sudo apt-get -y install m4
+  - sudo apt-get -y install libgmp3-dev
+  # install bertini
+  - curl https://bertini.nd.edu/BertiniLinux64_v1.6.tar.gz -o BertiniLinux64_v1.6.tar.gz
+  - tar -xf BertiniLinux64_v1.6.tar.gz
+  - export BERTINI=/home/travis/build/algstat/BertiniLinux64_v1.6
+  # install latte
+  - wget https://github.com/latte-int/latte/releases/download/version_1_7_5/latte-integrale-1.7.5.tar.gz
+  - tar -xf latte-integrale-1.7.5.tar.gz
+  - cd latte-integrale-1.7.5
+  - ./configure && make
+  - export LATTE=/home/travis/build/algstat/latte-integrale-1.7.5/dest/bin
+  - export 4TI2=/home/travis/build/algstat/latte-integrale-1.7.5/dest/bin
+  # install macaulay2
+  # revert to home directory
+  - cd /home/travis/build/dkahle/algstat
 
-script: 
-  - |
-    travis_wait 42 R CMD build .
-    travis_wait 59 R CMD check algstat*tar.gz
+install:
+  - Rscript -e 'install.packages(c("devtools","roxygen2","testthat"))'
+  - Rscript -e 'install.packages("rstan", repos = "https://cloud.r-project.org/", dependencies = TRUE)'
+  - Rscript -e 'devtools::install_deps()'
+
+script:
+  - Rscript -e 'devtools::check()'
 
 after_script:
   - tar -ztvf algstat_*.tar.gz
