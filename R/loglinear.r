@@ -683,7 +683,7 @@ loglinear <- function(model, data,
   if(missing(moves) && has_4ti2()){
    
     message("Computing Markov moves (4ti2)... ", appendLF = FALSE)  	
-    moves <- markov(A)
+    moves <- markov(A, p = "arb")
     message("done.", appendLF = TRUE)      
     
   } else if(missing(moves) && has_4ti2()){
@@ -702,10 +702,10 @@ loglinear <- function(model, data,
     
     movesMat <- NULL
     stopifnot(all(moves %in% c("lattice", "markov", "groebner", "grobner", "graver", "sis")))
-    if("lattice"  %in% moves)  movesMat <- cbind(movesMat,   zbasis(A))
-    if("markov"   %in% moves)  movesMat <- cbind(movesMat,   markov(A))
-    if("groebner" %in% moves)  movesMat <- cbind(movesMat, groebner(A))
-    if("grobner"  %in% moves)  movesMat <- cbind(movesMat, groebner(A))
+    if("lattice"  %in% moves)  movesMat <- cbind(movesMat,   zbasis(A, p = "arb"))
+    if("markov"   %in% moves)  movesMat <- cbind(movesMat,   markov(A, p = "arb"))
+    if("groebner" %in% moves)  movesMat <- cbind(movesMat, groebner(A, p = "arb"))
+    if("grobner"  %in% moves)  movesMat <- cbind(movesMat, groebner(A, p = "arb"))
     if("graver"   %in% moves)  stop("graver not yet implemented.")
     moves <- movesMat
     
