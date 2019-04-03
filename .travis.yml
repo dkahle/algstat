@@ -7,21 +7,16 @@ cache: packages
 before_install:
   - sudo apt-get update
   - sudo apt-get -y install curl
-  - sudo apt-get -y install wget
-  - sudo apt-get -y install build-essential
-  - sudo apt-get -y install m4
-  - sudo apt-get -y install libgmp3-dev
+  - sudo apt-get -y install unzip
   # install bertini
   - curl https://bertini.nd.edu/BertiniLinux64_v1.6.tar.gz -o BertiniLinux64_v1.6.tar.gz
   - tar -xf BertiniLinux64_v1.6.tar.gz
   - export BERTINI=/home/travis/build/algstat/BertiniLinux64_v1.6
   # install latte
-  - wget https://github.com/latte-int/latte/releases/download/version_1_7_5/latte-integrale-1.7.5.tar.gz
-  - tar -xf latte-integrale-1.7.5.tar.gz
-  - cd latte-integrale-1.7.5
-  - ./configure && make
-  - export LATTE=/home/travis/build/algstat/latte-integrale-1.7.5/dest/bin
-  - export 4TI2=/home/travis/build/algstat/latte-integrale-1.7.5/dest/bin
+  - curl https://www.math.ucdavis.edu/~latte/software/packages/binary/latte-integrale-1.6-x86_64-unknown-linux-gnu.zip -o latte-integrale-1.6-x86_64-unknown-linux-gnu.zip
+  - unzip latte-integrale-1.6-x86_64-unknown-linux-gnu.zip -d latte
+  - export LATTE=/home/travis/build/algstat/latte/bin
+  - export 4TI2=/home/travis/build/algstat/latte/bin
   # install macaulay2
   # revert to home directory
   - cd /home/travis/build/dkahle/algstat
