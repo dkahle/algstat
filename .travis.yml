@@ -28,6 +28,7 @@ before_install:
 install:
   - Rscript -e 'install.packages(c("devtools","roxygen2","testthat"))'
   - Rscript -e 'install.packages("rstan", repos = "https://cloud.r-project.org/", dependencies = TRUE)'
+  - Rscript -e 'devtools::install_github(c("dkahle/mpoly", "dkahle/latte", "dkahle/bertini", "coneill-math/m2r"))'
   - Rscript -e 'devtools::install_deps()'
 
 script:
@@ -45,12 +46,11 @@ after_failure:
 
 # 
 jobs:  
-  r_github_packages: 
-  - dkahle/mpoly
-  - dkahle/latte
-  - dkahle/bertini
-  - coneill-math/m2r
-  
+  #r_github_packages: 
+  #- dkahle/mpoly
+  #- dkahle/latte
+  #- dkahle/bertini
+  #- coneill-math/m2r
   include:
   - r: devel
   - r: release
