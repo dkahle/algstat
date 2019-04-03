@@ -16,7 +16,7 @@ before_install:
   - curl https://www.math.ucdavis.edu/~latte/software/packages/binary/latte-integrale-1.6-x86_64-unknown-linux-gnu.zip -o latte-integrale-1.6-x86_64-unknown-linux-gnu.zip
   - unzip latte-integrale-1.6-x86_64-unknown-linux-gnu.zip -d latte
   - export LATTE=/home/travis/build/algstat/latte/bin
-  - export 4TI2=/home/travis/build/algstat/latte/bin
+  - export FOURTITWO=/home/travis/build/algstat/latte/bin
   # install macaulay2
   # revert to home directory
   - cd /home/travis/build/dkahle/algstat
