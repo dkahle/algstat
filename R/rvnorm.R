@@ -99,6 +99,16 @@
 #' 
 #' samps <- rvnorm(250, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' 
+#' 
+#' ## semi-algebraic sets
+#' ########################################
+#' # inside the semialgebraic set x^2 + y^2 <= 1
+#' 
+#' p <- mp("1 - (x^2 + y^2) - s^2")
+#' samps <- rvnorm(1e4, p, sd = .01, "tibble", chains = 8)
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' ggplot(samps, aes(x, y)) + geom_bin2d() + coord_equal()
 #'  
 #' 
 #' ## keeping the warmup / the importance of multiple chains
@@ -238,7 +248,7 @@ rvnorm <- function(
     )
     if (verbose) cat(stan_code, "\n")  
     
-    
+
     # compile code
     if (!verbose) message("Compiling model... ", appendLF = FALSE)
     model <- rstan::stan_model("model_code" = stan_code, ...)
