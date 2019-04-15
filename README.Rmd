@@ -215,6 +215,12 @@ ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 ```
 
 
+After being migrated onto the variety or semi-algebraic set, these can be used
+as a mesh on that geometry. Here's a cool image made using [__ggforce__](https://github.com/thomasp85/ggforce)'s `geom_voronoi_segment()`:
+```{r mesh, message=FALSE}
+library("ggforce")
+ggplot(samps, aes(x, y)) + geom_voronoi_segment() + coord_equal()
+```
 
 
 

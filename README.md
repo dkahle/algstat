@@ -447,6 +447,18 @@ ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 
 ![](tools/rvnorm-semi-alg-1.png)
 
+After being migrated onto the variety or semi-algebraic set, these can
+be used as a mesh on that geometry. Here’s a cool image made using
+[**ggforce**](https://github.com/thomasp85/ggforce)’s
+`geom_voronoi_segment()`:
+
+``` r
+library("ggforce")
+ggplot(samps, aes(x, y)) + geom_voronoi_segment() + coord_equal()
+```
+
+![](tools/mesh-1.png)
+
 Acknowledgements
 ================
 
