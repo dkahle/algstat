@@ -93,11 +93,18 @@
 #' 
 #' ## the importance of normalizing 
 #' ########################################
-#' # one of the effects of the normalizing is to stabilize variances.
-#' # thus, the variance below is inflated to create a similar amount
-#' # of variability.
+#' # one of the effects of the normalizing is to stabilize variances, making 
+#' # them roughly equivalent globally over the variety.
 #' 
-#' samps <- rvnorm(250, p, sd = .05, "tibble", normalize = FALSE, chains = 8, w = 1.15)
+#' # lemniscate of bernoulli
+#' p <- mp("(x^2 + y^2)^2 - 2 (x^2 - y^2)")
+#' 
+#' # normalized, good
+#' (samps <- rvnorm(2000, p, .025, "tibble"))
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' 
+#' # unnormalized, bad
+#' (samps <- rvnorm(2000, p, .025, "tibble", normalized = FALSE))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #' 
 #' 
