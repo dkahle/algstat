@@ -1,11 +1,56 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-language: R
+language: r
 sudo: false
 cache: packages
-  
-r_github_packages: 
-  - dkahle/mpoly
-  - dkahle/latte
-  - dkahle/bertini
-  - coneill-math/m2r
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install curl
+  - sudo apt-get -y install unzip
+  # install bertini
+  - curl https://bertini.nd.edu/BertiniLinux64_v1.6.tar.gz -o BertiniLinux64_v1.6.tar.gz
+  - tar -xf BertiniLinux64_v1.6.tar.gz
+  - export BERTINI=/home/travis/build/algstat/BertiniLinux64_v1.6
+  # install latte
+  - curl https://www.math.ucdavis.edu/~latte/software/packages/binary/latte-integrale-1.6-x86_64-unknown-linux-gnu.zip -o latte-integrale-1.6-x86_64-unknown-linux-gnu.zip
+  - unzip latte-integrale-1.6-x86_64-unknown-linux-gnu.zip -d latte
+  - export LATTE=/home/travis/build/algstat/latte/bin
+  - export FOURTITWO=/home/travis/build/algstat/latte/bin
+  # install macaulay2
+  # set C++ flags for rstan
+  - mkdir -p ~/.R
+  - echo "CXX14FLAGS=-O3 -mtune=native -march=native -Wno-unused-variable -Wno-unused-function  -Wno-macro-redefined" >> ~/.R/Makevars
+  - echo "CXX14=g++ -std=c++1y -fPIC" >> ~/.R/Makevars
+  # revert to home directory
+  - cd /home/travis/build/dkahle/algstat
+
+install:
+  - Rscript -e 'install.packages(c("devtools","roxygen2","testthat"))'
+  - Rscript -e 'install.packages("rstan", repos = "https://cloud.r-project.org/", dependencies = TRUE)'
+  - Rscript -e 'devtools::install_github(c("dkahle/mpoly", "dkahle/latte", "dkahle/bertini", "coneill-math/m2r"))'
+  - Rscript -e 'devtools::install_deps()'
+
+script:
+  - Rscript -e 'devtools::check()'
+
+after_script:
+  - tar -ztvf algstat_*.tar.gz
+  - echo ${NOT_CRAN}
+
+after_success:
+  - travis_wait 40 tar -C .. -xf $PKG_TARBALL
+
+after_failure:
+  - cat algstat.Rcheck/00*
+
+# 
+jobs:  
+  #r_github_packages: 
+  #- dkahle/mpoly
+  #- dkahle/latte
+  #- dkahle/bertini
+  #- coneill-math/m2r
+  include:
+  - r: devel
+  - r: release

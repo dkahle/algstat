@@ -1,7 +1,7 @@
 Package: algstat
 Type: Package
-Title: Algebraic Statistics in R
-Version: 0.1.0.903
+Title: Algebraic Statistics
+Version: 0.1.0.904
 Authors@R: c(person("David", "Kahle", email = "david@kahle.io", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9999-1558")),
   person("Luis", "Garcia-Puente", email = "lgarcia@shsu.edu", role = "aut"),
   person("Ruriko", "Yoshida", email = "ryoshida@nps.edu", role = "aut"),
@@ -31,10 +31,15 @@ Imports:
     purrr,
     dplyr,
     magrittr,
-    tibble
+    tibble,
+    tidyr,
+    glue,
+    rstan,
+    gmp
 Suggests:
     vcd,
     microbenchmark
 License: GPL-2
 RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

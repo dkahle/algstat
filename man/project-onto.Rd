@@ -31,5 +31,5 @@ project_onto_perp(A, x)
 
 }
 \seealso{
-\code{\link{qr.fitted}}
+\link[base:qr.fitted]{base::qr.fitted}
 }

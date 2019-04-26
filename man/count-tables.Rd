@@ -19,7 +19,7 @@ count_tables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
 
 \item{cache}{use count (default) or fcount}
 
-\item{...}{arguments to pass to \code{\link{latte_count}}}
+\item{...}{arguments to pass to \code{\link[=latte_count]{latte_count()}}}
 }
 \value{
 an integer
@@ -29,16 +29,15 @@ Count the number of contingency tables with the same marginals as a given
 table.
 }
 \details{
-\code{count_tables} uses LattE's count function (via algstat's
-\code{\link{latte_count}} function) to count the tables.  In many cases, the
-number of such tables is enormous.  In these cases, instead of giving back an
-integer \code{count_tables} provides a character string with the integer in
-it; see examples.
+\code{count_tables} uses LattE's count function (via latte's \code{\link[=latte_count]{latte_count()}})
+to count the tables.  In many cases, the number of such tables is enormous.
+In these cases, instead of giving back an integer \code{count_tables}
+provides a character string with the integer in it; see examples.
 }
 \examples{
 
 
-\dontrun{ requires LattE
+if (has_latte()) {
 
 
 data(politics); politics
@@ -79,12 +78,17 @@ count_tables(drugs)
 # the 4x4 table below has 154 elements in its independence fiber
 # the 5x5 has 16830, and the compute times are on the order of
 # 1 and 10 seconds, respectively.
+# the following block is omited for faster R check time
+if (FALSE) {
 set.seed(1)
 n <- 5
 tab <- matrix(sample(0:1, n^2, replace = TRUE), nrow = n)
 dimnames(tab) <- list(X = paste0("x", 1:n), Y = paste0("y", 1:n))
 tab
 count_tables(tab)
+}
+
+
 
 count_tables(eyeHairColor, quiet = FALSE)
 
@@ -94,5 +98,5 @@ count_tables(eyeHairColor, quiet = FALSE)
 
 }
 \seealso{
-\code{\link{latte_count}}, \code{\link{count_fiber}}
+\code{\link[=latte_count]{latte_count()}}, \code{\link[=count_fiber]{count_fiber()}}
 }

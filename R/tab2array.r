@@ -5,7 +5,7 @@
 #' @param tab a table
 #' @return an array
 #' @export tab2array
-#' @seealso \code{\link{tab2vec}}, \code{\link{array2tab}}
+#' @seealso [tab2vec()], [array2tab()]
 #' @examples
 #' 
 #' data(handy)
@@ -46,7 +46,7 @@ tab2array <- function(tab){
 #' @param array an array
 #' @return an tabl
 #' @export array2tab
-#' @seealso \code{\link{tab2array}}
+#' @seealso [tab2array()]
 #' @examples
 #' 
 #' mat <- matrix(rpois(25,2), 5, 5) 

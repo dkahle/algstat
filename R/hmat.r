@@ -8,7 +8,7 @@
 #' @param varlvls a vector containing the number of levels of each variable
 #' @param facets the facets generating the hierarchical model, a list of vectors
 #'   of variable indices
-#' @seealso \code{\link{genmodel}}
+#' @seealso [genmodel()]
 #' @return a named matrix
 #' @export hmat
 #' @references Drton, M., B. Sturmfels, and S. Sullivant (2009). \emph{Lectures

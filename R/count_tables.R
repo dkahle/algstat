@@ -3,25 +3,24 @@
 #' Count the number of contingency tables with the same marginals as a given
 #' table.
 #'
-#' \code{count_tables} uses LattE's count function (via algstat's
-#' \code{\link{latte_count}} function) to count the tables.  In many cases, the
-#' number of such tables is enormous.  In these cases, instead of giving back an
-#' integer \code{count_tables} provides a character string with the integer in
-#' it; see examples.
+#' \code{count_tables} uses LattE's count function (via latte's [latte_count()])
+#' to count the tables.  In many cases, the number of such tables is enormous.
+#' In these cases, instead of giving back an integer \code{count_tables}
+#' provides a character string with the integer in it; see examples.
 #'
 #' @param table the table of interest
 #' @param A the configuration/transpose design matrix
 #' @param dir directory to place the files in, without an ending /
 #' @param quiet show latte output
 #' @param cache use count (default) or fcount
-#' @param ... arguments to pass to \code{\link{latte_count}}
+#' @param ... arguments to pass to [latte_count()]
 #' @return an integer
-#' @seealso \code{\link{latte_count}}, \code{\link{count_fiber}}
+#' @seealso [latte_count()], [count_fiber()]
 #' @name count-tables
 #' @examples
-#' 
-#' 
-#' \dontrun{ requires LattE
+#'
+#'
+#' if (has_latte()) {
 #'
 #'
 #' data(politics); politics
@@ -62,13 +61,18 @@
 #' # the 4x4 table below has 154 elements in its independence fiber
 #' # the 5x5 has 16830, and the compute times are on the order of
 #' # 1 and 10 seconds, respectively.
+#' # the following block is omited for faster R check time
+#' if (FALSE) {
 #' set.seed(1)
 #' n <- 5
 #' tab <- matrix(sample(0:1, n^2, replace = TRUE), nrow = n)
 #' dimnames(tab) <- list(X = paste0("x", 1:n), Y = paste0("y", 1:n))
 #' tab
 #' count_tables(tab)
+#' }
 #'
+#' 
+#' 
 #' count_tables(eyeHairColor, quiet = FALSE)
 #'
 #'
@@ -85,14 +89,14 @@ count_tables <- function(table,
 ){
   
   ## make column names
-  cellNames <- paste0("t", colnames(A))
+  cellVars <- paste0("t", 1L:ncol(A))
   
   
   ## make the sums
   margConds <- unname(apply(A, 1, function(v){
     nonzero_ndcs <- unname(which(v > 0))
     one_ndcs     <- unname(which(v[nonzero_ndcs] == 1))
-    terms <- paste(v[nonzero_ndcs], cellNames[nonzero_ndcs])
+    terms <- paste(v[nonzero_ndcs], cellVars[nonzero_ndcs])
     terms[one_ndcs] <- str_sub(terms[one_ndcs], 3)
     paste(terms, collapse = " + ")
   }))
@@ -104,8 +108,8 @@ count_tables <- function(table,
   
   
   ## make the equalities and inqualities
-  margConds <- paste0(margConds, " == ", marginals)
-  nonnegConds <- paste0(cellNames, " >= 0")
+  margConds <- str_c(margConds, " == ", marginals)
+  nonnegConds <- str_c(cellVars, " >= 0")
   
   
   ## count

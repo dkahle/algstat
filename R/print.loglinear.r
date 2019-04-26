@@ -7,7 +7,7 @@
 #' @param ... additional parameters
 #' @usage \method{print}{loglinear}(x, digits = 4, ...)
 #' @return Invisible string of the printed object.
-#' @seealso \code{\link{loglinear}}
+#' @seealso [loglinear()]
 #' @export
 #' @examples
 #' 

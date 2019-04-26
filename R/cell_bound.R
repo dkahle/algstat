@@ -6,11 +6,11 @@
 #' @param b solution vector in Ax = b (vector of sufficient statistics)
 #' @param side bound side to compute, "lower" or "upper"
 #' @param strategy "lp" for linear programming and "ip" for integer programming.
-#'   (both use \code{\link{lp}}.)
+#'   (both use [lpSolve::lp()].)
 #' @param ... ...
 #' @return an integer
 #' @author Ruriko Yoshida \email{ruriko.yoshida@@uky.edu}, David Kahle
-#'   \email{david.kahle@@gmail.com}
+#'   \email{david@@kahle.io}
 #' @name cell-bound
 #' @examples
 #'

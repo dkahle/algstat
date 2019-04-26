@@ -1,7 +1,7 @@
 #' Sample from the fiber of a contingency table
-#' 
+#'
 #' Sample from the fiber of a contingency table
-#' 
+#'
 #' @param n the number of observations
 #' @param A the configuration matrix of the model defining the fiber
 #' @param b integer vector; the vector of sufficient statistics
@@ -10,78 +10,77 @@
 #' @param method "sis", "walk", or "hybrid"
 #' @param dist "uniform" or "hypergeometric"
 #' @param parallel parallelize the sampling?
-#' @param includeRejections should rejections be returned? (note: rejection 
+#' @param includeRejections should rejections be returned? (note: rejection
 #'   tables aren't completed in the SIS procedure.)
 #' @param format format of the returned moves, "mat", "vec", or "tab"
-#' @param dim the dimensions of the table if "tab" is used, see 
-#'   \code{\link{vec2tab}}
+#' @param dim the dimensions of the table if "tab" is used, see [vec2tab()]
 #' @param thin thinning argument (if using walk method)
 #' @param ... ...
 #' @return a named numeric vector
-#' @author David Kahle \email{david.kahle@@gmail.com}, Ruriko Yoshida 
+#' @author David Kahle \email{david@@kahle.io}, Ruriko Yoshida
 #'   \email{ruriko.yoshida@@uky.edu}
 #' @export rfiber
 #' @examples
-#' 
-#' 
+#'
+#'
 #' A <- hmat(c(2,2), 1:2)
 #' b <- rep.int(4, 4)
-#' 
+#'
 #' rfiber(10, A = A, b = b)
 #' rfiber(10, A = A, b = b, format = "vec")
 #' rfiber(10, A = A, b = b, format = "tab", dim = c(2, 2))
-#' 
+#'
 #' set.seed(1)
 #' (tab <- rfiber(1, A = A, b = b, format = "tab", dim = c(2, 2))[[1]])
 #' x <- tab2vec(tab)
-#' 
+#'
 #' \dontrun{ # requires 4ti2
-#' 
+#'
 #' rfiber(100, A = A, x = x, method = "walk")
-#' 
+#'
 #' library(microbenchmark)
 #' microbenchmark(
 #'   rfiber(100, A = A, b = b),
 #'   rfiber(100, A = A, x = x, method = "walk")
 #' )
-#' 
+#'
 #' # the distribution of the samples is seemingly near-uniform
 #' tabs <- rfiber(1e4, A, b, format = "vec", parallel = TRUE)
 #' table(sapply(tabs, paste, collapse = " "))
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' tabs <- rfiber(1000, A = A, b = b, format = "vec")
 #' unique(tabs)
 #' lapply(unique(tabs), vec2tab, dim = c(2, 2))
-#' 
+#'
 #' table(sapply(tabs, paste, collapse = " " ))
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
 #' data(politics); politics
 #' tab2vec(politics)
 #' b <- A %*% tab2vec(politics)
 #' tabs <- rfiber(1000, A = A, b = b)
 #' unique(t(tabs))
 #' table(apply(tabs, 2, paste, collapse = " " )) # roughly uniform
-#' 
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
+#'
 #' # poisson regression example
 #' J <- 5
 #' A <- rbind(1L, 1:J)
 #' b <- c(5, 15)
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
 #' system.time(rfiber(1e4, A = A, b = b))
 #' system.time(rfiber(1e4, A = A, b = b, parallel = TRUE))
-#' 
+#'
 #' }
 #' 
 rfiber <- function(n, ..., A, b, x, 

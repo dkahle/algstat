@@ -64,5 +64,5 @@ zbasis(lawrence(A))
 Aoki, Hara, and Takemura (2012), pp. 61-62
 }
 \author{
-David Kahle \email{david.kahle@gmail.com}
+David Kahle \email{david@kahle.io}
 }

@@ -6,7 +6,7 @@
 #' @param k kth Lawrence lifting
 #' @param extent short or tall version
 #' @return an integer matrix
-#' @author David Kahle \email{david.kahle@@gmail.com}
+#' @author David Kahle \email{david@@kahle.io}
 #' @seealso Aoki, Hara, and Takemura (2012), pp. 61-62
 #' @export
 #' @examples

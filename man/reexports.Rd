@@ -3,6 +3,7 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
+\alias{cpp_object_initializer}
 \alias{tab2vec}
 \alias{vec2tab}
 \alias{\%>\%}
@@ -14,6 +15,8 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
+  \item{Rcpp}{\code{\link[Rcpp]{cpp_object_initializer}}}
+
   \item{latte}{\code{\link[latte]{tab2vec}}, \code{\link[latte]{vec2tab}}, \code{\link[latte]{plot_matrix}}, \code{\link[latte]{plot_matrix}}}
 
   \item{magrittr}{\code{\link[magrittr]{\%>\%}}}

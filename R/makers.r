@@ -8,8 +8,7 @@
 #' @param vin the (lower order) grouping level of the data
 #' @param vout the desired higher order grouping level
 #' @return ...
-#' @seealso \code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Mmaker}},
-#'   \code{\link{Pmaker}}, \code{\link{Smaker}}
+#' @seealso [Tmaker()], [Amaker()], [Mmaker()], [Pmaker()], [Smaker()]
 #' @export Emaker
 #' @examples
 #'
@@ -82,8 +81,7 @@ Emaker <- function(m, vin, vout){
 #' @param k the number of objects selected
 #' @param d the order-effect for the desired matrix (0 to k)
 #' @return ...
-#' @seealso \code{\link{Emaker}}, \code{\link{Amaker}}, \code{\link{Mmaker}},
-#'   \code{\link{Pmaker}}, \code{\link{Smaker}}
+#' @seealso [Emaker()], [Amaker()], [Mmaker()], [Pmaker()], [Smaker()]
 #' @export Tmaker
 #' @examples
 #'
@@ -191,8 +189,7 @@ Tmaker <- function(m, k, d){
 #' @param m the number of objects
 #' @param k the number of objects selected
 #' @return ...
-#' @seealso \code{\link{Tmaker}}, \code{\link{Emaker}}, \code{\link{Mmaker}},
-#'   \code{\link{Pmaker}}, \code{\link{Smaker}}
+#' @seealso [Tmaker()], [Emaker()], [Mmaker()], [Pmaker()], [Smaker()]
 #' @export Amaker
 #' @examples
 #'
@@ -221,8 +218,7 @@ Amaker <- function(m, k){
 #'
 #' @param m the number of objects
 #' @return ...
-#' @seealso \code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}},
-#'   \code{\link{Pmaker}}, \code{\link{Smaker}}
+#' @seealso [Tmaker()], [Amaker()], [Emaker()], [Pmaker()], [Smaker()]
 #' @export Mmaker
 #' @references Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
 #'   London: Chapman & Hall. p.42.
@@ -270,8 +266,7 @@ Mmaker <- function(m){
 #'
 #' @param m the number of objects
 #' @return ...
-#' @seealso \code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}},
-#'   \code{\link{Mmaker}}, \code{\link{Smaker}}
+#' @seealso [Tmaker()], [Amaker()], [Emaker()], [Mmaker()], [Smaker()]
 #' @export Pmaker
 #' @references Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
 #'   London: Chapman & Hall. p.42.
@@ -358,8 +353,7 @@ Pmaker <- function(m){
 #'
 #' @param m the number of objects
 #' @return ...
-#' @seealso \code{\link{Tmaker}}, \code{\link{Amaker}}, \code{\link{Emaker}},
-#'   \code{\link{Mmaker}}, \code{\link{Pmaker}}
+#' @seealso [Tmaker()], [Amaker()], [Emaker()], [Mmaker()], [Pmaker()] 
 #' @export Smaker
 #' @references Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
 #'   London: Chapman & Hall. p.41.
@@ -446,7 +440,7 @@ Smaker <- function(m){
 #'
 #' @param m the number of objects
 #' @return ...
-#' @seealso \code{\link{Mmaker}}, \code{\link{Pmaker}}, \code{\link{Smaker}}
+#' @seealso [Mmaker()], [Pmaker()], [Smaker()]
 #' @references Marden, J. I. (1995). \emph{Analyzing and Modeling Rank Data},
 #'   London: Chapman & Hall. pp.47--48.
 #' @examples

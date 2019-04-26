@@ -8,7 +8,7 @@ aglm(model, data, family = poisson(), iter = 10000, burn = 10000,
   thin = 100, engine = c("Cpp", "R"), moves, ...)
 }
 \arguments{
-\item{model}{model specification, either in terms of a configuration matrix or a symbolic 
+\item{model}{model specification, either in terms of a configuration matrix or a symbolic
 description of the model to be fitted}
 
 \item{data}{data, as a data frame of raw data with ordinal discrete covariates}
@@ -30,23 +30,23 @@ matrix).}
 }
 \value{
 a list containing named elements \itemize{ \item
-  \code{steps}: an integer matrix whose columns represent
-  individual samples from the mcmc. \item \code{moves}: the moves
-  used for the proposal distribution in the mcmc, computed with
-  4ti2 (note that only the positive moves are given). \item
-  \code{acceptProb}: the average acceptance probability of the
-  moves, including the thinned moves. \item \code{call}: the call. 
-  \item \code{obs}: the summarized data. 
-   \item \code{A}: the sufficient
-  statistics computing matrix.
-  \item \code{sufficientStatistics}: The sufficient statistics of the model.
-  \item \code{p.value}: the exact p-values of individual tests,
-  accurate to Monte-Carlo error.  these are computed as the
-  proportion of samples with statistics equal to or larger than
-  the oberved statistic. \item \code{mid.p.value}: the mid
-  p.values, see Agresti pp.20--21. \item \code{sampsStats}: 
-  the statistics computed for each mcmc
-  sample. \item \code{cells}: the number of cells in the table. }
+\code{steps}: an integer matrix whose columns represent
+individual samples from the mcmc. \item \code{moves}: the moves
+used for the proposal distribution in the mcmc, computed with
+4ti2 (note that only the positive moves are given). \item
+\code{acceptProb}: the average acceptance probability of the
+moves, including the thinned moves. \item \code{call}: the call.
+\item \code{obs}: the summarized data.
+\item \code{A}: the sufficient
+statistics computing matrix.
+\item \code{sufficientStatistics}: The sufficient statistics of the model.
+\item \code{p.value}: the exact p-values of individual tests,
+accurate to Monte-Carlo error.  these are computed as the
+proportion of samples with statistics equal to or larger than
+the oberved statistic. \item \code{mid.p.value}: the mid
+p.values, see Agresti pp.20--21. \item \code{sampsStats}:
+the statistics computed for each mcmc
+sample. \item \code{cells}: the number of cells in the table. }
 }
 \description{
 Fitting generalized linear models with algebraic methods

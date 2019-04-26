@@ -2,8 +2,8 @@
 #'
 #' Count the elements of a fiber Ax = b
 #'
-#' \code{count_fiber} uses LattE's count function (via algstat's
-#' \code{\link{latte_count}} function) to count the fiber  In many cases, the
+#' \code{count_fiber} uses LattE's count function (via latte's
+#' [latte_count()]) to count the fiber  In many cases, the
 #' number of such tables is enormous.  In these cases, instead of giving back an
 #' integer \code{count_fiber} provides a character string with the integer in
 #' it; see examples.
@@ -13,9 +13,9 @@
 #' @param dir directory to place the files in, without an ending /
 #' @param quiet show latte output
 #' @param cache use count (default) or fcount
-#' @param ... additional arguments to \code{\link{latte_count}}
+#' @param ... additional arguments to [latte_count()]
 #' @return an integer
-#' @seealso \code{\link{latte_count}}
+#' @seealso [latte_count()]
 #' @name count-fiber
 #' @examples
 #'

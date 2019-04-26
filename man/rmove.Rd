@@ -15,7 +15,7 @@ rmove(n, A, b, x, method = c("sis", "walk", "hybrid"),
 
 \item{b}{integer vector; the vector of sufficient statistics}
 
-\item{x}{integer vector; a vector in the fiber to be used as an 
+\item{x}{integer vector; a vector in the fiber to be used as an
 initialization point for the "walk" method}
 
 \item{method}{"sis", "walk", or "hybrid"}
@@ -26,11 +26,9 @@ initialization point for the "walk" method}
 
 \item{format}{format of the returned moves, "mat", "vec", or "tab"}
 
-\item{dim}{the dimensions of the table if "tab" is used, see 
-\code{\link{vec2tab}}}
+\item{dim}{the dimensions of the table if "tab" is used, see \code{\link[=vec2tab]{vec2tab()}}}
 
-\item{...}{arguments to pass to \code{\link{rfiber}}, such as \code{parallel 
-= TRUE}}
+\item{...}{arguments to pass to \code{\link[=rfiber]{rfiber()}}, such as \code{parallel = TRUE}}
 }
 \value{
 a named numeric vector
@@ -129,9 +127,9 @@ rmove(5, A, b, format = "tab", dim = c(2,2,2))
 
 }
 \seealso{
-\code{\link{rfiber}}
+\code{\link[=rfiber]{rfiber()}}
 }
 \author{
-David Kahle \email{david.kahle@gmail.com}, Ruriko Yoshida 
-  \email{ruriko.yoshida@uky.edu}
+David Kahle \email{david@kahle.io}, Ruriko Yoshida
+\email{ruriko.yoshida@uky.edu}
 }

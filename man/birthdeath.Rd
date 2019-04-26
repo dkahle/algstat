@@ -13,6 +13,6 @@ A two-way table cross-classifying birth and death days of 82 individuals.
 }
 \references{
 Andrews, D. and A. Herzberg (1985). \emph{Data}. Springer-Verlag,
-  New York.
+New York.
 }
 \keyword{datasets}

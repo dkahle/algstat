@@ -1,233 +1,124 @@
 #include <Rcpp.h>
-#include "sis_tbl.h"
+#include "hit_and_run_fun.h"
+#include "adaptive_fun.h"
 using namespace Rcpp;
 
 // [[Rcpp::export]]
 List metropolis_uniform_cpp(
-    IntegerVector current, 
+    IntegerVector init, 
     IntegerMatrix moves,
-    IntegerVector suff_stats,
-    IntegerMatrix config,
-    int iter, int thin, 
+    int iter, 
+    int burn,
+    int thin, 
     bool hit_and_run, 
-    bool SIS, bool non_uniform, 
     bool adaptive
 ){
-
-  int nTotalSamples = iter * thin;         // total number of steps
-  int n = current.size();                  // number of cells
-  int nMoves = moves.ncol();               // number of moves
-  IntegerMatrix steps(n, iter);            // columns are states
-  IntegerVector whichMove(nTotalSamples);  // move selection
-  NumericVector unifs(nTotalSamples);      // for transition probabilities
-  NumericVector unifs2(nTotalSamples);
-  NumericVector unifs3(nTotalSamples);
-  IntegerVector proposal(n);               // the proposed moves
-  double prob;                             // the probability of transition
-  double prob2;
-  bool anyIsNegative;
-  IntegerVector move(n);
+  IntegerVector current = clone(init);
+  int n_total_samples = iter * thin;         // total number of steps
+  int n_cells= current.size();                  // number of cells
+  int n_moves = moves.ncol();               // number of moves
+  IntegerMatrix steps(n_cells, iter);            // columns are states
+  IntegerVector which_move(n_total_samples);  // move selection
+  IntegerVector proposal(n_cells);               // the proposed moves
+  double transition_prob;                             // the probability of transition
+  int accept_count = 0;
+  int total_count = 0;
+  bool any_negative_cells;
+  IntegerVector move(n_cells);
   double accept_prob = 0;
-  IntegerVector current_num;
-  IntegerVector move_num;
-  IntegerVector stepSize;
-  IntegerVector upperBound;
-  IntegerVector lowerBound;
-  int lb;
-  int ub;
-  IntegerVector constant = IntegerVector::create(-1,1);
-  IntegerVector w_current(n);
-  IntegerVector w_proposal(n);
-  IntegerVector run;
-
+  
   Function sample("sample");
-  whichMove = sample(nMoves, nTotalSamples, 1);
-  Function runif("runif");
-  unifs = runif(nTotalSamples);
-  unifs2 = runif(nTotalSamples);
-  unifs3 = runif(nTotalSamples);
-  Function print("print");
+  which_move = sample(n_moves, burn + n_total_samples, 1);
   
-  NumericVector move_dist = rep(1.0, nMoves);
-  double counter = moves.ncol();
-  int which_move;
+  // enforce burn-in
+  if (burn > 0) for (int j = 0; j < burn; ++j) {
+    
+    // determine move
+    for (int k = 0; k < n_cells; ++k) move[k] = moves(k, which_move[j] - 1);
+    
+    // compute proposal
+    if(hit_and_run) proposal = hit_and_run_fun(current, move);
+    if(adaptive) proposal = adaptive_fun(current, move);
+    if(hit_and_run == false & adaptive == false) {
+      for(int k = 0; k < n_cells; ++k) proposal[k] = current[k] + move[k];
+    }    
+    // compute probability of transition
+    any_negative_cells = false;
+    for (int k = 0; k < n_cells; ++k) {
+      if (proposal[k] < 0) any_negative_cells = true;
+    }
+    
+    // compute transition probability
+    if (any_negative_cells) {
+      transition_prob = 0.;
+    } else {
+      transition_prob = 1.;
+    }
+    
+    // make move
+    if (runif(1)[0] < transition_prob) {
+      for (int k = 0; k < n_cells; ++k) current[k] = proposal[k];
+    }
+    
+  }
   
+  // set first step
+  for (int k = 0; k < n_cells; ++k) steps(k,0) = current[k];
+  
+  // main chain
   for(int i = 0; i < iter; ++i){
+    
+    // cycle through thinning moves, the last of which is kept
     for(int j = 0; j < thin; ++j){
       
-      if(non_uniform == true){
-        for(int l = 0; l < nMoves; ++l){
-          double sums = 0;
-          for(int m = 0; m < l+1; ++m){
-            sums = sums + move_dist[m];
-          }
-          
-          if(unifs3[thin*i+j] <= sums / counter){
-            
-            for(int k = 0; k < n; ++k){
-              move[k] = moves(k, l);
-            }
-            which_move = l;
-            break;
-          }
-        }
-        for(int k = 0; k < n; ++k){
-          proposal[k] = current[k] + move[k];
-        }
-      }else{
-        
-        // make move
-        for(int k = 0; k < n; ++k){
-          move[k] = moves(k, whichMove[thin*i+j]-1);
-        }
-        if(hit_and_run == true){
-          current_num = current[move != 0];
-          move_num = move[move != 0];
-          stepSize = (-1 * current_num) / move_num;
-          lowerBound = stepSize[stepSize < 0];
-          upperBound = stepSize[stepSize > 0];
-          lb = max(lowerBound);
-          ub = min(upperBound);
-          
-          if(is_true(any(stepSize == 0))){
-            IntegerVector test1 = current + lb * move;
-            IntegerVector test2 = current + ub * move;
-            for(int i = 0; i < n; ++i){
-              if(test1[i] < 0) lb = 1;
-              if(test2[i] < 0) ub = -1;
-            }
-          }
-          
-          if(adaptive){
-            
-            int line_length = ub-lb + 1;
-            if(line_length < 0) line_length = 1;
-            
-            for(int m = 0; m < n;++m){
-              w_current[m] = current[m];
-            }
-            
-            for(int l = 0; l < line_length;++l){
-              int constant2 = as<int>(Rcpp::sample(constant, 1));
-              for(int k = 0; k < n;++k){
-                w_proposal[k] = w_current[k] + constant2 * move[k];
-              }
-              bool anyIsNegative2;
-              anyIsNegative2 = false;
-              for(int k = 0; k < n; ++k){
-                if(w_proposal[k] < 0){
-                  anyIsNegative2 = true;
-                }
-              }
-              
-              if(anyIsNegative2){
-                prob2 = 0;
-              } else {
-                prob2 = exp( sum(lgamma(w_current+1)) - sum(lgamma(w_proposal+1)) );
-              }
-              
-              if(prob2 > 1){
-                prob2 = 1;
-              }
-              
-              // make move
-              if(unifs[l] < prob2){
-                for(int k = 0; k < n; ++k){
-                  w_current[k] = w_proposal[k];
-                }
-              }
-            }
-            for(int k = 0; k < n; ++k){
-              proposal[k] = w_current[k];
-            }
-
-          } else {
-          
-          if(lb > ub){
-            run = Rcpp::sample(constant, 1);
-          }else{
-          
-          IntegerVector range = seq(lb,ub);
-          
-          run = Rcpp::sample(range,1);
-          
-            }
-          if(run[0] == 0){
-            run = Rcpp::sample(constant, 1);
-          }
-        }
-        if(hit_and_run == TRUE){
-          for(int k = 0; k < n; ++k){
-            proposal[k] = current[k] + as<int>(run) * move[k];
-          }
-        }
-        } else {
-          for(int k = 0; k < n; ++k){
-            proposal[k] = current[k] + move[k];
-          }
-        }
+      // determine move
+      for(int k = 0; k < n_cells; ++k) move[k] = moves(k, which_move[burn+thin*i+j]-1);
+      
+      // compute proposal
+      if(hit_and_run) proposal = hit_and_run_fun(current, move);
+      
+      if(adaptive) proposal = adaptive_fun(current, move);
+      
+      if(hit_and_run == false & adaptive == false) {
+        for(int k = 0; k < n_cells; ++k) proposal[k] = current[k] + move[k];
       }
-      if(SIS){
-        if(unifs2[i] < .05){
-          proposal = sis_tbl(config, suff_stats);
-        }
-      }
+      
       // compute probability of transition
-      anyIsNegative = false;
-      for(int k = 0; k < n; ++k){
-        if(proposal[k] < 0){
-          anyIsNegative = true;
-        }
+      any_negative_cells = false;
+      for(int k = 0; k < n_cells; ++k){
+        if(proposal[k] < 0) any_negative_cells = true; 
       }
-
-      if(anyIsNegative){
-        prob = 0;
+      
+      // compute transition probability
+      if (any_negative_cells) {
+        transition_prob = 0.;
       } else {
-        prob = 1; // accept every proposal = uniform
+        transition_prob = 1.;
       }
-
-      if(prob > 1){
-        prob = 1;
-      }
-
-      // store acceptance probability
-      accept_prob = accept_prob + prob / nTotalSamples;
-
-      if(non_uniform == true){
-        
-        if(unifs[thin*i+j] < prob){
-          for(int k = 0; k < n; ++k){
-            current[k] = proposal[k];
-          }
-          
-          move_dist[which_move] = move_dist[which_move] + 1;
-          ++counter;
-        }
-      }else{
+      
         // make move
-        if(unifs[thin*i+j] < prob){
-          
-          for(int k = 0; k < n; ++k){
-            current[k] = proposal[k];
-          }
-          
+        if(runif(1)[0] < transition_prob){        
+          for(int k = 0; k < n_cells; ++k) current[k] = proposal[k];
+          accept_count++;
         }
-      }
-
+      
+      
+      // update total_count
+      total_count++;
     }
-
-    // assign state move
-    for(int k = 0; k < n; ++k){
-      steps(k,i) = current[k];
-    }
+    
+    // record current position in steps
+    for(int k = 0; k < n_cells; ++k) steps(k,i) = current[k];
+    
   }
-
+  
   // create out list
   List out = List::create(
     Rcpp::Named("steps") = steps,
-    Rcpp::Named("accept_prob") = accept_prob
+    Rcpp::Named("accept_count") = accept_count,
+    Rcpp::Named("total_count") = total_count,
+    Rcpp::Named("accept_prob") = (accept_count + 0.) / (total_count + 0.)
   );
-
+  
   return out;
 }
-

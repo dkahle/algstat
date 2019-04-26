@@ -16,11 +16,11 @@ freedom of speech, "freedom".
 }
 \references{
 Barnes, S. H. and Kaase, M. (1979). \emph{Political Action: Mass
-  Participation in Five Western Countries}. Sage, Beverly Hills, CA.
+Participation in Five Western Countries}. Sage, Beverly Hills, CA.
 
 Croon, M. A. (1998). Latent class models for the analysis of
-  rankings. \emph{New Developments in Psychological Choice Modeling},
-  99--121. Feger, Klauer, and de Soete, eds. North-Holland, Amsterdam.
+rankings. \emph{New Developments in Psychological Choice Modeling},
+99--121. Feger, Klauer, and de Soete, eds. North-Holland, Amsterdam.
 }
 \author{
 The first reference

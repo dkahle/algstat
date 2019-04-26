@@ -33,12 +33,12 @@ hit_and_run_fun <- function(current, move) {
     .Call('_algstat_hit_and_run_fun', PACKAGE = 'algstat', current, move)
 }
 
-metropolis_hypergeometric_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive) {
-    .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
+metropolis_hypergeometric_cpp <- function(init, moves, iter, burn, thin, hit_and_run, adaptive) {
+    .Call('_algstat_metropolis_hypergeometric_cpp', PACKAGE = 'algstat', init, moves, iter, burn, thin, hit_and_run, adaptive)
 }
 
-metropolis_uniform_cpp <- function(current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive) {
-    .Call('_algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', current, moves, suff_stats, config, iter, thin, hit_and_run, SIS, non_uniform, adaptive)
+metropolis_uniform_cpp <- function(init, moves, iter, burn, thin, hit_and_run, adaptive) {
+    .Call('_algstat_metropolis_uniform_cpp', PACKAGE = 'algstat', init, moves, iter, burn, thin, hit_and_run, adaptive)
 }
 
 rfiberOne <- function(A, b) {

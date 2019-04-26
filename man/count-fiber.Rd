@@ -21,7 +21,7 @@ countFiber(...)
 
 \item{cache}{use count (default) or fcount}
 
-\item{...}{additional arguments to \code{\link{latte_count}}}
+\item{...}{additional arguments to \code{\link[=latte_count]{latte_count()}}}
 }
 \value{
 an integer
@@ -30,8 +30,8 @@ an integer
 Count the elements of a fiber Ax = b
 }
 \details{
-\code{count_fiber} uses LattE's count function (via algstat's
-\code{\link{latte_count}} function) to count the fiber  In many cases, the
+\code{count_fiber} uses LattE's count function (via latte's
+\code{\link[=latte_count]{latte_count()}}) to count the fiber  In many cases, the
 number of such tables is enormous.  In these cases, instead of giving back an
 integer \code{count_fiber} provides a character string with the integer in
 it; see examples.
@@ -61,5 +61,5 @@ system.time(count_fiber(A, 100))
 
 }
 \seealso{
-\code{\link{latte_count}}
+\code{\link[=latte_count]{latte_count()}}
 }

@@ -9,6 +9,8 @@ algstat
 status](https://www.r-pkg.org/badges/version/algstat)](https://cran.r-project.org/package=algstat)
 [![Travis build
 status](https://travis-ci.org/dkahle/algstat.svg?branch=master)](https://travis-ci.org/dkahle/algstat)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/dkahle/algstat?branch=master&svg=true)](https://ci.appveyor.com/project/dkahle/algstat)
 <!-- badges: end -->
 
 **algstat** is a collection of tools to help you use algebraic
@@ -61,11 +63,8 @@ library("algstat")
 # Loading required package: mpoly
 # Loading required package: latte
 #   Please cite latte! See citation("latte") for details.
-#   LattE found in /Applications/latte/bin
-#   4ti2 found in /Applications/latte/bin
 # Loading required package: bertini
 #   Please cite bertini! See citation("bertini") for details.
-#   Bertini found in /usr/local/bin
 # Loading required package: m2r
 #   Please cite m2r! See citation("m2r") for details.
 #   M2 found in /Applications/Macaulay2-1.10/bin
@@ -112,12 +111,12 @@ loglinear(~ Personality + Party, data = politics)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.3638 0.0048      0.2171
-#    Pearson X^2 1.8182  0.3638 0.0048      0.2171
-# Likelihood G^2 1.848   0.3638 0.0048      0.2171
-#  Freeman-Tukey 1.8749  0.3638 0.0048      0.2171
-#   Cressie-Read 1.8247  0.3638 0.0048      0.2171
-#     Neyman X^2 2.0089  0.3638 0.0048      0.2926
+#       P(table)         0.3713 0.0048      0.2185
+#    Pearson X^2 1.8182  0.3713 0.0048      0.2185
+# Likelihood G^2 1.848   0.3713 0.0048      0.2185
+#  Freeman-Tukey 1.8749  0.3713 0.0048      0.2185
+#   Cressie-Read 1.8247  0.3713 0.0048      0.2185
+#     Neyman X^2 2.0089  0.3713 0.0048      0.2951
 ```
 
 Exact inference in algebraic statistics is done using MCMC to sample
@@ -224,12 +223,12 @@ loglinear(~ income + satisfaction, data = Job)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.7725 0.0042      0.7722
-#    Pearson X^2 5.9655  0.7634 0.0042      0.7634
-# Likelihood G^2 6.7641  0.7662 0.0042      0.7662
-#  Freeman-Tukey 8.6189  0.766  0.0042      0.766 
-#   Cressie-Read 6.0752  0.7653 0.0042      0.7653
-#     Neyman X^2 6.2442  0.5891 0.0049      0.5891
+#       P(table)         0.7855 0.0041      0.785 
+#    Pearson X^2 5.9655  0.7722 0.0042      0.7722
+# Likelihood G^2 6.7641  0.7761 0.0042      0.7761
+#  Freeman-Tukey 8.6189  0.7768 0.0042      0.7768
+#   Cressie-Read 6.0752  0.7735 0.0042      0.7735
+#     Neyman X^2 6.2442  0.6057 0.0049      0.6057
 ```
 
 The asymptotic test can be performed as well. The chi-square
@@ -278,12 +277,12 @@ loglinear(subsets(1:3, 2), data = drugs)
 # N = 10000 samples (after thinning), burn in = 1000, thinning = 10
 # 
 #                  stat p.value     se mid.p.value
-#       P(table)         0.6031 0.0049      0.4686
-#    Pearson X^2 0.5279  0.6031 0.0049      0.4686
-# Likelihood G^2 0.4845  0.6031 0.0049      0.4686
-#  Freeman-Tukey 0.4672  0.6031 0.0049      0.4686
-#   Cressie-Read 0.512   0.6031 0.0049      0.4686
-#     Neyman X^2 0.4294  0.6031 0.0049      0.4686
+#       P(table)         0.6016 0.0049      0.4598
+#    Pearson X^2 0.5279  0.6016 0.0049      0.4598
+# Likelihood G^2 0.4845  0.6016 0.0049      0.4598
+#  Freeman-Tukey 0.4672  0.6016 0.0049      0.4598
+#   Cressie-Read 0.512   0.6016 0.0049      0.4598
+#     Neyman X^2 0.4294  0.6016 0.0049      0.4598
 ```
 
 Note that here we’ve used the more concise syntax of facet
@@ -383,18 +382,82 @@ Even better, **algstat** can team up with
 solve systems of polynomial equations using `poly_solve()`:
 
 ``` r
-ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351) +
-  ggplot2::theme_classic()
+library("ggplot2"); theme_set(theme_minimal())
+# 
+# Attaching package: 'ggplot2'
+# The following object is masked from 'package:mpoly':
+# 
+#     vars
+ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351)
 ```
 
 ![](tools/poly-solve-1.png)
 
 ``` r
-poly_solve(c("y = x^2", "y = 2 - x^2"), var_order = c("x", "y"))
+poly_solve(c("y = x^2", "y = 2 - x^2"), varorder = c("x", "y"))
 # 2 solutions (x,y) found. (2 real, 0 complex)
 #     (-1,1) (R)
 #     ( 1,1) (R)
 ```
+
+Variety normal distribution
+===========================
+
+``` r
+options("mc.cores" = parallel::detectCores())
+
+p <- mp("(x^2 + y^2 - 1)^3 - x^2 y^3")
+(samps <- rvnorm(500, p, .025, "tibble", chains = 8))
+# # A tibble: 4,000 x 8
+#        x      y      num denom        ng  lp__ chain  iter
+#    <dbl>  <dbl>    <dbl> <dbl>     <dbl> <dbl> <int> <int>
+#  1 0.981  1.07   0.162   6.50   0.0249    2.27     1   251
+#  2 0.979  1.06   0.137   6.29   0.0217    2.39     1   252
+#  3 0.895 -0.197  0.00207 0.195  0.0106    2.68     1   253
+#  4 1.10   0.222  0.00226 0.393  0.00575   2.74     1   254
+#  5 1.13   0.216  0.0209  0.687  0.0304    2.03     1   255
+#  6 1.11   0.205  0.0110  0.502  0.0218    2.39     1   256
+#  7 0.757  1.17  -0.0928  4.10  -0.0226    2.36     1   257
+#  8 0.765  1.19   0.0357  5.24   0.00681   2.73     1   258
+#  9 0.742  1.20   0.00398 4.88   0.000815  2.77     1   259
+# 10 1.08   0.842 -0.0151  4.02  -0.00376   2.76     1   260
+# # … with 3,990 more rows
+
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+```
+
+![](tools/rvnorm-1.png)
+
+``` r
+
+ggplot(samps, aes(x, y, color = iter)) + 
+  geom_point(size = .5) + geom_path(alpha = .3) +
+  coord_equal() + facet_wrap(~ factor(chain), nrow = 2)
+```
+
+![](tools/rvnorm-2.png)
+
+For semi-algebraic sets:
+
+``` r
+p <- mp("(x^2 + y^2 - 1)^3 - x^2 y^3 + s^2")
+samps <- rvnorm(500, p, .025, "tibble", chains = 8) 
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+```
+
+![](tools/rvnorm-semi-alg-1.png)
+
+After being migrated onto the variety or semi-algebraic set, these can
+be used as a mesh on that geometry. Here’s a cool image made using
+[**ggforce**](https://github.com/thomasp85/ggforce)’s
+`geom_voronoi_segment()`:
+
+``` r
+library("ggforce")
+ggplot(samps, aes(x, y)) + geom_voronoi_segment() + coord_equal()
+```
+
+![](tools/mesh-1.png)
 
 Acknowledgements
 ================
@@ -416,7 +479,7 @@ way until we push a new release to CRAN:
 -   From Github:
 
 ``` r
-if(!requireNamespace("devtools")) install.packages("devtools")
+if (!requireNamespace("devtools")) install.packages("devtools")
 devtools::install_github("dkahle/mpoly")
 devtools::install_github("coneill-math/m2r")
 devtools::install_github("dkahle/latte")

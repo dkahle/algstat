@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/algstat)](https://cran.r-project.org/package=algstat)
 [![Travis build status](https://travis-ci.org/dkahle/algstat.svg?branch=master)](https://travis-ci.org/dkahle/algstat)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/dkahle/algstat?branch=master&svg=true)](https://ci.appveyor.com/project/dkahle/algstat)
 <!-- badges: end -->
 
 
@@ -52,6 +53,9 @@ fisher.test(politics)
 ```
 
 Since the independence model is log-linear, this exact same procedure can be done with __algstat__. The go-to function here is `loglinear()`:
+```{r loglinear-intro-prep, echo=FALSE}
+set.seed(1L)
+```
 ```{r loglinear-intro}
 loglinear(~ Personality + Party, data = politics)
 ```
@@ -178,9 +182,44 @@ bertini(code)
 
 Even better, __algstat__ can team up with [__mpoly__](http://github.com/dkahle/mpoly) (working under the hood) to solve systems of polynomial equations using `poly_solve()`:
 ```{r poly-solve, fig.height = 3} 
-ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351) +
-  ggplot2::theme_classic()
-poly_solve(c("y = x^2", "y = 2 - x^2"), var_order = c("x", "y"))
+library("ggplot2"); theme_set(theme_minimal())
+ggvariety(mp("(y - x^2) (y - (2 - x^2))"), xlim = c(-2,2), ylim = c(0,2), n = 351)
+poly_solve(c("y = x^2", "y = 2 - x^2"), varorder = c("x", "y"))
+```
+
+
+
+
+
+
+# Variety normal distribution
+
+```{r rvnorm, message=FALSE}
+options("mc.cores" = parallel::detectCores())
+
+p <- mp("(x^2 + y^2 - 1)^3 - x^2 y^3")
+(samps <- rvnorm(500, p, .025, "tibble", chains = 8))
+
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+
+ggplot(samps, aes(x, y, color = iter)) + 
+  geom_point(size = .5) + geom_path(alpha = .3) +
+  coord_equal() + facet_wrap(~ factor(chain), nrow = 2)
+```
+
+For semi-algebraic sets:
+```{r rvnorm-semi-alg, message=FALSE}
+p <- mp("(x^2 + y^2 - 1)^3 - x^2 y^3 + s^2")
+samps <- rvnorm(500, p, .025, "tibble", chains = 8) 
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+```
+
+
+After being migrated onto the variety or semi-algebraic set, these can be used
+as a mesh on that geometry. Here's a cool image made using [__ggforce__](https://github.com/thomasp85/ggforce)'s `geom_voronoi_segment()`:
+```{r mesh, message=FALSE}
+library("ggforce")
+ggplot(samps, aes(x, y)) + geom_voronoi_segment() + coord_equal()
 ```
 
 
@@ -205,7 +244,7 @@ There are currently two ways to get __algstat__.  Here's the preferred way until
 
 * From Github: 
 ```{r eval=FALSE}
-if(!requireNamespace("devtools")) install.packages("devtools")
+if (!requireNamespace("devtools")) install.packages("devtools")
 devtools::install_github("dkahle/mpoly")
 devtools::install_github("coneill-math/m2r")
 devtools::install_github("dkahle/latte")
