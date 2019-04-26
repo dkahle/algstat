@@ -111,12 +111,19 @@
 #' ## semi-algebraic sets
 #' ########################################
 #' # inside the semialgebraic set x^2 + y^2 <= 1
+#' # this is the same as x^2 + y^2 - 1 <= 0, so that
+#' # x^2 + y^2 - 1 + s^2 == 0 for some slack variable s
+#' # this is the projection of the sphere into the xy-plane.
 #' 
 #' p <- mp("1 - (x^2 + y^2) - s^2")
 #' samps <- rvnorm(1e4, p, sd = .01, "tibble", chains = 8)
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #' ggplot(samps, aes(x, y)) + geom_bin2d() + coord_equal()
-#'  
+#' 
+#' ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) + 
+#'   geom_point(size = .5) + 
+#'   coord_equal()
+#'   
 #' 
 #' ## keeping the warmup / the importance of multiple chains
 #' ########################################
