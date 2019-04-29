@@ -124,6 +124,15 @@
 #'   geom_point(size = .5) + 
 #'   coord_equal()
 #'   
+#' # alternative representation   
+#' # x^2 + y^2 - 1 <= 0 iff s^2 (x^2 + y^2 - 1) == -1
+#' # so that s^2 (x^2 + y^2 - 1) + 1 == 0
+#' # this tends to be a worse strategy because the gradient
+#' # is more complex
+#' p <- mp("s^2 (x^2 + y^2 - 1) + 1")
+#' samps <- rvnorm(250, p, sd = .01, "tibble", chains = 8)
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#'   
 #' 
 #' ## keeping the warmup / the importance of multiple chains
 #' ########################################
