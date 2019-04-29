@@ -161,6 +161,7 @@ ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
 # so well in practice, since s^2 is unbounded.
 # it's gradient is also more complicated.
 
+
 ## keeping the warmup / the importance of multiple chains
 ########################################
 
@@ -189,6 +190,18 @@ ggplot(samps, aes(x, y, color = num < 0)) +
   geom_point(size = .5) + 
   coord_equal(xlim = c(-3,3), ylim = c(-3,3)) +
   facet_wrap(~ power)
+
+
+## neat example
+########################################
+# an implicit Lissajous region, view in separate window large
+# https://reference.wolfram.com/language/ref/DiscretizeRegion.html
+
+p <- mp("-1 + (-1 + 18 x^2 - 48 x^4 + 32 x^6)^2 + (-1 + 18 y^2 - 48 y^4 + 32 y^6)^2")
+samps <- rvnorm(1e4, p + mp("s^2"), sd = .01, "tibble", chains = 8, refresh = 100)
+ggplot(samps, aes(x, y, color = factor(chain))) + 
+  geom_point(size = .5) + coord_equal() 
+
 
 
 }
