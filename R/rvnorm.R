@@ -231,7 +231,8 @@ rvnorm <- function(
     
     if (!is.mpoly(poly)) poly <- mp(poly)
     if (missing(vars)) vars <- mpoly::vars(poly)
-    poly <- mpoly:::reorder.mpoly(poly, varorder = sort(vars))
+    reorder.mpoly <- get("reorder.mpoly", asNamespace("mpoly"))
+    poly <- reorder.mpoly(poly, varorder = sort(vars))
 
     numerator <- print(poly, stars = TRUE, silent = TRUE, plus_pad = 0L, times_pad = 0L) %>% str_replace_all("[*]{2}", "^")
     if (normalized) {
@@ -245,7 +246,7 @@ rvnorm <- function(
   }
   
   if (missing(refresh)) if (verbose) refresh <- max(n/10L, 1) else refresh <- 0L
-  if(!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
+  if (!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
   
   
   

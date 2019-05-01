@@ -73,7 +73,7 @@ metropolis(init, moves, iter = 10, burn = 0, thin = 1, engine = "R", dist = "uni
 # a bigger simulation
 iter <- 1e4
 out <- metropolis(init, moves, iter = iter, burn = 0)
-hist(out$steps[1,], breaks = 100)
+hist(out$steps[1,], breaks = 100, col = "gray20")
 
 # view convergence through trace plot
 plot(1:iter, out$steps[1,1:iter])
@@ -87,7 +87,7 @@ acf(out$steps[1,])
 
 out <- metropolis(init, moves, iter = iter, thin = 200)
 acf(out$steps[1,])
-hist(out$steps[1,], breaks = 100)
+hist(out$steps[1,], breaks = 100, col = "gray20")
 
 
 
