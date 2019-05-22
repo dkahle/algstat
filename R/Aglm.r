@@ -26,10 +26,13 @@
 #'   \item \code{p.value}: the exact p-values of individual tests,
 #'   accurate to Monte-Carlo error.  these are computed as the
 #'   proportion of samples with statistics equal to or larger than
-#'   the oberved statistic. \item \code{mid.p.value}: the mid
-#'   p.values, see Agresti pp.20--21. \item \code{sampsStats}: 
+#'   the oberved statistic. 
+#'   \item \code{mid.p.value}: the mid
+#'   p.values, see Agresti pp.20--21. 
+#'   \item \code{sampsStats}: 
 #'   the statistics computed for each mcmc
-#'   sample. \item \code{cells}: the number of cells in the table. }
+#'   sample. 
+#'   \item \code{cells}: the number of cells in the table. }
 #' @examples 
 #' 
 #'  library(ggplot2);theme_set(theme_bw())
@@ -112,7 +115,7 @@
 
 aglm <- function(model, data, family = poisson(),
                      iter = 1E4, burn = 10000, 
-                     thin = 100, engine = c("Cpp","R"), 
+                     thin = 100, engine = c("C++","R"), 
                       moves, 
                      ...)
 {
@@ -189,9 +192,9 @@ aglm <- function(model, data, family = poisson(),
       }
       
       ## any 0 levels
-      if (any(data[,-ncol(data)] == 0)) {
-        stop("Cannot have a covariate with a level 0")
-      }
+    #  if (any(data[,-ncol(data)] == 0)) {
+    #    stop("Cannot have a covariate with a level 0")
+    #  }
       
       if(length(model) == 1){
         
@@ -248,18 +251,18 @@ aglm <- function(model, data, family = poisson(),
   ## construct A matrix and compute moves
   ##################################################  
   
-  if(missing(moves) && !is.null(getOption("4ti2_path"))){
+  if(missing(moves) && has_4ti2()){
     
     message("Computing Markov moves (4ti2)... ", appendLF = FALSE)  	
-    moves <- markov(A)
+    moves <- markov(A, p = "arb")
     message("done.", appendLF = TRUE)      
     
-  } else if(missing(moves) && is.null(getOption("4ti2_path"))){
+  } else if(missing(moves) && has_4ti2()){
     
     warning(
-      "No moves were provided and 4ti2 is not found.\n",
-      "  The resulting chain is likely not connected and strongly autocorrelated.\n",
-      "  See ?aglm.  Consider using rmove to generate SIS moves in advance.",
+      "No moves were provided and has_4ti2() = FALSE.\n",
+      "  SIS moves will be used; estimates will likely be biased.\n",
+      "  Consider using rmove() to generate SIS moves in advance.",
       immediate. = TRUE
     )
     message("Computing 1000 SIS moves... ", appendLF = FALSE)    
@@ -270,10 +273,10 @@ aglm <- function(model, data, family = poisson(),
     
     movesMat <- NULL
     stopifnot(all(moves %in% c("lattice", "markov", "groebner", "grobner", "graver", "sis")))
-    if("lattice"  %in% moves)  movesMat <- cbind(movesMat,   zbasis(A))
-    if("markov"   %in% moves)  movesMat <- cbind(movesMat,   markov(A))
-    if("groebner" %in% moves)  movesMat <- cbind(movesMat, groebner(A))
-    if("grobner"  %in% moves)  movesMat <- cbind(movesMat, groebner(A))
+    if("lattice"  %in% moves)  movesMat <- cbind(movesMat,   zbasis(A, p = "arb"))
+    if("markov"   %in% moves)  movesMat <- cbind(movesMat,   markov(A, p = "arb"))
+    if("groebner" %in% moves)  movesMat <- cbind(movesMat, groebner(A, p = "arb"))
+    if("grobner"  %in% moves)  movesMat <- cbind(movesMat, groebner(A, p = "arb"))
     if("graver"   %in% moves)  stop("graver not yet implemented.")
     moves <- movesMat
     
@@ -290,8 +293,6 @@ aglm <- function(model, data, family = poisson(),
     metropolis(
       init,
       moves,
-      suffStats = suffStats,
-      config = unname(A),
       iter = iter,
       burn = burn,
       thin = thin,
