@@ -45,10 +45,6 @@ rfiberOne <- function(A, b) {
     .Call('_algstat_rfiberOne', PACKAGE = 'algstat', A, b)
 }
 
-sis_tbl <- function(A, suff_stats) {
-    .Call('_algstat_sis_tbl', PACKAGE = 'algstat', A, suff_stats)
-}
-
 walk <- function(current, moves, iter, thin) {
     .Call('_algstat_walk', PACKAGE = 'algstat', current, moves, iter, thin)
 }

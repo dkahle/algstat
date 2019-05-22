@@ -149,18 +149,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sis_tbl
-IntegerVector sis_tbl(IntegerMatrix A, IntegerVector suff_stats);
-RcppExport SEXP _algstat_sis_tbl(SEXP ASEXP, SEXP suff_statsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerMatrix >::type A(ASEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type suff_stats(suff_statsSEXP);
-    rcpp_result_gen = Rcpp::wrap(sis_tbl(A, suff_stats));
-    return rcpp_result_gen;
-END_RCPP
-}
 // walk
 IntegerMatrix walk(IntegerVector current, IntegerMatrix moves, int iter, int thin);
 RcppExport SEXP _algstat_walk(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
@@ -188,7 +176,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &_algstat_metropolis_hypergeometric_cpp, 7},
     {"_algstat_metropolis_uniform_cpp", (DL_FUNC) &_algstat_metropolis_uniform_cpp, 7},
     {"_algstat_rfiberOne", (DL_FUNC) &_algstat_rfiberOne, 2},
-    {"_algstat_sis_tbl", (DL_FUNC) &_algstat_sis_tbl, 2},
     {"_algstat_walk", (DL_FUNC) &_algstat_walk, 4},
     {NULL, NULL, 0}
 };

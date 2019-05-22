@@ -25,7 +25,7 @@ List metropolis_uniform_cpp(
   int total_count = 0;
   bool any_negative_cells;
   IntegerVector move(n_cells);
-  double accept_prob = 0;
+
   
   Function sample("sample");
   which_move = sample(n_moves, burn + n_total_samples, 1);
