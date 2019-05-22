@@ -196,17 +196,7 @@
 #'     geom_bin2d(bins = 100) + 
 #'     facet_wrap(~ normd) +
 #'     coord_equal()
-#'      +
-#'     scale_fill_gradient(lim = c(0, 200))
 #'
-#' bind_rows(
-#'   samps_normd %>% mutate(normd = TRUE),
-#'   samps_unormd %>% mutate(normd = FALSE)
-#' ) %>% 
-#'   ggplot(aes(x, y)) +
-#'     geom_bin2d() + 
-#'     facet_wrap(~ normd) +
-#'     coord_equal()
 #' 
 #' samps_normd %>% 
 #'   ggplot(aes(x, y)) +
