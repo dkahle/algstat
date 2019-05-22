@@ -46,7 +46,7 @@
 #' @examples
 #'
 #' \dontrun{ runs rstan
-#' 
+#'
 #' library("ggplot2")
 #'
 #' ## basic usage
@@ -59,123 +59,164 @@
 #'
 #' (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' ggplot(samps, aes(x, y, color = num > 0)) + 
-#'   geom_point(size = .5) + 
+#' ggplot(samps, aes(x, y, color = num > 0)) +
+#'   geom_point(size = .5) +
 #'   coord_equal()
-#' 
-#' 
+#'
+#'
 #' ## using refresh to get more info
 #' ########################################
-#' 
+#'
 #' rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
 #' rvnorm(2000, p, sd = .1, "tibble", refresh = 100)
 #' rvnorm(2000, p, sd = .1, "tibble", refresh = 500)
 #' rvnorm(2000, p, sd = .1, "tibble", refresh = 0)
 #' rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
-#' 
-#' 
+#'
+#'
 #' ## many chains in parallel
 #' ########################################
-#' 
+#'
 #' options(mc.cores = parallel::detectCores())
 #' p <- mp("x^2 + (4 y)^2 - 1")
 #' samps <- rvnorm(250, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
 #' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
-#' 
-#' 
+#'
+#'
 #' ## windowing for unbounded varieties
 #' ########################################
-#' 
+#'
 #' p <- mp("y^2 - (x^3 + x^2)")
 #' samps <- rvnorm(250, p, sd = .05, "tibble", chains = 8, w = 1.15)
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' 
-#' 
-#' ## the importance of normalizing 
+#'
+#'
+#' ## the importance of normalizing
 #' ########################################
-#' # one of the effects of the normalizing is to stabilize variances, making 
+#' # one of the effects of the normalizing is to stabilize variances, making
 #' # them roughly equivalent globally over the variety.
-#' 
+#'
 #' # lemniscate of bernoulli
 #' p <- mp("(x^2 + y^2)^2 - 2 (x^2 - y^2)")
-#' 
+#'
 #' # normalized, good
 #' (samps <- rvnorm(2000, p, .025, "tibble"))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' 
+#'
 #' # unnormalized, bad
 #' (samps <- rvnorm(2000, p, .025, "tibble", normalized = FALSE))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' 
-#' 
+#'
+#'
 #' ## semi-algebraic sets
 #' ########################################
 #' # inside the semialgebraic set x^2 + y^2 <= 1
 #' # this is the same as x^2 + y^2 - 1 <= 0, so that
 #' # x^2 + y^2 - 1 + s^2 == 0 for some slack variable s
 #' # this is the projection of the sphere into the xy-plane.
-#' 
+#'
 #' p <- mp("1 - (x^2 + y^2) - s^2")
 #' samps <- rvnorm(1e4, p, sd = .01, "tibble", chains = 8)
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #' ggplot(samps, aes(x, y)) + geom_bin2d() + coord_equal()
-#' 
-#' ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) + 
-#'   geom_point(size = .5) + 
+#'
+#' ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
+#'   geom_point(size = .5) +
 #'   coord_equal()
-#'   
-#' # alternative representation   
+#'
+#' # alternative representation
 #' # x^2 + y^2 - 1 <= 0 iff s^2 (x^2 + y^2 - 1) == -1
 #' # so that s^2 (x^2 + y^2 - 1) + 1 == 0
 #' # while this strategy works in theory, it doesn't work
 #' # so well in practice, since s^2 is unbounded.
 #' # it's gradient is also more complicated.
-#' 
-#' 
+#'
+#'
 #' ## keeping the warmup / the importance of multiple chains
 #' ########################################
-#' 
+#'
 #' p <- mp("((x + 1.5)^2 + y^2 - 1) ((x - 1.5)^2 + y^2 - 1)")
 #' ggvariety(p, xlim = c(-3,3)) + coord_equal()
-#' 
+#'
 #' samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
-#' ggplot(samps, aes(x, y, color = iter)) + 
-#'   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) + 
+#' ggplot(samps, aes(x, y, color = iter)) +
+#'   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) +
 #'   coord_equal() + facet_wrap(~ factor(chain))
-#' 
-#' 
+#'
+#'
 #' ## ideal-variety correspondence considerations
 #' ########################################
-#' 
+#'
 #' p <- mp("x^2 + y^2 - 1")
-#' 
+#'
 #' samps_1 <- rvnorm(250, p^1, sd = .1, output = "tibble", chains = 8)
 #' samps_2 <- rvnorm(250, p^2, sd = .1, output = "tibble", chains = 8)
 #' samps_3 <- rvnorm(250, p^3, sd = .1, output = "tibble", chains = 8)
 #' samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
 #' samps <- bind_rows(mget(apropos("samps_")))
 #' samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
-#' 
-#' ggplot(samps, aes(x, y, color = num < 0)) + 
-#'   geom_point(size = .5) + 
+#'
+#' ggplot(samps, aes(x, y, color = num < 0)) +
+#'   geom_point(size = .5) +
 #'   coord_equal(xlim = c(-3,3), ylim = c(-3,3)) +
 #'   facet_wrap(~ power)
-#' 
-#' 
+#'
+#'
 #' ## neat example
 #' ########################################
 #' # an implicit Lissajous region, view in separate window large
-#' # https://reference.wolfram.com/language/ref/DiscretizeRegion.html
+#'
+#' # x = cos(m t + p)
+#' # y = sin(n t + q)
+#' (p <- lissajous(3, 2,  -pi/2, 0))
+#' (p <- lissajous(4, 3,  -pi/2, 0))
+#' (p <- lissajous(5, 4,  -pi/2, 0))
+#' (p <- lissajous(3, 3,  0, 0))
+#' (p <- lissajous(5, 5,  0, 0))
+#' (p <- lissajous(7, 7,  0, 0))
+#' ggvariety(p, n = 201) + coord_equal()
 #' 
-#' p <- mp("-1 + (-1 + 18 x^2 - 48 x^4 + 32 x^6)^2 + (-1 + 18 y^2 - 48 y^4 + 32 y^6)^2")
-#' samps <- rvnorm(1e4, p + mp("s^2"), sd = .01, "tibble", chains = 8, refresh = 100)
-#' ggplot(samps, aes(x, y, color = factor(chain))) + 
-#'   geom_point(size = .5) + coord_equal() 
+#' p <- plug(p, "x", mp(".5 x"))
+#' p <- plug(p, "y", mp(".5 y"))
 #' 
+#' # algebraic set
+#' samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8)
+#' ggplot(samps, aes(x, y, color = factor(chain))) +
+#'   geom_point(size = .5) + coord_equal()
 #' 
+#' # semi-algebraic set
+#' samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, normalized = TRUE, refresh = 100)
+#' samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, normalized = FALSE, refresh = 100)
+#'
+#' bind_rows(
+#'   samps_normd %>% mutate(normd = TRUE),
+#'   samps_unormd %>% mutate(normd = FALSE)
+#' ) %>% 
+#'   ggplot(aes(x, y)) +
+#'     geom_bin2d(bins = 100) + 
+#'     facet_wrap(~ normd) +
+#'     coord_equal()
+#'      +
+#'     scale_fill_gradient(lim = c(0, 200))
+#'
+#' bind_rows(
+#'   samps_normd %>% mutate(normd = TRUE),
+#'   samps_unormd %>% mutate(normd = FALSE)
+#' ) %>% 
+#'   ggplot(aes(x, y)) +
+#'     geom_bin2d() + 
+#'     facet_wrap(~ normd) +
+#'     coord_equal()
+#' 
+#' samps_normd %>% 
+#'   ggplot(aes(x, y)) +
+#'     geom_bin2d(bins = 200) + 
+#'     facet_wrap(~ factor(chain)) +
+#'     coord_equal()
 #'
 #' }
 #' 
+
 
 
 
@@ -205,6 +246,7 @@ rvnorm <- function(
   normalized = TRUE,
   w, 
   vars, 
+  slack_vars,
   numerator, 
   denominator, 
   refresh,
@@ -219,8 +261,7 @@ rvnorm <- function(
   lp__ <- NULL; rm(lp__)
   iter <- NULL; rm(iter)
   
-  ## check arguments
-  ########################################
+  ##check arguments ######################################
   
   if (inject_direct) {
     
@@ -236,7 +277,13 @@ rvnorm <- function(
 
     numerator <- print(poly, stars = TRUE, silent = TRUE, plus_pad = 0L, times_pad = 0L) %>% str_replace_all("[*]{2}", "^")
     if (normalized) {
-      denominator <- if (length(vars) > 1) Reduce(`+`, gradient(poly)^2) else gradient(poly)^2
+      if (length(vars) > 1) {
+        if (missing(slack_vars)) slack_vars <- ""
+        grad <- deriv(poly, var = setdiff(vars(poly), slack_vars))
+        denominator <- Reduce(`+`, grad^2) 
+      } else {
+        denominator <- gradient(poly)^2
+      }
       denominator <- print(denominator, stars = TRUE, silent = TRUE, plus_pad = 0L, times_pad = 0L) %>% str_replace_all("[*]{2}", "^")
       denominator <- glue::glue("sqrt({denominator})")
     } else {
