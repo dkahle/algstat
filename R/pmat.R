@@ -23,48 +23,55 @@
 #' @export pmat
 
 pmat <- function(levels, facets) {
+
   #Small function to make single covariate configuration matrix
   func <- function(x)
     unname(rbind(rep(1, length(x)), x))
   
   if (!is.list(levels)) {
     numCovariates <- 1
-    fullMat <- func(levels)
+    full_mat_segre <- func(levels)
   } else{
     numCovariates <- length(levels)
     #Make single covariate configuration matrix for each covariate
     matList <- lapply(levels, func)
     #Full heirarchicial config matrix with all interactions included
-    fullMat <- do.call(kprod, matList)
-    # fullMat <- do.call(segre, matList)
-  }
-  expCov <- 1:numCovariates
-  
-  #Checking heirarchical sturcture of facets
-  if (any(sapply(facets, length) > 1)) {
-    longListElts <- facets[which(sapply(facets, length) > 1)]
-    
-    uniqueVals <- unique(unlist(longListElts))
-    
-    heirarc <- as.list(c(uniqueVals, longListElts))
-    
-    facets <- union(heirarc, facets)
+    full_mat_kprod <- do.call(kprod, matList)
+    full_mat_segre <- do.call(segre, matList)
   }
   
-  #All possible combinations of covariates (powerset like) to be compared to facets
-  if (length(expCov) == 1) {
-    facetList <- list(expCov)
+ if(any(lengths(facets) > 1)) {
+   
+   expCov <- 1:numCovariates
+   
+   #Checking heirarchical sturcture of facets
+   if (any(sapply(facets, length) > 1)) {
+     longListElts <- facets[which(sapply(facets, length) > 1)]
+     
+     uniqueVals <- unique(unlist(longListElts))
+     
+     heirarc <- as.list(c(uniqueVals, longListElts))
+     
+     facets <- union(heirarc, facets)
+   }
+   
+   #All possible combinations of covariates (powerset like) to be compared to facets
+   if (length(expCov) == 1) {
+     facetList <- list(expCov)
+   } else{
+     facetList <- list(integer(0))
+     for (i in seq_along(expCov)) {
+       facetList <-
+         c(facetList, lapply(facetList, function(x)
+           c(x, expCov[i])))
+     }
+     facetList <- facetList[-1]
+   }
+   #return the configuration matrix which includes only the elements need for the heirarchical model
+   full_mat_kprod[c(TRUE, facetList %in% type.convert(facets)), ]
   } else{
-    facetList <- list(integer(0))
-    for (i in seq_along(expCov)) {
-      facetList <-
-        c(facetList, lapply(facetList, function(x)
-          c(x, expCov[i])))
-    }
-    facetList <- facetList[-1]
+  full_mat_segre
   }
-  #return the configuration matrix which includes only the elements need for the heirarchical model
-  fullMat[c(TRUE, facetList %in% type.convert(facets)), ]
 }
 
 

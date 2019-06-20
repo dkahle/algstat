@@ -5,10 +5,7 @@
 #'   description of the model to be fitted
 #' @param data data, as a data frame of raw data with ordinal discrete covariates
 #' @param family a description of the error distirbution and link function used in the model
-#' @param iter number of chain iterations
-#' @param burn burn-in
-#' @param thin thinning
-#' @param engine C++ or R? (C++ yields roughly a 20-25x speedup)
+#' @param control a list of arguments that control the MCMC algorithm
 #' @param moves the markov moves for the mcmc (as columns of a
 #'   matrix).
 #' @param ... ...
@@ -51,7 +48,7 @@
 #'     )
 #'     
 #'     # function output
-#'     out <- aglm(y ~ x, data = df, family = poisson(), thin = 2000)
+#'     out <- aglm(y ~ x, data = df, family = poisson(), control = list(thin = 2000))
 #'     
 #'     # check convergence through trace plot
 #'     qplot(1:10000, out$sampsStats$PRs, geom = "line")
@@ -93,7 +90,7 @@
 #'   )
 #'   
 #'   # aglm 
-#'   out <- aglm(y ~ x, data = df, family = binomial(), thin = 500)
+#'   out <- aglm(y ~ x, data = df, family = binomial(), control(thin = 500))
 #'  
 #'   # check convergence through trace plot
 #'   qplot(1:10000, out$sampsStats$PRs, geom = "line")
@@ -114,15 +111,13 @@
 
 
 aglm <- function(model, data, family = poisson(),
-                     iter = 1E4, burn = 10000, 
-                     thin = 100, engine = c("C++","R"), 
-                      moves, 
+                     control = list(...), moves, 
                      ...)
 {
 
   ## set/check args
   ##################################################
-  engine  <- match.arg(engine)
+  control <- do.call("aglm.control", control)
   argList <- as.list(match.call(expand.dots = TRUE))[-1]
   
   if("formula" %in% names(argList)){
@@ -161,21 +156,19 @@ aglm <- function(model, data, family = poisson(),
   } else {
     # if it's a formula, convert to list
     if(is.formula(model)){ 
+      
       ## reshape data
       data <- model.frame(model, data)
       
-      # name data
+      ## extract full model 
+      pred_string <- attr(terms(data), "term.labels")
+      
+      ## name data
       vars  <- names(data)
-      
-      ## parse formula
-      fString    <- as.character(model)
-      response   <- fString[2]
-      predString <- fString[3]
-      
+      response   <- vars[1]
       
       ## make list of facets
-      model <- strsplit(predString, " \\+ ")[[1]]
-      model <- strsplit(model, " \\* ")
+      model <- strsplit(pred_string, "\\:")
       
       ## format the data 
       names(data)[names(data) == response] <- "response"
@@ -236,10 +229,10 @@ aglm <- function(model, data, family = poisson(),
   }
   
  # check to see if all level configurations are there (need work here)
-  lvlsInData <- as.list(as.data.frame(t(expand.grid(levels)))) %in% as.list(as.data.frame(t(data[, -ncol(data)])))
+ # lvlsInData <- as.list(as.data.frame(t(expand.grid(levels)))) %in% as.list(as.data.frame(t(data[, -ncol(data)])))
   
   # subset A by levels that are present
-  A <- A[,lvlsInData]
+ # A <- A[,lvlsInData]
   
   # if family = "binomial" compute the lawernce lifting of A
   if (method == "binomial") {
@@ -293,11 +286,12 @@ aglm <- function(model, data, family = poisson(),
     metropolis(
       init,
       moves,
-      iter = iter,
-      burn = burn,
-      thin = thin,
-      engine = engine,
-      ...
+      iter = control$iter,
+      burn = control$burn,
+      thin = control$thin,
+      engine = control$engine,
+      hit_and_run = control$hit_and_run,
+      adaptive = control$adaptive
     )
   
   
@@ -321,7 +315,7 @@ aglm <- function(model, data, family = poisson(),
   )
   
   out$p.value.std.err <- c(
-    PR = sqrt(mean(PRs <= PR)*(1-mean(PRs <= PR))/iter)
+    PR = sqrt(mean(PRs <= PR)*(1-mean(PRs <= PR))/control$iter)
   )  
   
   out$mid.p.value <- c(
@@ -329,9 +323,9 @@ aglm <- function(model, data, family = poisson(),
   )  
   
   
-  out$iter       <- iter
-  out$burn       <- burn
-  out$thin       <- thin
+  out$iter       <- control$iter
+  out$burn       <- control$burn
+  out$thin       <- control$thin
   out$statistic  <- c(PR = PR)
   out$sampsStats <- list(PRs = PRs)
   out$cells      <- nCells
@@ -339,11 +333,28 @@ aglm <- function(model, data, family = poisson(),
   
   class(out) <- "aglm"
   out
-  
-  
-  
-  
-  
-  
-  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+aglm.control <- function(iter = 10000,
+                         burn = 10000,
+                         thin = 100, 
+                         engine = c("C++", "R"), 
+                         hit_and_run = FALSE,
+                         adaptive = FALSE
+) {
+  engine <- match.arg(engine)
+list(iter = iter, burn = burn, thin = thin, 
+     engine = engine, hit_and_run = hit_and_run, 
+     adaptive = adaptive)
 }

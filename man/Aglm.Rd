@@ -4,8 +4,7 @@
 \alias{aglm}
 \title{Fitting generalized linear models with algebraic methods}
 \usage{
-aglm(model, data, family = poisson(), iter = 10000, burn = 10000,
-  thin = 100, engine = c("Cpp", "R"), moves, ...)
+aglm(model, data, family = poisson(), control = list(...), moves, ...)
 }
 \arguments{
 \item{model}{model specification, either in terms of a configuration matrix or a symbolic
@@ -15,13 +14,7 @@ description of the model to be fitted}
 
 \item{family}{a description of the error distirbution and link function used in the model}
 
-\item{iter}{number of chain iterations}
-
-\item{burn}{burn-in}
-
-\item{thin}{thinning}
-
-\item{engine}{C++ or R? (C++ yields roughly a 20-25x speedup)}
+\item{control}{a list of arguments that control the MCMC algorithm}
 
 \item{moves}{the markov moves for the mcmc (as columns of a
 matrix).}
@@ -43,10 +36,13 @@ statistics computing matrix.
 \item \code{p.value}: the exact p-values of individual tests,
 accurate to Monte-Carlo error.  these are computed as the
 proportion of samples with statistics equal to or larger than
-the oberved statistic. \item \code{mid.p.value}: the mid
-p.values, see Agresti pp.20--21. \item \code{sampsStats}:
+the oberved statistic.
+\item \code{mid.p.value}: the mid
+p.values, see Agresti pp.20--21.
+\item \code{sampsStats}:
 the statistics computed for each mcmc
-sample. \item \code{cells}: the number of cells in the table. }
+sample.
+\item \code{cells}: the number of cells in the table. }
 }
 \description{
 Fitting generalized linear models with algebraic methods
@@ -69,7 +65,7 @@ Fitting generalized linear models with algebraic methods
     )
     
     # function output
-    out <- aglm(y ~ x, data = df, family = poisson(), thin = 2000)
+    out <- aglm(y ~ x, data = df, family = poisson(), control = list(thin = 2000))
     
     # check convergence through trace plot
     qplot(1:10000, out$sampsStats$PRs, geom = "line")
@@ -111,7 +107,7 @@ Fitting generalized linear models with algebraic methods
   )
   
   # aglm 
-  out <- aglm(y ~ x, data = df, family = binomial(), thin = 500)
+  out <- aglm(y ~ x, data = df, family = binomial(), control(thin = 500))
  
   # check convergence through trace plot
   qplot(1:10000, out$sampsStats$PRs, geom = "line")
