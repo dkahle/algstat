@@ -48,18 +48,30 @@
 #' \dontrun{ runs rstan
 #'
 #' library("ggplot2")
+#' library("rstan"); rstan_options(auto_write = TRUE) # helps avoid recompiles
 #'
 #' ## basic usage
 #' ########################################
 #'
+#' # single polynomial
 #' p <- mp("x^2 + y^2 - 1")
 #' samps <- rvnorm(2000, p, sd = .1)
 #' head(samps)
 #' str(samps) # 2000 * (4 chains)
-#'
+#' plot(samps, asp = 1)
+#' 
+#' # returning a data frame
 #' (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' ggplot(samps, aes(x, y, color = num > 0)) +
+#' ggplot(samps, aes(x, y, color = `g[1]` > 0)) +
+#'   geom_point(size = .5) +
+#'   coord_equal()
+#'
+#'
+#' # > 1 polynomials, underdetermined system
+#' p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
+#' samps <- rvnorm(2000, p, sd = .1, output = "tibble")
+#' ggplot(samps, aes(x, y)) +
 #'   geom_point(size = .5) +
 #'   coord_equal()
 #'
@@ -162,7 +174,7 @@
 #'   facet_wrap(~ power)
 #'
 #'
-#' ## neat example
+#' ## neat examples
 #' ########################################
 #' # an implicit Lissajous region, view in separate window large
 #'
@@ -185,8 +197,12 @@
 #'   geom_point(size = .5) + coord_equal()
 #' 
 #' # semi-algebraic set
-#' samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, normalized = TRUE, refresh = 100)
-#' samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, normalized = FALSE, refresh = 100)
+#' samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+#'   normalized = TRUE, refresh = 100
+#' )
+#' samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+#'   normalized = FALSE, refresh = 100
+#' )
 #'
 #' bind_rows(
 #'   samps_normd %>% mutate(normd = TRUE),
@@ -245,7 +261,6 @@ rvnorm <- function(
   normalized = TRUE,
   w, 
   vars, 
-  slack_vars,
   numerator, 
   denominator, 
   refresh,
@@ -259,37 +274,14 @@ rvnorm <- function(
   ng <- NULL; rm(ng)
   lp__ <- NULL; rm(lp__)
   iter <- NULL; rm(iter)
+  . <- NULL; rm(.)
   
-  ##check arguments ######################################
+  if (!is.mpolyList(poly)) poly <- structure(list(poly), class = "mpolyList")
   
-  if (inject_direct) {
-    
-    if(missing(vars) || missing(numerator) || missing(denominator)) 
-      stop("if inject_direct = TRUE, you must specify vars, numerator, and denominator")
-    
-  } else {
-    
-    if (!is.mpoly(poly)) poly <- mp(poly)
-    if (missing(vars)) vars <- mpoly::vars(poly)
-    reorder.mpoly <- get("reorder.mpoly", asNamespace("mpoly"))
-    poly <- reorder.mpoly(poly, varorder = sort(vars))
-
-    numerator <- print(poly, stars = TRUE, silent = TRUE, plus_pad = 0L, times_pad = 0L) %>% str_replace_all("[*]{2}", "^")
-    if (normalized) {
-      if (length(vars) > 1) {
-        if (missing(slack_vars)) slack_vars <- ""
-        grad <- deriv(poly, var = setdiff(vars(poly), slack_vars))
-        denominator <- Reduce(`+`, grad^2) 
-      } else {
-        denominator <- gradient(poly)^2
-      }
-      denominator <- print(denominator, stars = TRUE, silent = TRUE, plus_pad = 0L, times_pad = 0L) %>% str_replace_all("[*]{2}", "^")
-      denominator <- glue::glue("sqrt({denominator})")
-    } else {
-      denominator <- "1"
-    }
-    
-  }
+  vars <- mpoly::vars(poly)
+  
+  n_eqs  <- length(poly)
+  n_vars <- length(vars)
   
   if (missing(refresh)) if (verbose) refresh <- max(n/10L, 1) else refresh <- 0L
   if (!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
@@ -302,10 +294,28 @@ rvnorm <- function(
   needs_to_compile_new_model <- TRUE
   
   if (needs_to_compile_new_model) {
-  
+    
+    printed_polys <- mpoly:::print.mpolyList(poly, silent = TRUE, stars = TRUE, plus_pad = 0, times_pad = 0) %>% str_replace_all("\\*\\*", "^")
+    printed_polys <- str_c(printed_polys, collapse = ", ")
+    
+    d <- get("deriv.mpoly", asNamespace("mpoly"))
+    p <- get("print.mpoly", asNamespace("mpoly"))
+    
+    printed_jac <- array("", dim = c(n_eqs, n_vars))
+    for (i in 1:n_eqs) {
+      for (j in 1:n_vars) {
+        printed_jac[i,j] <- p(d(poly[[i]], vars[j]), silent = TRUE, stars = TRUE, plus_pad = 0L, times_pad = 0L)
+      }
+    }
+    printed_jac <- printed_jac %>% 
+      apply(1L, str_c, collapse = ", ") %>% 
+      str_c("      [", ., "]", collapse = ", \n") %>% 
+      str_c("[\n", ., "\n    ]") %>% 
+      str_replace_all("\\*\\*", "^") # %>% cat()
+    
     # create stan code
     if (missing(w)) {
-      parms <- glue::glue("real {vars};") %>% str_c(collapse = "\n  ") 
+      parms <- glue::glue("real {vars};") %>% str_c(collapse = "\n    ") 
     } else {
       parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") %>% str_c(collapse = "\n  ") 
     }
@@ -316,13 +326,13 @@ rvnorm <- function(
       } 
       
       transformed parameters {
-        real num = {{numerator}};
-        real denom = {{denominator}};
-        real ng = num / denom;
+        vector[{{n_eqs}}] g = [{{printed_polys}}]';
+        matrix[{{n_eqs}},{{n_vars}}] J = {{printed_jac}};
+        matrix[{{n_eqs}},{{n_eqs}}] Si = {{sd^2}} * J * J';
       } 
       
       model {
-        target += normal_lpdf(ng | 0.00, {{sd}});
+        target += multi_normal_lpdf(g | [{{str_c(rep('0', n_eqs), collapse = ',')}}]', Si);
       }
     ",  .open = "{{", .close = "}}"
     )
@@ -359,9 +369,9 @@ rvnorm <- function(
   
   if (output == "stanfit") return(fit)
     
-  if(output == "tibble") {
+  if (output == "tibble") {
     
-    samps <- fit %>% 
+    samps <- fit %>%
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
       purrr::imap(
@@ -378,7 +388,7 @@ rvnorm <- function(
   } 
   
   if (output == "simple") { 
-    
+
     samps <- fit %>% 
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
@@ -390,7 +400,8 @@ rvnorm <- function(
         iter = rep((as.integer(!keep_warmup)*warmup+1):(n+warmup), chains),
         chain = as.integer(str_sub(chain, 7L))
       ) %>% 
-      dplyr::select(-num, -denom, -ng, -lp__, -chain, -iter) %>% 
+      # dplyr::select(-num, -denom, -ng, -lp__, -chain, -iter) %>% 
+      .[1:n_vars] %>% 
       as.matrix()
     
     return(samps)
