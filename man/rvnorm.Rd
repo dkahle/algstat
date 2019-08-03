@@ -8,7 +8,7 @@ rvnorm(n, poly, sd, output = "simple", chains = 4L,
   warmup = floor(n/2), keep_warmup = FALSE, thin = 1L,
   inject_direct = FALSE, verbose = FALSE,
   cores = getOption("mc.cores", 1L), normalized = TRUE, w, vars,
-  slack_vars, numerator, denominator, refresh, ...)
+  numerator, denominator, refresh, ...)
 }
 \arguments{
 \item{n}{The number of draws desired from each chain after warmup.}
@@ -78,18 +78,30 @@ varieties of varying dimensions?
 \dontrun{ runs rstan
 
 library("ggplot2")
+library("rstan"); rstan_options(auto_write = TRUE) # helps avoid recompiles
 
 ## basic usage
 ########################################
 
+# single polynomial
 p <- mp("x^2 + y^2 - 1")
 samps <- rvnorm(2000, p, sd = .1)
 head(samps)
 str(samps) # 2000 * (4 chains)
+plot(samps, asp = 1)
 
+# returning a data frame
 (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-ggplot(samps, aes(x, y, color = num > 0)) +
+ggplot(samps, aes(x, y, color = `g[1]` > 0)) +
+  geom_point(size = .5) +
+  coord_equal()
+
+
+# > 1 polynomials, underdetermined system
+p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
+samps <- rvnorm(2000, p, sd = .1, output = "tibble")
+ggplot(samps, aes(x, y)) +
   geom_point(size = .5) +
   coord_equal()
 
@@ -192,7 +204,7 @@ ggplot(samps, aes(x, y, color = num < 0)) +
   facet_wrap(~ power)
 
 
-## neat example
+## neat examples
 ########################################
 # an implicit Lissajous region, view in separate window large
 
@@ -215,8 +227,12 @@ ggplot(samps, aes(x, y, color = factor(chain))) +
   geom_point(size = .5) + coord_equal()
 
 # semi-algebraic set
-samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, normalized = TRUE, refresh = 100)
-samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, normalized = FALSE, refresh = 100)
+samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+  normalized = TRUE, refresh = 100
+)
+samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+  normalized = FALSE, refresh = 100
+)
 
 bind_rows(
   samps_normd \%>\% mutate(normd = TRUE),
