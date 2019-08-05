@@ -8,7 +8,7 @@ rvnorm(n, poly, sd, output = "simple", chains = 4L,
   warmup = floor(n/2), keep_warmup = FALSE, thin = 1L,
   inject_direct = FALSE, verbose = FALSE,
   cores = getOption("mc.cores", 1L), normalized = TRUE, w, vars,
-  numerator, denominator, refresh, ...)
+  numerator, denominator, refresh, code_only = FALSE, ...)
 }
 \arguments{
 \item{n}{The number of draws desired from each chain after warmup.}
@@ -41,7 +41,8 @@ into the stan code. Requires you specify \code{vars}, \code{numerator}, and
 \item{normalized}{If \code{TRUE}, the polynomial is gradient-normalized. This
 is highly recommended.}
 
-\item{w}{A box window (-w,w) of the same dimension as the number of
+\item{w}{A named list of box constraints for vectors to be passed to Stan,
+see examples. A If a single number, a box window (-w,w) is applied to all
 variables.}
 
 \item{vars}{A character vector of the indeterminates in the distribution.}
@@ -51,6 +52,8 @@ of the variety normal distribution.}
 
 \item{refresh}{The \code{refresh} argument of \code{\link[=stan]{stan()}}, which governs how
 much information is provided to the user while sampling.}
+
+\item{code_only}{If \code{TRUE}, will only formulate and return Stan code.}
 
 \item{...}{Additional parameters to pass to \code{\link[=stan]{stan()}}.}
 }
@@ -78,7 +81,7 @@ varieties of varying dimensions?
 \dontrun{ runs rstan
 
 library("ggplot2")
-library("rstan"); rstan_options(auto_write = TRUE) # helps avoid recompiles
+rstan::rstan_options(auto_write = TRUE) # helps avoid recompiles
 
 ## basic usage
 ########################################
@@ -93,18 +96,54 @@ plot(samps, asp = 1)
 # returning a data frame
 (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-ggplot(samps, aes(x, y, color = `g[1]` > 0)) +
+ggplot(samps, aes(x, y, color = `g[1]`)) +
   geom_point(size = .5) +
+  scale_color_gradient2() +
   coord_equal()
 
 
-# > 1 polynomials, underdetermined system
+# more than one polynomial, # vars >= # eqns
 p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
-samps <- rvnorm(2000, p, sd = .1, output = "tibble")
+samps <- rvnorm(500, p, sd = .1, output = "tibble")
+
 ggplot(samps, aes(x, y)) +
   geom_point(size = .5) +
   coord_equal()
 
+ggplot(samps, aes(x, y, color = `g[1]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+ggplot(samps, aes(x, y, color = `g[2]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+ggplot(samps, aes(x, z, color = `g[2]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+
+# overdetermined system, vars < # eqns (not yet supported)
+p <- mp(c("x", "y", "x + y"))
+samps <- rvnorm(500, p, sd = .1, output = "tibble")
+
+ggplot(samps, aes(x, y, color = `g[1]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+ggplot(samps, aes(x, y, color = `g[1]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+ggplot(samps, aes(x, y, color = `g[3]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
 
 ## using refresh to get more info
 ########################################
@@ -112,8 +151,9 @@ ggplot(samps, aes(x, y)) +
 rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
 rvnorm(2000, p, sd = .1, "tibble", refresh = 100)
 rvnorm(2000, p, sd = .1, "tibble", refresh = 500)
-rvnorm(2000, p, sd = .1, "tibble", refresh = 0)
+rvnorm(2000, p, sd = .1, "tibble", refresh = 0) # default
 rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
+
 
 
 ## many chains in parallel
@@ -125,12 +165,24 @@ samps <- rvnorm(250, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
 ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 
 
+
 ## windowing for unbounded varieties
 ########################################
+# windowing is needed for unbounded varieties
+# in the following, look at the parameters block
 
-p <- mp("y^2 - (x^3 + x^2)")
-samps <- rvnorm(250, p, sd = .05, "tibble", chains = 8, w = 1.15)
-ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+p <- mp("x y - 1") # unbounded variety
+
+rvnorm(1e3, p, sd = .01, "tibble", code_only = TRUE)
+
+rvnorm(1e3, p, sd = .01, "tibble", w = 1.15, code_only = TRUE)
+
+window <- list("x" = c(-1.5, 1.25), "y" = c(-2, 1.5))
+rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
+
+window <- list("x" = c(-1.5, 1.5))
+rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
+
 
 
 ## the importance of normalizing
@@ -148,6 +200,7 @@ ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 # unnormalized, bad
 (samps <- rvnorm(2000, p, .025, "tibble", normalized = FALSE))
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+
 
 
 ## semi-algebraic sets
@@ -222,42 +275,43 @@ p <- plug(p, "x", mp(".5 x"))
 p <- plug(p, "y", mp(".5 y"))
 
 # algebraic set
-samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8)
+samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8, refresh = 100)
 ggplot(samps, aes(x, y, color = factor(chain))) +
   geom_point(size = .5) + coord_equal()
 
 # semi-algebraic set
-samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
   normalized = TRUE, refresh = 100
 )
-samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
   normalized = FALSE, refresh = 100
 )
 
 bind_rows(
   samps_normd \%>\% mutate(normd = TRUE),
   samps_unormd \%>\% mutate(normd = FALSE)
-) \%>\% 
+) \%>\%
   ggplot(aes(x, y)) +
-    geom_point() + 
+    geom_point() +
     facet_wrap(~ normd) +
     coord_equal()
 
 bind_rows(
   samps_normd \%>\% mutate(normd = TRUE),
   samps_unormd \%>\% mutate(normd = FALSE)
-) \%>\% 
+) \%>\%
   ggplot(aes(x, y)) +
-    geom_bin2d(bins = 100) + 
+    geom_bin2d(bins = 100) +
     facet_wrap(~ normd) +
     coord_equal()
 
 
-samps_normd \%>\% 
+samps_normd \%>\%
   ggplot(aes(x, y)) +
-    geom_bin2d(bins = 200) + 
+    geom_bin2d(bins = 200) +
     facet_wrap(~ factor(chain)) +
     coord_equal()
+
 
 }
 

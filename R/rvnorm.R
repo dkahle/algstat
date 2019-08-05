@@ -33,10 +33,12 @@
 #' @param vars A character vector of the indeterminates in the distribution.
 #' @param numerator,denominator A character(1) containing the printed numerator
 #'   of the variety normal distribution.
-#' @param w A box window (-w,w) of the same dimension as the number of
+#' @param w A named list of box constraints for vectors to be passed to Stan,
+#'   see examples. A If a single number, a box window (-w,w) is applied to all
 #'   variables.
 #' @param refresh The \code{refresh} argument of [stan()], which governs how
 #'   much information is provided to the user while sampling.
+#' @param code_only If \code{TRUE}, will only formulate and return Stan code.
 #' @param ... Additional parameters to pass to [stan()].
 #' @name rvnorm
 #' @return Either (1) matrix whose rows are the individual draws from the
@@ -48,7 +50,7 @@
 #' \dontrun{ runs rstan
 #'
 #' library("ggplot2")
-#' library("rstan"); rstan_options(auto_write = TRUE) # helps avoid recompiles
+#' rstan::rstan_options(auto_write = TRUE) # helps avoid recompiles
 #'
 #' ## basic usage
 #' ########################################
@@ -59,22 +61,58 @@
 #' head(samps)
 #' str(samps) # 2000 * (4 chains)
 #' plot(samps, asp = 1)
-#' 
+#'
 #' # returning a data frame
 #' (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' ggplot(samps, aes(x, y, color = `g[1]` > 0)) +
+#' ggplot(samps, aes(x, y, color = `g[1]`)) +
 #'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
 #'   coord_equal()
 #'
 #'
-#' # > 1 polynomials, underdetermined system
+#' # more than one polynomial, # vars >= # eqns
 #' p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
-#' samps <- rvnorm(2000, p, sd = .1, output = "tibble")
+#' samps <- rvnorm(500, p, sd = .1, output = "tibble")
+#'
 #' ggplot(samps, aes(x, y)) +
 #'   geom_point(size = .5) +
 #'   coord_equal()
 #'
+#' ggplot(samps, aes(x, y, color = `g[1]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
+#'
+#' ggplot(samps, aes(x, y, color = `g[2]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
+#'
+#' ggplot(samps, aes(x, z, color = `g[2]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
+#'
+#'
+#' # overdetermined system, vars < # eqns (not yet supported)
+#' p <- mp(c("x", "y", "x + y"))
+#' samps <- rvnorm(500, p, sd = .1, output = "tibble")
+#'
+#' ggplot(samps, aes(x, y, color = `g[1]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
+#'
+#' ggplot(samps, aes(x, y, color = `g[1]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
+#'
+#' ggplot(samps, aes(x, y, color = `g[3]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
 #'
 #' ## using refresh to get more info
 #' ########################################
@@ -82,8 +120,9 @@
 #' rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
 #' rvnorm(2000, p, sd = .1, "tibble", refresh = 100)
 #' rvnorm(2000, p, sd = .1, "tibble", refresh = 500)
-#' rvnorm(2000, p, sd = .1, "tibble", refresh = 0)
+#' rvnorm(2000, p, sd = .1, "tibble", refresh = 0) # default
 #' rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
+#'
 #'
 #'
 #' ## many chains in parallel
@@ -95,12 +134,24 @@
 #' ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 #'
 #'
+#'
 #' ## windowing for unbounded varieties
 #' ########################################
+#' # windowing is needed for unbounded varieties
+#' # in the following, look at the parameters block
 #'
-#' p <- mp("y^2 - (x^3 + x^2)")
-#' samps <- rvnorm(250, p, sd = .05, "tibble", chains = 8, w = 1.15)
-#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' p <- mp("x y - 1") # unbounded variety
+#'
+#' rvnorm(1e3, p, sd = .01, "tibble", code_only = TRUE)
+#'
+#' rvnorm(1e3, p, sd = .01, "tibble", w = 1.15, code_only = TRUE)
+#'
+#' window <- list("x" = c(-1.5, 1.25), "y" = c(-2, 1.5))
+#' rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
+#'
+#' window <- list("x" = c(-1.5, 1.5))
+#' rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
+#'
 #'
 #'
 #' ## the importance of normalizing
@@ -118,6 +169,7 @@
 #' # unnormalized, bad
 #' (samps <- rvnorm(2000, p, .025, "tibble", normalized = FALSE))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#'
 #'
 #'
 #' ## semi-algebraic sets
@@ -187,47 +239,48 @@
 #' (p <- lissajous(5, 5,  0, 0))
 #' (p <- lissajous(7, 7,  0, 0))
 #' ggvariety(p, n = 201) + coord_equal()
-#' 
+#'
 #' p <- plug(p, "x", mp(".5 x"))
 #' p <- plug(p, "y", mp(".5 y"))
-#' 
+#'
 #' # algebraic set
-#' samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8)
+#' samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8, refresh = 100)
 #' ggplot(samps, aes(x, y, color = factor(chain))) +
 #'   geom_point(size = .5) + coord_equal()
-#' 
+#'
 #' # semi-algebraic set
-#' samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+#' samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
 #'   normalized = TRUE, refresh = 100
 #' )
-#' samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8, 
+#' samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
 #'   normalized = FALSE, refresh = 100
 #' )
 #'
 #' bind_rows(
 #'   samps_normd %>% mutate(normd = TRUE),
 #'   samps_unormd %>% mutate(normd = FALSE)
-#' ) %>% 
+#' ) %>%
 #'   ggplot(aes(x, y)) +
-#'     geom_point() + 
+#'     geom_point() +
 #'     facet_wrap(~ normd) +
 #'     coord_equal()
 #'
 #' bind_rows(
 #'   samps_normd %>% mutate(normd = TRUE),
 #'   samps_unormd %>% mutate(normd = FALSE)
-#' ) %>% 
+#' ) %>%
 #'   ggplot(aes(x, y)) +
-#'     geom_bin2d(bins = 100) + 
+#'     geom_bin2d(bins = 100) +
 #'     facet_wrap(~ normd) +
 #'     coord_equal()
 #'
-#' 
-#' samps_normd %>% 
+#'
+#' samps_normd %>%
 #'   ggplot(aes(x, y)) +
-#'     geom_bin2d(bins = 200) + 
+#'     geom_bin2d(bins = 200) +
 #'     facet_wrap(~ factor(chain)) +
 #'     coord_equal()
+#'
 #'
 #' }
 #' 
@@ -264,6 +317,7 @@ rvnorm <- function(
   numerator, 
   denominator, 
   refresh,
+  code_only = FALSE,
   ...
 ) {
   
@@ -282,6 +336,7 @@ rvnorm <- function(
   
   n_eqs  <- length(poly)
   n_vars <- length(vars)
+  # if (n_eqs > n_vars) stop("Overdetermined systems not yet supported.")
   
   if (missing(refresh)) if (verbose) refresh <- max(n/10L, 1) else refresh <- 0L
   if (!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
@@ -300,24 +355,59 @@ rvnorm <- function(
     
     d <- get("deriv.mpoly", asNamespace("mpoly"))
     p <- get("print.mpoly", asNamespace("mpoly"))
-    
+      
     printed_jac <- array("", dim = c(n_eqs, n_vars))
     for (i in 1:n_eqs) {
       for (j in 1:n_vars) {
-        printed_jac[i,j] <- p(d(poly[[i]], vars[j]), silent = TRUE, stars = TRUE, plus_pad = 0L, times_pad = 0L)
+        if (normalized) {
+          printed_jac[i,j] <- p(d(poly[[i]], vars[j]), silent = TRUE, stars = TRUE, plus_pad = 0L, times_pad = 0L)
+        } else {
+          printed_jac[i,j] <- if (i == j) "1" else "0"
+        }
       }
     }
     printed_jac <- printed_jac %>% 
       apply(1L, str_c, collapse = ", ") %>% 
       str_c("      [", ., "]", collapse = ", \n") %>% 
       str_c("[\n", ., "\n    ]") %>% 
-      str_replace_all("\\*\\*", "^") # %>% cat()
+      str_replace_all("\\*\\*", "^")
     
-    # create stan code
+    
+    # set variables
     if (missing(w)) {
-      parms <- glue::glue("real {vars};") %>% str_c(collapse = "\n    ") 
+      parms <- glue::glue("real {vars};") 
     } else {
-      parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") %>% str_c(collapse = "\n  ") 
+      if (is.numeric(w) && length(w) == 1L) {
+        parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") 
+      } else if (is.list(w)) {
+        stopifnot(all(names(w) %in% vars))
+        parms <- vector("character", n_vars)
+        for (var_ndx in seq_along(vars)) {
+          parms[var_ndx] <- if (vars[var_ndx] %in% names(w)) {
+            var_ndx_in_w <- which(names(w) == vars[var_ndx])
+            glue::glue("real<lower={w[[var_ndx_in_w]][1]},upper={w[[var_ndx_in_w]][2]}> {vars[var_ndx]};") 
+          } else {
+            glue::glue("real {vars[var_ndx]};") 
+          }
+        }
+      } else {
+        stop("bound parameter misspecified, see ?rvnorm.", call. = FALSE)
+      }
+    }
+    parms <- parms %>% str_c(collapse = "\n    ") 
+
+    # variance expression
+    if (is.numeric(sd) && is.vector(sd) && length(sd) == 1L) {
+      Si_exp <- if (n_vars >= n_eqs) {
+        glue::glue("{sd^2} * tcrossprod(J)") # = "{sd^2} * J * J'"
+      } else {
+        glue::glue("{sd^2} * (tcrossprod(J) + diag_matrix(rep_vector(1, {n_eqs})))")
+      }
+    } else if (is.numeric(sd) && is.vector(sd)) {
+      stop("This sd not yet supported.")
+    } else if (is.numeric(sd) && is.matrix(sd)) {
+      stop("This sd not yet supported.")
+      Si_exp <- glue::glue("quad_form_sym(sd, J)") # = J' * sd * J
     }
     
     stan_code <- glue::glue("
@@ -328,16 +418,16 @@ rvnorm <- function(
       transformed parameters {
         vector[{{n_eqs}}] g = [{{printed_polys}}]';
         matrix[{{n_eqs}},{{n_vars}}] J = {{printed_jac}};
-        matrix[{{n_eqs}},{{n_eqs}}] Si = {{sd^2}} * J * J';
+        matrix[{{n_eqs}},{{n_eqs}}] Si = {{Si_exp}};
       } 
       
       model {
-        target += multi_normal_lpdf(g | [{{str_c(rep('0', n_eqs), collapse = ',')}}]', Si);
+        target += multi_normal_lpdf(g | rep_vector(0, {{n_eqs}}), Si);
       }
     ",  .open = "{{", .close = "}}"
     )
     if (verbose) cat(stan_code, "\n")  
-    
+    if (code_only) return(stan_code)
 
     # compile code
     if (!verbose) message("Compiling model... ", appendLF = FALSE)
