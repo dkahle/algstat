@@ -96,7 +96,7 @@
 #'
 #'
 #' # overdetermined system, vars < # eqns (not yet supported)
-#' p <- mp(c("x", "y", "x + y"))
+#' p <- mp(c("x", "y", "x + y", "x^2 + y", "x^2 - y"))
 #' samps <- rvnorm(500, p, sd = .1, output = "tibble")
 #'
 #' ggplot(samps, aes(x, y, color = `g[1]`)) +
@@ -110,6 +110,16 @@
 #'   coord_equal()
 #'
 #' ggplot(samps, aes(x, y, color = `g[3]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
+#'   
+#' ggplot(samps, aes(x, y, color = `g[4]`)) +
+#'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
+#'   coord_equal()
+#'   
+#' ggplot(samps, aes(x, y, color = `g[5]`)) +
 #'   geom_point(size = .5) +
 #'   scale_color_gradient2() +
 #'   coord_equal()
