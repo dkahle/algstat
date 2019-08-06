@@ -80,7 +80,7 @@ varieties of varying dimensions?
 
 \dontrun{ runs rstan
 
-library("ggplot2")
+library("tidyverse")
 rstan::rstan_options(auto_write = TRUE) # helps avoid recompiles
 
 ## basic usage
@@ -127,33 +127,18 @@ ggplot(samps, aes(x, z, color = `g[2]`)) +
 
 
 # overdetermined system, vars < # eqns (not yet supported)
-p <- mp(c("x", "y", "x + y", "x^2 + y", "x^2 - y"))
+p <- mp(c("x", "y", "x + y", "3 (x^2 + y)", "3 (x^2 - y)"))
 samps <- rvnorm(500, p, sd = .1, output = "tibble")
 
-ggplot(samps, aes(x, y, color = `g[1]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
-
-ggplot(samps, aes(x, y, color = `g[1]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
-
-ggplot(samps, aes(x, y, color = `g[3]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
-  
-ggplot(samps, aes(x, y, color = `g[4]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
-  
-ggplot(samps, aes(x, y, color = `g[5]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
+samps \%>\% 
+  select(x, y, starts_with("g")) \%>\% 
+  pivot_longer(starts_with("g"), "equation", "value") \%>\% 
+  ggplot(aes(x, y, color = value)) +
+    geom_point(size = .5) +
+    scale_color_gradient2() +
+    coord_equal() +
+    facet_wrap(~ equation)
+    
 
 ## using refresh to get more info
 ########################################
