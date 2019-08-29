@@ -22,8 +22,8 @@
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
 #' @importFrom tidyr gather
-#' @importFrom stats deriv dmultinom loglin runif sd
-#' @importFrom utils combn download.file
+#' @importFrom stats deriv dmultinom loglin runif sd acf model.frame poisson terms
+#' @importFrom utils combn download.file type.convert
 #' @useDynLib algstat
 #' @docType package
 #' @name algstat

@@ -45,83 +45,84 @@ sample.
 \item \code{cells}: the number of cells in the table. }
 }
 \description{
-Fitting generalized linear models with algebraic methods
+\code{\link[=aglm]{aglm()}} fits a generalized linear model to a dataset (typically a
+contingency table) and performs an exact conditional test on the fitted model.
+The exact test, which is a goodness-of-fit test, is performed via
+Monte-Carlo sampling from the conditional distribution of the table
+given the sufficient statistics of the model.  In short, inference
+is drawn by comparing the statistic of the observed table (the unnormalized log-likelihood)
+to those of the samples.  The proportion of sampled tables with equal to or
+more extreme values than the observed table is the resulting p-value.
 }
 \examples{
 
- library(ggplot2);theme_set(theme_bw())
+ # simple poisson regression example from Diaconis et. al. 1998
  
- # generating data and running a poisson regression model
-   # pick beta 0 and beta 1
-    b0 <- 1; b1 <- 0.3
+ data <- data.frame(x = c(0,1,2,3,4), y = c(44,25,21,19,11))
 
-   # generate data
-    n <- 5000
-    x <- sample(1:5, n, replace = T)
-    y <- rpois(n, lambda = exp(b0 + b1*x))
-    df <- data.frame(
-     x = x, 
-     y = y
-    )
-    
-    # function output
-    out <- aglm(y ~ x, data = df, family = poisson(), control = list(thin = 2000))
-    
-    # check convergence through trace plot
-    qplot(1:10000, out$sampsStats$PRs, geom = "line")
-  
-   # compare aglm and glm predictions with the truth
-    
-    # model fitting with glm
-    mod <- glm(y ~ x, data = df, family = poisson())
-    
-    # truth
-    exp(b0 + b1*(1:5))
-     
-    # glm predictions
-    predict(mod, data.frame(x = 1:5), type = "response")
-    
-    # aglm predictions
-    rowMeans(out$steps) / plyr::ddply(df, "x", nrow)$V1
-    
-    
-    
- # generating data and running a logistic regression model
+ # perform the fitting
+ fit_aglm <- aglm(y ~ x, data = data, family = poisson())
+
+ # aglm gof p-value
+ fit_aglm$p.value
  
-  # helper functions
-  link    <- function(p) log(p/(1-p))
-  invlink <- function(x) 1 / (1+exp(-x))
-  
-  
-  # create a fake data set
-  
-  # one covariate
-  b0 <- 0.5; b1 <- 0.2
-  
-  n <- 100
-  x <- sample(1:5, n, replace = T)
-  y <- rbinom(n = n, size = 1, prob = invlink(b0 + b1*x))
-  df <- data.frame(
-    x = x, 
-    y = y
-  )
-  
-  # aglm 
-  out <- aglm(y ~ x, data = df, family = binomial(), control(thin = 500))
+ # compare with glm   
+ fit_glm  <-  glm(y ~ x, data = data, family = poisson())
  
-  # check convergence through trace plot
-  qplot(1:10000, out$sampsStats$PRs, geom = "line")
-  
-  # using glm
-  mod <- glm(y ~ x, data = df, family = binomial())
-  
-  # truth 
-  invlink(b0 + b1*out$obs[,1])
-  
-  # glm predictions
-  predict(mod, data.frame(x = c(1:5)), type = "response")
-  
-  # aglm predictions 
-  rowMeans(out$steps) / plyr::ddply(df, "x", nrow)$V1
-  
+ # glm gof p-value
+ 1 - pchisq(fit_glm$deviance, fit_glm$df.residual)
+ 
+ 
+ # logistic regression example with data from Haberman 1974
+ 
+ # data in elongated format
+ x <- c(rep(0,6),rep(1,2),rep(2,4),rep(3,9),rep(4,10),rep(5,20),
+ rep(6,34),rep(7,42),rep(8,124),rep(9,58),rep(10,77),rep(11,95),
+ rep(12,360))
+ 
+ y <- c(rep(0,2),rep(1,10),rep(0,3),rep(1,6),rep(0,5),rep(1,5),
+ rep(0,7),rep(1,13),rep(0,9),rep(1,25),rep(0,15),rep(1,27),rep(0,49),
+ rep(1,75),rep(0,29),rep(1,29),rep(0,45),rep(1,32),rep(0,59),
+ rep(1,36),rep(0,245),rep(1,115))
+ 
+ data_aglm <- data.frame(x=x,y=y)
+ data_glm <- data.frame(x = 0:12)
+ data_glm$y <- cbind(c(4, 2, 4, 6, 5, 13, 25, 27, 75, 29, 32, 36, 115),
+                     c(2, 0, 0, 3, 5, 7, 9, 15, 49, 29, 45, 59, 245))
+
+ fit_aglm <- aglm(y ~ x, data = data_aglm, family = binomial())  
+ fit_aglm$p.value  
+ 
+ # compare to glm
+ 
+ # special formatting of data needed for correct analysis
+ data_glm <- data.frame(x = 0:12)
+ data_glm$y <- cbind(c(4, 2, 4, 6, 5, 13, 25, 27, 75, 29, 32, 36, 115),
+                     c(2, 0, 0, 3, 5, 7, 9, 15, 49, 29, 45, 59, 245))
+                     
+ fit_glm <-   glm(y ~ x, data = data_glm, family = binomial())
+ 1 - pchisq(fit_glm$deviance, fit_glm$df.residual)
+ 
+ 
+ # multiple poisson regression 
+ 
+ # create a fake dataset 
+ b0 <- 1; b1 <- 0.5; b2 <- 0.5
+ 
+ covariates <- expand.grid(1:3,1:4)
+ 
+ data <- data.frame(
+   x1 = covariates[,1],
+   x2 = covariates[,2],
+   y = rpois(12,exp(b0 + b1*covariates[,1] + b2*covariates[,2]))
+ )
+ 
+ # compare to glm
+ 
+ fit_aglm <- aglm(y ~ x1 + x2, data = data, family = poisson())
+ fit_glm  <-  glm(y ~ x1 + x2, data = data, family = poisson())
+ 
+ fit_aglm$p.value
+ with(fit_glm, 1 - pchisq(deviance, df.residual))
+ 
 }

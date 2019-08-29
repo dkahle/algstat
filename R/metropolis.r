@@ -123,17 +123,7 @@
 #' 
 #' ggplot(data = data) + geom_line(aes(steps, baseStats)) + 
 #' geom_line(aes(steps, harStats), color = "red") + 
-#' labs(x = "Steps", y = "UNLP value", title = "Base Algorithm vs. Algorithm with Hit and Run option in red")
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
+#' labs(x = "Steps", y = "UNLP value", title = "Base Algorithm vs. Algorithm with Hit and Run Option in Red")
 #' }
 #' 
 #' 
