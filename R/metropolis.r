@@ -61,7 +61,7 @@
 #' # a bigger simulation
 #' iter <- 1e4
 #' out <- metropolis(init, moves, iter = iter, burn = 0)
-#' hist(out$steps[1,], breaks = 100)
+#' hist(out$steps[1,], breaks = 100, col = "gray20")
 #'
 #' # view convergence through trace plot
 #' plot(1:iter, out$steps[1,1:iter])
@@ -75,8 +75,8 @@
 #'
 #' out <- metropolis(init, moves, iter = iter, thin = 200)
 #' acf(out$steps[1,])
-#' hist(out$steps[1,], breaks = 100)
-#' 
+#' hist(out$steps[1,], breaks = 100, col = "gray20")
+#'
 #' ## burn in with the burn argument
 #' ############################################################
 #'
@@ -143,14 +143,13 @@ metropolis <- function(
   ## preliminary checking
   ##################################################
   dist <- match.arg(dist)
-  if (is.character(engine) && length(character) == 1L && engine == "Cpp") engine <- "C++"
+  if (is.character(engine) && length(engine) == 1L && engine == "Cpp") engine <- "C++"
   engine <- match.arg(engine)
   
   if (thin == 0L) {
     message("thin = 1 corresponds to no thinning, resetting thin = 1.")
     thin <- 1L
   }
-  
   
   ## in R
   ##################################################
@@ -332,4 +331,6 @@ metropolis <- function(
 rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hit_and_run = FALSE, adaptive = FALSE){
   metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hit_and_run, adaptive) 
 }
+
+
 

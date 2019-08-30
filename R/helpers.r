@@ -132,8 +132,8 @@ lower <- function(x) t(upper(x))
 #' Project a vector onto the column space of a matrix or the orthogonal complement of the column
 #' space of a matrix; the null space of A transpose.
 #' 
-#' @param A a matrix
 #' @param x a vector
+#' @param A a matrix
 #' @return ...
 #' @name project-onto
 #' @seealso [base::qr.fitted]
@@ -141,19 +141,22 @@ lower <- function(x) t(upper(x))
 #' 
 #' A <- diag(5)[,1:2]
 #' x <- 1:5
-#' project_onto(A, x)
-#' project_onto_perp(A, x)
+#' project_onto(x, A)
+#' x %>% project_onto(A)
+#' 
+#' project_onto_perp(x, A)
+#' x %>% project_onto_perp(A)
 #' 
 
 
 #' @rdname project-onto
 #' @export
-project_onto <- function(A, x) qr.fitted(qr(A), x) 
+project_onto <- function(x, A) qr.fitted(qr(A), x) 
 
 
 #' @rdname project-onto
 #' @export
-project_onto_perp <- function(A, x) as.vector(diag(length(x))%*%x - qr.fitted(qr(A), x) )
+project_onto_perp <- function(x, A) as.vector(diag(length(x))%*%x - qr.fitted(qr(A), x) )
 
 
 

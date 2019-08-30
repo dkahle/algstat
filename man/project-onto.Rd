@@ -6,14 +6,14 @@
 \alias{project_onto_perp}
 \title{Vector Projection}
 \usage{
-project_onto(A, x)
+project_onto(x, A)
 
-project_onto_perp(A, x)
+project_onto_perp(x, A)
 }
 \arguments{
-\item{A}{a matrix}
-
 \item{x}{a vector}
+
+\item{A}{a matrix}
 }
 \value{
 ...
@@ -26,8 +26,11 @@ space of a matrix; the null space of A transpose.
 
 A <- diag(5)[,1:2]
 x <- 1:5
-project_onto(A, x)
-project_onto_perp(A, x)
+project_onto(x, A)
+x \%>\% project_onto(A)
+
+project_onto_perp(x, A)
+x \%>\% project_onto_perp(A)
 
 }
 \seealso{

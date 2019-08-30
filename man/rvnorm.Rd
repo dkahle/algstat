@@ -8,7 +8,7 @@ rvnorm(n, poly, sd, output = "simple", chains = 4L,
   warmup = floor(n/2), keep_warmup = FALSE, thin = 1L,
   inject_direct = FALSE, verbose = FALSE,
   cores = getOption("mc.cores", 1L), normalized = TRUE, w, vars,
-  numerator, denominator, refresh, ...)
+  numerator, denominator, refresh, code_only = FALSE, ...)
 }
 \arguments{
 \item{n}{The number of draws desired from each chain after warmup.}
@@ -41,7 +41,8 @@ into the stan code. Requires you specify \code{vars}, \code{numerator}, and
 \item{normalized}{If \code{TRUE}, the polynomial is gradient-normalized. This
 is highly recommended.}
 
-\item{w}{A box window (-w,w) of the same dimension as the number of
+\item{w}{A named list of box constraints for vectors to be passed to Stan,
+see examples. A If a single number, a box window (-w,w) is applied to all
 variables.}
 
 \item{vars}{A character vector of the indeterminates in the distribution.}
@@ -51,6 +52,8 @@ of the variety normal distribution.}
 
 \item{refresh}{The \code{refresh} argument of \code{\link[=stan]{stan()}}, which governs how
 much information is provided to the user while sampling.}
+
+\item{code_only}{If \code{TRUE}, will only formulate and return Stan code.}
 
 \item{...}{Additional parameters to pass to \code{\link[=stan]{stan()}}.}
 }
@@ -77,22 +80,65 @@ varieties of varying dimensions?
 
 \dontrun{ runs rstan
 
-library("ggplot2")
+library("tidyverse")
+rstan::rstan_options(auto_write = TRUE) # helps avoid recompiles
 
 ## basic usage
 ########################################
 
+# single polynomial
 p <- mp("x^2 + y^2 - 1")
 samps <- rvnorm(2000, p, sd = .1)
 head(samps)
 str(samps) # 2000 * (4 chains)
+plot(samps, asp = 1)
 
+# returning a data frame
 (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-ggplot(samps, aes(x, y, color = num > 0)) + 
-  geom_point(size = .5) + 
+ggplot(samps, aes(x, y, color = `g[1]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
   coord_equal()
 
+
+# more than one polynomial, # vars >= # eqns
+p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
+samps <- rvnorm(500, p, sd = .1, output = "tibble")
+
+ggplot(samps, aes(x, y)) +
+  geom_point(size = .5) +
+  coord_equal()
+
+ggplot(samps, aes(x, y, color = `g[1]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+ggplot(samps, aes(x, y, color = `g[2]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+ggplot(samps, aes(x, z, color = `g[2]`)) +
+  geom_point(size = .5) +
+  scale_color_gradient2() +
+  coord_equal()
+
+
+# overdetermined system, vars < # eqns (not yet supported)
+p <- mp(c("x", "y", "x + y", "3 (x^2 + y)", "3 (x^2 - y)"))
+samps <- rvnorm(500, p, sd = .1, output = "tibble")
+
+samps \%>\% 
+  select(x, y, starts_with("g")) \%>\% 
+  pivot_longer(starts_with("g"), "equation", "value") \%>\% 
+  ggplot(aes(x, y, color = value)) +
+    geom_point(size = .5) +
+    scale_color_gradient2() +
+    coord_equal() +
+    facet_wrap(~ equation)
+    
 
 ## using refresh to get more info
 ########################################
@@ -100,8 +146,9 @@ ggplot(samps, aes(x, y, color = num > 0)) +
 rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
 rvnorm(2000, p, sd = .1, "tibble", refresh = 100)
 rvnorm(2000, p, sd = .1, "tibble", refresh = 500)
-rvnorm(2000, p, sd = .1, "tibble", refresh = 0)
+rvnorm(2000, p, sd = .1, "tibble", refresh = 0) # default
 rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
+
 
 
 ## many chains in parallel
@@ -113,17 +160,29 @@ samps <- rvnorm(250, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
 ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 
 
+
 ## windowing for unbounded varieties
 ########################################
+# windowing is needed for unbounded varieties
+# in the following, look at the parameters block
 
-p <- mp("y^2 - (x^3 + x^2)")
-samps <- rvnorm(250, p, sd = .05, "tibble", chains = 8, w = 1.15)
-ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+p <- mp("x y - 1") # unbounded variety
+
+rvnorm(1e3, p, sd = .01, "tibble", code_only = TRUE)
+
+rvnorm(1e3, p, sd = .01, "tibble", w = 1.15, code_only = TRUE)
+
+window <- list("x" = c(-1.5, 1.25), "y" = c(-2, 1.5))
+rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
+
+window <- list("x" = c(-1.5, 1.5))
+rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
 
 
-## the importance of normalizing 
+
+## the importance of normalizing
 ########################################
-# one of the effects of the normalizing is to stabilize variances, making 
+# one of the effects of the normalizing is to stabilize variances, making
 # them roughly equivalent globally over the variety.
 
 # lemniscate of bernoulli
@@ -138,6 +197,7 @@ ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 
 
+
 ## semi-algebraic sets
 ########################################
 # inside the semialgebraic set x^2 + y^2 <= 1
@@ -150,10 +210,17 @@ samps <- rvnorm(1e4, p, sd = .01, "tibble", chains = 8)
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 ggplot(samps, aes(x, y)) + geom_bin2d() + coord_equal()
 
-ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) + 
-  geom_point(size = .5) + 
+ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
+  geom_point(size = .5) +
   coord_equal()
-  
+
+# alternative representation
+# x^2 + y^2 - 1 <= 0 iff s^2 (x^2 + y^2 - 1) == -1
+# so that s^2 (x^2 + y^2 - 1) + 1 == 0
+# while this strategy works in theory, it doesn't work
+# so well in practice, since s^2 is unbounded.
+# it's gradient is also more complicated.
+
 
 ## keeping the warmup / the importance of multiple chains
 ########################################
@@ -162,8 +229,8 @@ p <- mp("((x + 1.5)^2 + y^2 - 1) ((x - 1.5)^2 + y^2 - 1)")
 ggvariety(p, xlim = c(-3,3)) + coord_equal()
 
 samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
-ggplot(samps, aes(x, y, color = iter)) + 
-  geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) + 
+ggplot(samps, aes(x, y, color = iter)) +
+  geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) +
   coord_equal() + facet_wrap(~ factor(chain))
 
 
@@ -179,10 +246,66 @@ samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
 samps <- bind_rows(mget(apropos("samps_")))
 samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
 
-ggplot(samps, aes(x, y, color = num < 0)) + 
-  geom_point(size = .5) + 
+ggplot(samps, aes(x, y, color = num < 0)) +
+  geom_point(size = .5) +
   coord_equal(xlim = c(-3,3), ylim = c(-3,3)) +
   facet_wrap(~ power)
+
+
+## neat examples
+########################################
+# an implicit Lissajous region, view in separate window large
+
+# x = cos(m t + p)
+# y = sin(n t + q)
+(p <- lissajous(3, 2,  -pi/2, 0))
+(p <- lissajous(4, 3,  -pi/2, 0))
+(p <- lissajous(5, 4,  -pi/2, 0))
+(p <- lissajous(3, 3,  0, 0))
+(p <- lissajous(5, 5,  0, 0))
+(p <- lissajous(7, 7,  0, 0))
+ggvariety(p, n = 201) + coord_equal()
+
+p <- plug(p, "x", mp(".5 x"))
+p <- plug(p, "y", mp(".5 y"))
+
+# algebraic set
+samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8, refresh = 100)
+ggplot(samps, aes(x, y, color = factor(chain))) +
+  geom_point(size = .5) + coord_equal()
+
+# semi-algebraic set
+samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
+  normalized = TRUE, refresh = 100
+)
+samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
+  normalized = FALSE, refresh = 100
+)
+
+bind_rows(
+  samps_normd \%>\% mutate(normd = TRUE),
+  samps_unormd \%>\% mutate(normd = FALSE)
+) \%>\%
+  ggplot(aes(x, y)) +
+    geom_point() +
+    facet_wrap(~ normd) +
+    coord_equal()
+
+bind_rows(
+  samps_normd \%>\% mutate(normd = TRUE),
+  samps_unormd \%>\% mutate(normd = FALSE)
+) \%>\%
+  ggplot(aes(x, y)) +
+    geom_bin2d(bins = 100) +
+    facet_wrap(~ normd) +
+    coord_equal()
+
+
+samps_normd \%>\%
+  ggplot(aes(x, y)) +
+    geom_bin2d(bins = 200) +
+    facet_wrap(~ factor(chain)) +
+    coord_equal()
 
 
 }
