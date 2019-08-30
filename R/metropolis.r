@@ -6,14 +6,19 @@
 #' See Algorithm 1.1.13 in LAS, the reference below.
 #'
 #' @param init the initial step
-#' @param moves the moves to be used (the negatives will be added); they are
-#'   arranged as the columns of a matrix.
+#' @param moves the moves to be used (the negatives will be added); 
+#'   they are arranged as the columns of a matrix.
 #' @param iter number of chain iterations
 #' @param burn burn-in
 #' @param thin thinning
-#' @param dist steady-state distribution; "hypergeometric" (default) or
-#'   "uniform"
-#' @param engine \code{"C++"} or \code{"R"}? (C++ is significantly faster)
+#' @param dist steady-state distribution; "hypergeometric" (default)
+#'   or "uniform"
+#' @param engine \code{C++} or \code{R}? (C++ is significantly faster)
+#' @param hit_and_run Whether or not to use the discrete hit and run algorithm in
+#'   the metropolis algorithm. Defaulted to FALSE
+#' @param adaptive Option when hit_and_run = TRUE. If adaptive = TRUE, hit and run will choose a proposal distribution adaptively. 
+#' Defaulted to FALSE
+#' 
 #' @name metropolis
 #' @return a list containing named elements
 #'
@@ -72,8 +77,6 @@
 #' acf(out$steps[1,])
 #' hist(out$steps[1,], breaks = 100, col = "gray20")
 #'
-#'
-#'
 #' ## burn in with the burn argument
 #' ############################################################
 #'
@@ -97,6 +100,34 @@
 #' set.seed(1L)
 #' metropolis(init, moves, iter =  5, burn = 5, thin = 1)$steps
 #' 
+#' 
+#' # examples using the extra options inside metropolis 
+#' 
+#' 
+#' data("HairEyeColor")
+#' tbl <- tab2vec(apply(HairEyeColor, c(1, 2), sum))
+#' A <- hmat(c(4,4),1:2)
+#' moves <- markov(A)
+#' 
+#' # base metropolis algorithm 
+#' base <- metropolis(tbl, moves)
+#' 
+#' # hit and run option
+#' har <- metropolis(tbl, moves, hit_and_run = TRUE)
+#' 
+#' # check convergence through trace plots
+#' baseStats <- algstat:::computeUProbsCpp(base$steps)
+#' harStats <- algstat:::computeUProbsCpp(har$steps)
+#' 
+#' data <- data.frame(baseStats = baseStats, harStats = harStats, steps = 1:1000)
+#' 
+#' ggplot(data = data) + geom_line(aes(steps, baseStats)) + 
+#' geom_line(aes(steps, harStats), color = "red") + 
+#' labs(x = "Steps", y = "UNLP value", title = "Base Algorithm vs. Algorithm with Hit and Run Option in Red")
+#' }
+#' 
+#' 
+
 metropolis <- function(
   init, 
   moves, 
@@ -104,9 +135,11 @@ metropolis <- function(
   burn = 0L, 
   thin = 1L,
   dist = c("hypergeometric","uniform"), 
-  engine = c("C++","R")
+  engine = c("C++","R"),
+  hit_and_run = FALSE,
+  adaptive = FALSE
 ){
-
+  
   ## preliminary checking
   ##################################################
   dist <- match.arg(dist)
@@ -117,32 +150,60 @@ metropolis <- function(
     message("thin = 1 corresponds to no thinning, resetting thin = 1.")
     thin <- 1L
   }
-
-
+  
   ## in R
   ##################################################
   if(engine == "R"){
-
+    
     n_moves <- ncol(moves)
     state   <- matrix(nrow = nrow(moves), ncol = iter)
-  
+    
     ## burn in
     #########################
-  
+    
     current <- unname(init)
     burn_unifs <- runif(burn)
     main_unifs <- runif(iter*thin)  
     
     message("Running chain (R)... ", appendLF = FALSE)
     
-    if (burn > 0) {
+    if(burn > 0) {
       
       for(k in 1L:burn){
-  
-        move      <- sample(c(-1,1), 1) * moves[,sample(n_moves,1)]
-        prop_state <- current + move
-      
-        if(any(prop_state < 0)){
+        
+        move <- sample(c(-1,1), 1) * moves[,sample(n_moves,1)]
+        #Hit and Run option
+        if(hit_and_run) {
+          work_move <- move[move != 0]
+          work_current <- current[move != 0]
+          work_moves <- -1 * work_current / work_move
+          lower_bound <- if(any(work_moves < 0)){max(subset(work_moves,subset = work_moves < 0))}else{1}
+          upper_bound <- if(any(work_moves > 0)){min(subset(work_moves,subset = work_moves > 0))}else{-1}
+          
+          if(any(work_moves == 0)){
+          work_prop_statelow <- current + lower_bound * move
+          work_prop_stateup <-  current + upper_bound * move
+          if(any(work_prop_statelow < 0)){
+            lower_bound <- 1
+          }
+          if(any(work_prop_stateup < 0)){
+            upper_bound <- -1
+             }
+          }
+          
+          multiple  <- sample(lower_bound:upper_bound,1)
+          if(multiple  == 0){
+            multiple  <- 1
+          }
+          prop_state <- current + multiple  * move
+        } else if(adaptive) {
+          prop_state <- metropolis(init = current, moves = move, iter = 20)$steps[,20]
+        } else {
+          prop_state <- current + move
+        }
+       
+        
+         if(any(prop_state < 0)){
           prob <- 0
         } else {
           if(dist == "hypergeometric"){
@@ -151,33 +212,57 @@ metropolis <- function(
             prob <- 1
           }
         }
-      
-        if(burn_unifs[k] < prob) current <- prop_state # else current
-      
+        
+          if(burn_unifs[k] < prob) current <- prop_state # else current
       }
+      state[,1] <- current
+    } else {
       
-      state[,1L] <- current
-      
-    } else { # no burn-in
-      
-      state[,1L] <- current
+      state[,1L]
       
     }
-  
+    
     ## main sampler
-    #########################
-  
+    #######################
+    
     total_count <- 0L
     accept_count <- 0L
     prob_total <- 0
     
     for(k in 2:iter){
-    	
-    	for(j in 1:thin){
-  
-        move       <- sample(c(-1L,1L), 1L) * moves[,sample(n_moves,1L)]
-        prop_state <- current + move
       
+      for(j in 1:thin){
+        
+        move <- sample(c(-1,1), 1) * moves[,sample(n_moves,1)]
+        if(hit_and_run) {
+          work_move <- move[move != 0]
+          work_current <- current[move != 0]
+          work_moves <- -1 * work_current / work_move
+          lower_bound <- if(any(work_moves < 0)){max(subset(work_moves,subset = work_moves < 0))}else{1}
+          upper_bound <- if(any(work_moves > 0)){min(subset(work_moves,subset = work_moves > 0))}else{-1}
+          
+          if(any(work_moves == 0)){
+            work_prop_statelow <- current + lower_bound * move
+            work_prop_stateup <-  current + upper_bound * move
+            if(any(work_prop_statelow < 0)){
+              lower_bound <- 1
+            }
+            if(any(work_prop_stateup < 0)){
+              upper_bound <- -1
+            }
+          }
+          
+          multiple  <- sample(lower_bound:upper_bound,1)
+          if(multiple  == 0){
+            multiple  <- 1
+          }
+          prop_state <- current + multiple  * move
+        } else if(adaptive) {
+          prop_state <- metropolis(init = current, moves = move, iter = 20)$steps[,20]
+        }else {
+          prop_state <- current + move
+        }
+        
         if(any(prop_state < 0)){
           prob <- 0
         } else {
@@ -188,19 +273,18 @@ metropolis <- function(
           }
         }
         # prob_total <- prob_total + min(1, prob)
-  
-        if(main_unifs[k*(thin-1)+j] < prob) {
-          current <- prop_state # else current
-          accept_count <- accept_count + 1L
-        }
         
-        total_count <- total_count + 1L     
+          if(main_unifs[k*(thin-1)+j] < prob) {
+            current <- prop_state # else current
+            accept_count <- accept_count + 1L
+          }
         
+        total_count <- total_count + 1L        
       }
-  
+      
       state[,k] <- current    
     }
-    message("done.")  
+    message("done.")
     
     ## format output
     out <- list(
@@ -210,8 +294,6 @@ metropolis <- function(
       "accept_count" = accept_count,
       "total_count" = total_count
     )
-  
-
   }
   
   ## in Cpp
@@ -225,17 +307,16 @@ metropolis <- function(
     }
     
     message("Running chain (C++)... ", appendLF = FALSE)  
-    out       <- sampler(unname(init), cbind(moves, -moves), iter, burn, thin)
+    out       <- sampler(unname(init), cbind(moves, -moves), iter, burn, thin, hit_and_run, adaptive)
     out$moves <- moves
     message("done.")
-
   }
-
-
+  
   ## return output
   ##################################################  
 
   out[c("steps", "moves", "accept_prob", "accept_count", "total_count")]
+
 }
 
 
@@ -247,8 +328,8 @@ metropolis <- function(
 
 #' @rdname metropolis
 #' @export
-rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric"){
-  metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist) 
+rawMetropolis <- function(init, moves, iter = 1E3, dist = "hypergeometric", hit_and_run = FALSE, adaptive = FALSE){
+  metropolis(init, moves, iter, burn = 0, thin = 1, dist = dist, hit_and_run, adaptive) 
 }
 
 

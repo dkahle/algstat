@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// adaptive_fun
+IntegerVector adaptive_fun(IntegerVector current, IntegerVector move);
+RcppExport SEXP _algstat_adaptive_fun(SEXP currentSEXP, SEXP moveSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type move(moveSEXP);
+    rcpp_result_gen = Rcpp::wrap(adaptive_fun(current, move));
+    return rcpp_result_gen;
+END_RCPP
+}
 // computeCRsCpp
 NumericVector computeCRsCpp(NumericMatrix x, NumericVector exp, double lambda);
 RcppExport SEXP _algstat_computeCRsCpp(SEXP xSEXP, SEXP expSEXP, SEXP lambdaSEXP) {
@@ -65,9 +77,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// greedy_preprocess
+List greedy_preprocess(IntegerVector current, IntegerMatrix moves, int iter, int thin);
+RcppExport SEXP _algstat_greedy_preprocess(SEXP currentSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP thinSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type moves(movesSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
+    rcpp_result_gen = Rcpp::wrap(greedy_preprocess(current, moves, iter, thin));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hit_and_run_fun
+IntegerVector hit_and_run_fun(IntegerVector current, IntegerVector move);
+RcppExport SEXP _algstat_hit_and_run_fun(SEXP currentSEXP, SEXP moveSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type current(currentSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type move(moveSEXP);
+    rcpp_result_gen = Rcpp::wrap(hit_and_run_fun(current, move));
+    return rcpp_result_gen;
+END_RCPP
+}
 // metropolis_hypergeometric_cpp
-List metropolis_hypergeometric_cpp(IntegerVector init, IntegerMatrix moves, int iter, int burn, int thin);
-RcppExport SEXP _algstat_metropolis_hypergeometric_cpp(SEXP initSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP burnSEXP, SEXP thinSEXP) {
+List metropolis_hypergeometric_cpp(IntegerVector init, IntegerMatrix moves, int iter, int burn, int thin, bool hit_and_run, bool adaptive);
+RcppExport SEXP _algstat_metropolis_hypergeometric_cpp(SEXP initSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP burnSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP, SEXP adaptiveSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -76,13 +114,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type burn(burnSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
-    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(init, moves, iter, burn, thin));
+    Rcpp::traits::input_parameter< bool >::type hit_and_run(hit_and_runSEXP);
+    Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
+    rcpp_result_gen = Rcpp::wrap(metropolis_hypergeometric_cpp(init, moves, iter, burn, thin, hit_and_run, adaptive));
     return rcpp_result_gen;
 END_RCPP
 }
 // metropolis_uniform_cpp
-List metropolis_uniform_cpp(IntegerVector init, IntegerMatrix moves, int iter, int burn, int thin);
-RcppExport SEXP _algstat_metropolis_uniform_cpp(SEXP initSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP burnSEXP, SEXP thinSEXP) {
+List metropolis_uniform_cpp(IntegerVector init, IntegerMatrix moves, int iter, int burn, int thin, bool hit_and_run, bool adaptive);
+RcppExport SEXP _algstat_metropolis_uniform_cpp(SEXP initSEXP, SEXP movesSEXP, SEXP iterSEXP, SEXP burnSEXP, SEXP thinSEXP, SEXP hit_and_runSEXP, SEXP adaptiveSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -91,7 +131,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< int >::type burn(burnSEXP);
     Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
-    rcpp_result_gen = Rcpp::wrap(metropolis_uniform_cpp(init, moves, iter, burn, thin));
+    Rcpp::traits::input_parameter< bool >::type hit_and_run(hit_and_runSEXP);
+    Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
+    rcpp_result_gen = Rcpp::wrap(metropolis_uniform_cpp(init, moves, iter, burn, thin, hit_and_run, adaptive));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -123,13 +165,16 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_algstat_adaptive_fun", (DL_FUNC) &_algstat_adaptive_fun, 2},
     {"_algstat_computeCRsCpp", (DL_FUNC) &_algstat_computeCRsCpp, 3},
     {"_algstat_computeG2sCpp", (DL_FUNC) &_algstat_computeG2sCpp, 2},
     {"_algstat_computeNMsCpp", (DL_FUNC) &_algstat_computeNMsCpp, 2},
     {"_algstat_computeUProbsCpp", (DL_FUNC) &_algstat_computeUProbsCpp, 1},
     {"_algstat_computeX2sCpp", (DL_FUNC) &_algstat_computeX2sCpp, 2},
-    {"_algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &_algstat_metropolis_hypergeometric_cpp, 5},
-    {"_algstat_metropolis_uniform_cpp", (DL_FUNC) &_algstat_metropolis_uniform_cpp, 5},
+    {"_algstat_greedy_preprocess", (DL_FUNC) &_algstat_greedy_preprocess, 4},
+    {"_algstat_hit_and_run_fun", (DL_FUNC) &_algstat_hit_and_run_fun, 2},
+    {"_algstat_metropolis_hypergeometric_cpp", (DL_FUNC) &_algstat_metropolis_hypergeometric_cpp, 7},
+    {"_algstat_metropolis_uniform_cpp", (DL_FUNC) &_algstat_metropolis_uniform_cpp, 7},
     {"_algstat_rfiberOne", (DL_FUNC) &_algstat_rfiberOne, 2},
     {"_algstat_walk", (DL_FUNC) &_algstat_walk, 4},
     {NULL, NULL, 0}
