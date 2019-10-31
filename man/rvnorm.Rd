@@ -253,7 +253,7 @@ samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
 samps <- bind_rows(mget(apropos("samps_")))
 samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
 
-ggplot(samps, aes(x, y, color = num < 0)) +
+ggplot(samps, aes(x, y, color = g < 0)) +
   geom_point(size = .5) +
   coord_equal(xlim = c(-3,3), ylim = c(-3,3)) +
   facet_wrap(~ power)

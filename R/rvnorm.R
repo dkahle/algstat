@@ -222,7 +222,7 @@
 #' samps <- bind_rows(mget(apropos("samps_")))
 #' samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
 #'
-#' ggplot(samps, aes(x, y, color = num < 0)) +
+#' ggplot(samps, aes(x, y, color = g < 0)) +
 #'   geom_point(size = .5) +
 #'   coord_equal(xlim = c(-3,3), ylim = c(-3,3)) +
 #'   facet_wrap(~ power)
@@ -326,8 +326,8 @@ rvnorm <- function(
   
   # cran guard
   chain <- NULL; rm(chain)
-  num <- NULL; rm(num)
-  denom <- NULL; rm(denom)
+  g <- NULL; rm(g)
+  ndg <- NULL; rm(ndg)
   ng <- NULL; rm(ng)
   lp__ <- NULL; rm(lp__)
   iter <- NULL; rm(iter)
@@ -339,7 +339,7 @@ rvnorm <- function(
   } else if (is.character(poly) || is.mpolyList(poly)) {
     n_eqs <- length(poly)
   } else {
-    stop("`poly`` should be either a character vector, mpoly, or mpolyList.", call. = FALSE)
+    stop("`poly` should be either a character vector, mpoly, or mpolyList.", call. = FALSE)
   }
 
   if (missing(refresh)) if (verbose) refresh <- max(ceiling(n/10), 1L) else refresh <- 0L
@@ -365,13 +365,14 @@ rvnorm <- function(
       
       if (!is.mpoly(poly)) poly <- mp(poly)
       if (missing(vars)) vars <- mpoly::vars(poly)
+      n_vars <- length(vars)
       reorder.mpoly <- get("reorder.mpoly", asNamespace("mpoly"))
       poly <- reorder.mpoly(poly, varorder = sort(vars))
       
       numerator <- mpoly_to_stan(poly)
       
       if (normalized) {
-        if (length(vars) > 1) {
+        if (n_vars > 1) {
           grad <- deriv(poly, var = vars(poly))
           denominator <- Reduce(`+`, grad^2) 
         } else {
@@ -396,9 +397,9 @@ rvnorm <- function(
       } 
       
       transformed parameters {
-        real num = {{numerator}};
-        real denom = {{denominator}};
-        real ng = num / denom;
+        real g = {{numerator}};
+        real ndg = {{denominator}};
+        real ng = g / ndg;
       } 
       
       model {
@@ -524,6 +525,7 @@ rvnorm <- function(
   fit <- rstan::sampling(
     "object" = model,
     # "data" = data, # will be list of coefficients?
+    # "data" = list("sd" = sd), 
     "chains" = chains,
     "iter" = n + warmup,
     "warmup" = warmup,
@@ -574,8 +576,8 @@ rvnorm <- function(
         iter = rep((as.integer(!keep_warmup)*warmup+1):(n+warmup), chains),
         chain = as.integer(str_sub(chain, 7L))
       ) %>% 
-      # dplyr::select(-num, -denom, -ng, -lp__, -chain, -iter) %>% 
-      .[1:n_vars] %>% 
+      dplyr::select(-g, -ndg, -ng, -lp__, -chain, -iter) %>%
+      # .[1:n_vars] %>% 
       as.matrix()
     
     return(samps)
