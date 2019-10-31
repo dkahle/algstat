@@ -71,7 +71,7 @@
 #'   coord_equal()
 #'
 #'
-#' # more than one polynomial, # vars >= # eqns
+#' # more than one polynomial, # vars >= # eqns, underdetermined system
 #' p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
 #' samps <- rvnorm(500, p, sd = .1, output = "tibble")
 #'
@@ -95,7 +95,7 @@
 #'   coord_equal()
 #'
 #'
-#' # overdetermined system, vars < # eqns (not yet supported)
+#' # overdetermined system, vars < # eqns (experimental)
 #' p <- mp(c("x", "y", "x + y", "3 (x^2 + y)", "3 (x^2 - y)"))
 #' samps <- rvnorm(500, p, sd = .1, output = "tibble")
 #' 
@@ -177,10 +177,17 @@
 #' p <- mp("1 - (x^2 + y^2) - s^2")
 #' samps <- rvnorm(1e4, p, sd = .01, "tibble", chains = 8)
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' ggplot(samps, aes(x, y)) + geom_bin2d() + coord_equal()
+#' ggplot(samps, aes(x, y)) + geom_hex(bins = 50) + coord_equal()
+#' ggplot(samps, aes(x, y)) + 
+#'   stat_density2d(
+#'     aes(fill = stat(density)), 
+#'     geom = "raster", contour = FALSE
+#'    ) + 
+#'   coord_equal()
 #'
 #' ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
 #'   geom_point(size = .5) +
+#'   scale_color_gradient2() +
 #'   coord_equal()
 #'
 #' # alternative representation
@@ -316,6 +323,7 @@ rvnorm <- function(
   ...
 ) {
   
+  
   # cran guard
   chain <- NULL; rm(chain)
   num <- NULL; rm(num)
@@ -325,115 +333,193 @@ rvnorm <- function(
   iter <- NULL; rm(iter)
   . <- NULL; rm(.)
   
-  if (!is.mpolyList(poly)) poly <- structure(list(poly), class = "mpolyList")
   
-  vars <- mpoly::vars(poly)
-  
-  n_eqs  <- length(poly)
-  n_vars <- length(vars)
-  # if (n_eqs > n_vars) stop("Overdetermined systems not yet supported.")
-  
-  if (missing(refresh)) if (verbose) refresh <- max(n/10L, 1) else refresh <- 0L
-  if (!missing(refresh)) stopifnot(is.numeric(refresh) && length(refresh) == 1L)
-  
-  
-  
-  ## create stan code
-  ########################################
-  
-  needs_to_compile_new_model <- TRUE
-  
-  if (needs_to_compile_new_model) {
-    
-    printed_polys <- mpoly:::print.mpolyList(poly, silent = TRUE, stars = TRUE, plus_pad = 0, times_pad = 0) %>% str_replace_all("\\*\\*", "^")
-    printed_polys <- str_c(printed_polys, collapse = ", ")
-    
-    d <- get("deriv.mpoly", asNamespace("mpoly"))
-    p <- get("print.mpoly", asNamespace("mpoly"))
-      
-    printed_jac <- array("", dim = c(n_eqs, n_vars))
-    for (i in 1:n_eqs) {
-      for (j in 1:n_vars) {
-        if (normalized) {
-          printed_jac[i,j] <- p(d(poly[[i]], vars[j]), silent = TRUE, stars = TRUE, plus_pad = 0L, times_pad = 0L)
-        } else {
-          printed_jac[i,j] <- if (i == j) "1" else "0"
-        }
-      }
-    }
-    printed_jac <- printed_jac %>% 
-      apply(1L, str_c, collapse = ", ") %>% 
-      str_c("      [", ., "]", collapse = ", \n") %>% 
-      str_c("[\n", ., "\n    ]") %>% 
-      str_replace_all("\\*\\*", "^")
-    
-    
-    # set variables
-    if (missing(w)) {
-      parms <- glue::glue("real {vars};") 
-    } else {
-      if (is.numeric(w) && length(w) == 1L) {
-        parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") 
-      } else if (is.list(w)) {
-        stopifnot(all(names(w) %in% vars))
-        parms <- vector("character", n_vars)
-        for (var_ndx in seq_along(vars)) {
-          parms[var_ndx] <- if (vars[var_ndx] %in% names(w)) {
-            var_ndx_in_w <- which(names(w) == vars[var_ndx])
-            glue::glue("real<lower={w[[var_ndx_in_w]][1]},upper={w[[var_ndx_in_w]][2]}> {vars[var_ndx]};") 
-          } else {
-            glue::glue("real {vars[var_ndx]};") 
-          }
-        }
-      } else {
-        stop("bound parameter misspecified, see ?rvnorm.", call. = FALSE)
-      }
-    }
-    parms <- parms %>% str_c(collapse = "\n    ") 
+  if (is.mpoly(poly)) {
+    n_eqs <- 1L
+  } else if (is.character(poly) || is.mpolyList(poly)) {
+    n_eqs <- length(poly)
+  } else {
+    stop("`poly`` should be either a character vector, mpoly, or mpolyList.", call. = FALSE)
+  }
 
-    # variance expression
-    if (is.numeric(sd) && is.vector(sd) && length(sd) == 1L) {
-      Si_exp <- if (n_vars >= n_eqs) {
-        glue::glue("{sd^2} * tcrossprod(J)") # = "{sd^2} * J * J'"
-      } else {
-        glue::glue("{sd^2} * (tcrossprod(J) + diag_matrix(rep_vector(1, {n_eqs})))")
-      }
-    } else if (is.numeric(sd) && is.vector(sd)) {
-      stop("This sd not yet supported.")
-    } else if (is.numeric(sd) && is.matrix(sd)) {
-      stop("This sd not yet supported.")
-      Si_exp <- glue::glue("quad_form_sym(sd, J)") # = J' * sd * J
-    }
+  if (missing(refresh)) if (verbose) refresh <- max(ceiling(n/10), 1L) else refresh <- 0L
+  if (!missing(refresh)) stopifnot(is.numeric(refresh), length(refresh) == 1L)  
+  
+  mpoly_to_stan <- function (mpoly) {
+    print(mpoly, stars = TRUE, silent = TRUE, plus_pad = 0L, times_pad = 0L) %>% 
+      str_replace_all("[*]{2}", "^")
+  }
+  
+
+  # create stan code --------------------------------------------------------
+
+  needs_to_compile_model <- TRUE
+  
+  if (needs_to_compile_model) {
     
-    stan_code <- glue::glue("
+    
+    if (n_eqs == 1L) {
+    # single polynomial provided
+      
+      
+      
+      if (!is.mpoly(poly)) poly <- mp(poly)
+      if (missing(vars)) vars <- mpoly::vars(poly)
+      reorder.mpoly <- get("reorder.mpoly", asNamespace("mpoly"))
+      poly <- reorder.mpoly(poly, varorder = sort(vars))
+      
+      numerator <- mpoly_to_stan(poly)
+      
+      if (normalized) {
+        if (length(vars) > 1) {
+          grad <- deriv(poly, var = vars(poly))
+          denominator <- Reduce(`+`, grad^2) 
+        } else {
+          denominator <- gradient(poly)^2
+        }
+        denominator <- mpoly_to_stan(denominator)
+        denominator <- glue::glue("sqrt({denominator})")
+      } else {
+        denominator <- "1"
+      }
+        
+      if (missing(w)) {
+        parms <- glue::glue("real {vars};") %>% str_c(collapse = "\n  ") 
+      } else {
+        parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") %>% 
+          str_c(collapse = "\n  ") 
+      }
+      
+      stan_code <- glue::glue("
       parameters {
         {{parms}}
       } 
       
       transformed parameters {
-        vector[{{n_eqs}}] g = [{{printed_polys}}]';
-        matrix[{{n_eqs}},{{n_vars}}] J = {{printed_jac}};
-        matrix[{{n_eqs}},{{n_eqs}}] Si = {{Si_exp}};
+        real num = {{numerator}};
+        real denom = {{denominator}};
+        real ng = num / denom;
       } 
       
       model {
-        target += multi_normal_lpdf(g | rep_vector(0, {{n_eqs}}), Si);
+        target += normal_lpdf(ng | 0.00, {{sd}});
       }
     ",  .open = "{{", .close = "}}"
-    )
-    if (verbose) cat(stan_code, "\n")  
-    if (code_only) return(stan_code)
-
-    # compile code
-    if (!verbose) message("Compiling model... ", appendLF = FALSE)
-    model <- rstan::stan_model("model_code" = stan_code, ...)
-    if (!verbose) message("done.")
+      )
+      if (verbose) cat(stan_code, "\n")  
+      
+      
+      # compile code
+      if (!verbose) message("Compiling model... ", appendLF = FALSE)
+      model <- rstan::stan_model("model_code" = stan_code, ...)
+      if (!verbose) message("done.")
+      
+      
     
+    } else {
+    # multiple polynomials provided
+      
+      if (!is.mpolyList(poly)) poly <- structure(list(poly), class = "mpolyList")
+      
+      vars <- mpoly::vars(poly)
+      n_vars <- length(vars)
+      # if (n_eqs > n_vars) stop("Overdetermined systems not yet supported.")
+      
+    
+      printed_polys <- mpoly:::print.mpolyList(poly, 
+        silent = TRUE, stars = TRUE, plus_pad = 0, times_pad = 0
+      ) %>% str_replace_all("\\*\\*", "^")
+      printed_polys <- str_c(printed_polys, collapse = ", ")
+      
+      d <- get("deriv.mpoly", asNamespace("mpoly"))
+      p <- get("print.mpoly", asNamespace("mpoly"))
+        
+      printed_jac <- array("", dim = c(n_eqs, n_vars))
+      for (i in 1:n_eqs) {
+        for (j in 1:n_vars) {
+          if (normalized) {
+            printed_jac[i,j] <- p( d(poly[[i]], vars[j]), 
+              silent = TRUE, stars = TRUE, plus_pad = 0, times_pad = 0
+            )
+          } else {
+            printed_jac[i,j] <- if (i == j) "1" else "0"
+          }
+        }
+      }
+      printed_jac <- printed_jac %>% 
+        apply(1L, str_c, collapse = ", ") %>% 
+        str_c("      [", ., "]", collapse = ", \n") %>% 
+        str_c("[\n", ., "\n    ]") %>% 
+        str_replace_all("\\*\\*", "^")
+      
+      
+      # set variables
+      if (missing(w)) {
+        parms <- glue::glue("real {vars};") 
+      } else {
+        if (is.numeric(w) && length(w) == 1L) {
+          parms <- glue::glue("real<lower=-{w},upper={w}> {vars};") 
+        } else if (is.list(w)) {
+          stopifnot(all(names(w) %in% vars))
+          parms <- vector("character", n_vars)
+          for (var_ndx in seq_along(vars)) {
+            parms[var_ndx] <- if (vars[var_ndx] %in% names(w)) {
+              var_ndx_in_w <- which(names(w) == vars[var_ndx])
+              glue::glue("real<lower={w[[var_ndx_in_w]][1]},upper={w[[var_ndx_in_w]][2]}> {vars[var_ndx]};") 
+            } else {
+              glue::glue("real {vars[var_ndx]};") 
+            }
+          }
+        } else {
+          stop("bound parameter misspecified, see ?rvnorm.", call. = FALSE)
+        }
+      }
+      parms <- parms %>% str_c(collapse = "\n    ") 
+  
+      # variance expression
+      if (is.numeric(sd) && is.vector(sd) && length(sd) == 1L) {
+        Si_exp <- if (n_vars >= n_eqs) {
+          glue::glue("{sd^2} * tcrossprod(J)") # = "{sd^2} * J * J'"
+        } else {
+          glue::glue("{sd^2} * (tcrossprod(J) + diag_matrix(rep_vector(1, {n_eqs})))")
+        }
+      } else if (is.numeric(sd) && is.vector(sd)) {
+        stop("This sd not yet supported.")
+      } else if (is.numeric(sd) && is.matrix(sd)) {
+        stop("This sd not yet supported.")
+        Si_exp <- glue::glue("quad_form_sym(sd, J)") # = J' * sd * J
+      }
+      
+      stan_code <- glue::glue("
+        parameters {
+          {{parms}}
+        } 
+        
+        transformed parameters {
+          vector[{{n_eqs}}] g = [{{printed_polys}}]';
+          matrix[{{n_eqs}},{{n_vars}}] J = {{printed_jac}};
+          matrix[{{n_eqs}},{{n_eqs}}] Si = {{Si_exp}};
+        } 
+        
+        model {
+          target += multi_normal_lpdf(g | rep_vector(0, {{n_eqs}}), Si);
+        }
+      ",  .open = "{{", .close = "}}"
+      )
+      if (verbose) cat(stan_code, "\n")  
+      if (code_only) return(stan_code)
+  
+      # compile code
+      if (!verbose) message("Compiling model... ", appendLF = FALSE)
+      model <- rstan::stan_model("model_code" = stan_code, ...)
+      if (!verbose) message("done.")
+    }
   }
   
   
-  ## sample from the distribution
-  ######################################## 
+  
+
+  # run stan sampler --------------------------------------------------------
   
   fit <- rstan::sampling(
     "object" = model,
@@ -449,10 +535,12 @@ rvnorm <- function(
   )
   
   
-  ## return, parse output as desired 
-  ########################################
   
+
+  # parse output and return -------------------------------------------------
+
   if (output == "stanfit") return(fit)
+  
     
   if (output == "tibble") {
     
@@ -471,6 +559,7 @@ rvnorm <- function(
     return(samps)
     
   } 
+  
   
   if (output == "simple") { 
 

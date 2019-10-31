@@ -102,7 +102,7 @@ ggplot(samps, aes(x, y, color = `g[1]`)) +
   coord_equal()
 
 
-# more than one polynomial, # vars >= # eqns
+# more than one polynomial, # vars >= # eqns, underdetermined system
 p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
 samps <- rvnorm(500, p, sd = .1, output = "tibble")
 
@@ -126,7 +126,7 @@ ggplot(samps, aes(x, z, color = `g[2]`)) +
   coord_equal()
 
 
-# overdetermined system, vars < # eqns (not yet supported)
+# overdetermined system, vars < # eqns (experimental)
 p <- mp(c("x", "y", "x + y", "3 (x^2 + y)", "3 (x^2 - y)"))
 samps <- rvnorm(500, p, sd = .1, output = "tibble")
 
@@ -208,10 +208,17 @@ ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 p <- mp("1 - (x^2 + y^2) - s^2")
 samps <- rvnorm(1e4, p, sd = .01, "tibble", chains = 8)
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-ggplot(samps, aes(x, y)) + geom_bin2d() + coord_equal()
+ggplot(samps, aes(x, y)) + geom_hex(bins = 50) + coord_equal()
+ggplot(samps, aes(x, y)) + 
+  stat_density2d(
+    aes(fill = stat(density)), 
+    geom = "raster", contour = FALSE
+   ) + 
+  coord_equal()
 
 ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
   geom_point(size = .5) +
+  scale_color_gradient2() +
   coord_equal()
 
 # alternative representation
