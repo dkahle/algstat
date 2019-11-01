@@ -96,7 +96,7 @@ plot(samps, asp = 1)
 # returning a data frame
 (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-ggplot(samps, aes(x, y, color = `g[1]`)) +
+ggplot(samps, aes(x, y, color = g)) +
   geom_point(size = .5) +
   scale_color_gradient2() +
   coord_equal()
@@ -104,7 +104,7 @@ ggplot(samps, aes(x, y, color = `g[1]`)) +
 
 # more than one polynomial, # vars >= # eqns, underdetermined system
 p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
-samps <- rvnorm(500, p, sd = .1, output = "tibble")
+(samps <- rvnorm(500, p, sd = .1, output = "tibble"))
 
 ggplot(samps, aes(x, y)) +
   geom_point(size = .5) +
@@ -128,14 +128,14 @@ ggplot(samps, aes(x, z, color = `g[2]`)) +
 
 # overdetermined system, vars < # eqns (experimental)
 p <- mp(c("x", "y", "x + y", "3 (x^2 + y)", "3 (x^2 - y)"))
-samps <- rvnorm(500, p, sd = .1, output = "tibble")
+(samps <- rvnorm(500, p, sd = .1, output = "tibble"))
 
 samps \%>\% 
   select(x, y, starts_with("g")) \%>\% 
   pivot_longer(starts_with("g"), "equation", "value") \%>\% 
   ggplot(aes(x, y, color = value)) +
     geom_point(size = .5) +
-    scale_color_gradient2() +
+    scale_color_gradient2(mid = "gray80") +
     coord_equal() +
     facet_wrap(~ equation)
     
@@ -144,7 +144,6 @@ samps \%>\%
 ########################################
 
 rvnorm(2000, p, sd = .1, "tibble", verbose = TRUE)
-rvnorm(2000, p, sd = .1, "tibble", refresh = 100)
 rvnorm(2000, p, sd = .1, "tibble", refresh = 500)
 rvnorm(2000, p, sd = .1, "tibble", refresh = 0) # default
 rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
@@ -156,9 +155,9 @@ rvnorm(2000, p, sd = .1, "tibble", refresh = -1)
 
 options(mc.cores = parallel::detectCores())
 p <- mp("x^2 + (4 y)^2 - 1")
-samps <- rvnorm(250, p, sd = .01, "tibble", verbose = TRUE, chains = 8)
-ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
-
+(samps <- rvnorm(2500, p, sd = .01, "tibble", verbose = TRUE, chains = 8))
+ggplot(samps, aes(x, y)) + geom_hex(bins = 100) + coord_equal()
+# decrease sd to get more uniform sampling
 
 
 ## windowing for unbounded varieties
@@ -166,17 +165,17 @@ ggplot(samps, aes(x, y)) + geom_point() + coord_equal()
 # windowing is needed for unbounded varieties
 # in the following, look at the parameters block
 
-p <- mp("x y - 1") # unbounded variety
+p <- mp("x y - 1") # unbounded variety, 1 poly
+p <- mp(c("x y - 1", "y - x")) # 2 polys
 
 rvnorm(1e3, p, sd = .01, "tibble", code_only = TRUE)
-
-rvnorm(1e3, p, sd = .01, "tibble", w = 1.15, code_only = TRUE)
+rvnorm(1e3, p, sd = .01, "tibble", code_only = TRUE, w = 1.15)
 
 window <- list("x" = c(-1.5, 1.25), "y" = c(-2, 1.5))
-rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
+rvnorm(1e3, p, sd = .01, "tibble", code_only = TRUE, w = window)
 
 window <- list("x" = c(-1.5, 1.5))
-rvnorm(1e3, p, sd = .01, "tibble", w = window, code_only = TRUE)
+rvnorm(1e3, p, sd = .01, "tibble", code_only = TRUE, w = window)
 
 
 
