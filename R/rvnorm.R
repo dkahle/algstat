@@ -383,7 +383,7 @@ rvnorm <- function(
       
       if (normalized) {
         if (n_vars > 1) {
-          grad <- deriv(poly, var = vars(poly))
+          grad <- deriv(poly, var = mpoly::vars(poly))
           ndg_sq <- Reduce(`+`, grad^2) 
         } else {
           ndg_sq <- gradient(poly)^2
