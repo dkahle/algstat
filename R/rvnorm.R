@@ -96,7 +96,7 @@
 #'
 #'
 #' # overdetermined system, vars < # eqns (experimental)
-#' p <- mp(c("x", "y", "x + y", "3 (x^2 + y)", "3 (x^2 - y)"))
+#' p <- mp(c("3 x", "3 y", "2 x + 2 y", "3 (x^2 + y)", "3 (x^2 - y)"))
 #' (samps <- rvnorm(500, p, sd = .1, output = "tibble"))
 #' 
 #' samps %>% 
@@ -248,6 +248,10 @@
 #' samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8, refresh = 100)
 #' ggplot(samps, aes(x, y, color = factor(chain))) +
 #'   geom_point(size = .5) + coord_equal()
+#'   
+#' ggplot(samps, aes(x, y, color = factor(chain))) +
+#'   geom_point(size = .5) + coord_equal() +
+#'   facet_wrap(~ factor(chain))
 #'
 #' # semi-algebraic set
 #' samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
@@ -271,17 +275,16 @@
 #'   samps_unormd %>% mutate(normd = FALSE)
 #' ) %>%
 #'   ggplot(aes(x, y)) +
-#'     geom_bin2d(bins = 100) +
+#'     geom_hex(bins = 50) +
 #'     facet_wrap(~ normd) +
 #'     coord_equal()
 #'
 #'
 #' samps_normd %>%
 #'   ggplot(aes(x, y)) +
-#'     geom_bin2d(bins = 200) +
-#'     facet_wrap(~ factor(chain)) +
+#'     geom_hex(bins = 50) +
+#'     facet_wrap(~ factor(chain), labeller = label_both) +
 #'     coord_equal()
-#'
 #'
 #' }
 #' 
@@ -496,20 +499,21 @@ model {
       }
       parms <- parms %>% str_c(collapse = "\n  ") 
   
-      # variance expression
+      # normalization matrix
       if (is.numeric(sd) && is.vector(sd) && length(sd) == 1L) {
-        Si_exp <- if (n_vars >= n_eqs) {
-          glue::glue("tcrossprod(J)") # = J * J'
+        
+        gbar_string <- if (n_vars == n_eqs) {
+          "J \\ g"
+        } else if (n_vars > n_eqs) {
+          "J' * ((J*J') \\ g)"
         } else {
-          glue::glue("(tcrossprod(J) + diag_matrix(rep_vector(1, {n_eqs})))")
+          "(J'*J) \\ (J'*g)"
         }
-      } else if (is.numeric(sd) && is.vector(sd)) {
-        stop("This sd not yet supported.")
-      } else if (is.numeric(sd) && is.matrix(sd)) {
-        stop("This sd not yet supported.")
-        Si_exp <- glue::glue("crossprod(J)") # = J' * J
-      }
+        
+      } else stop("This sd not yet supported.") 
+       
       
+      # write stan code
       stan_code <- glue::glue("
 data {
   real<lower=0> si;
@@ -522,11 +526,10 @@ parameters {
 transformed parameters {
   vector[{{n_eqs}}] g = [{{printed_polys}}]';
   matrix[{{n_eqs}},{{n_vars}}] J = {{printed_jac}};
-  matrix[{{n_eqs}},{{n_eqs}}] Si = {{Si_exp}};
 } 
         
 model {
-  target += multi_normal_lpdf(g | rep_vector(0, {{n_eqs}}), si^2 * Si);
+  target += normal_lpdf(0.00 | {{gbar_string}}, si);
 }
       ",  .open = "{{", .close = "}}"
       )

@@ -127,7 +127,7 @@ ggplot(samps, aes(x, z, color = `g[2]`)) +
 
 
 # overdetermined system, vars < # eqns (experimental)
-p <- mp(c("x", "y", "x + y", "3 (x^2 + y)", "3 (x^2 - y)"))
+p <- mp(c("3 x", "3 y", "2 x + 2 y", "3 (x^2 + y)", "3 (x^2 - y)"))
 (samps <- rvnorm(500, p, sd = .1, output = "tibble"))
 
 samps \%>\% 
@@ -279,6 +279,10 @@ p <- plug(p, "y", mp(".5 y"))
 samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8, refresh = 100)
 ggplot(samps, aes(x, y, color = factor(chain))) +
   geom_point(size = .5) + coord_equal()
+  
+ggplot(samps, aes(x, y, color = factor(chain))) +
+  geom_point(size = .5) + coord_equal() +
+  facet_wrap(~ factor(chain))
 
 # semi-algebraic set
 samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
@@ -302,17 +306,16 @@ bind_rows(
   samps_unormd \%>\% mutate(normd = FALSE)
 ) \%>\%
   ggplot(aes(x, y)) +
-    geom_bin2d(bins = 100) +
+    geom_hex(bins = 50) +
     facet_wrap(~ normd) +
     coord_equal()
 
 
 samps_normd \%>\%
   ggplot(aes(x, y)) +
-    geom_bin2d(bins = 200) +
-    facet_wrap(~ factor(chain)) +
+    geom_hex(bins = 50) +
+    facet_wrap(~ factor(chain), labeller = label_both) +
     coord_equal()
-
 
 }
 
