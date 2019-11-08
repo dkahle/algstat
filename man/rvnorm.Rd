@@ -96,47 +96,46 @@ plot(samps, asp = 1)
 # returning a data frame
 (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+
 ggplot(samps, aes(x, y, color = g)) +
   geom_point(size = .5) +
   scale_color_gradient2() +
   coord_equal()
+  
+ggplot(samps, aes(x, y)) + 
+  stat_density2d(
+    aes(fill = stat(density)), 
+    geom = "raster", contour = FALSE
+   ) + 
+  coord_equal()
 
 
-# more than one polynomial, # vars >= # eqns, underdetermined system
+
+# more than one polynomial, # vars > # eqns, underdetermined system
 p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
 (samps <- rvnorm(500, p, sd = .1, output = "tibble"))
+ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 
-ggplot(samps, aes(x, y)) +
-  geom_point(size = .5) +
-  coord_equal()
+ggplot(samps, aes(x, y, color = `g[1]`)) + geom_point() +
+  scale_color_gradient2(mid = "gray80") + coord_equal()
 
-ggplot(samps, aes(x, y, color = `g[1]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
+ggplot(samps, aes(x, y, color = `g[2]`)) + geom_point() +
+  scale_color_gradient2(mid = "gray80") + coord_equal()
 
-ggplot(samps, aes(x, y, color = `g[2]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
-
-ggplot(samps, aes(x, z, color = `g[2]`)) +
-  geom_point(size = .5) +
-  scale_color_gradient2() +
-  coord_equal()
+ggplot(samps, aes(x, z, color = `g[1]`)) + geom_point() +
+  scale_color_gradient2(mid = "gray80") + coord_equal()
 
 
-# overdetermined system, vars < # eqns (experimental)
+
+# more than one polynomial, # vars < # eqns, overdetermined system
 p <- mp(c("3 x", "3 y", "2 x + 2 y", "3 (x^2 + y)", "3 (x^2 - y)"))
 (samps <- rvnorm(500, p, sd = .1, output = "tibble"))
 
 samps \%>\% 
   select(x, y, starts_with("g")) \%>\% 
   pivot_longer(starts_with("g"), "equation", "value") \%>\% 
-  ggplot(aes(x, y, color = value)) +
-    geom_point(size = .5) +
-    scale_color_gradient2(mid = "gray80") +
-    coord_equal() +
+  ggplot(aes(x, y, color = value)) + geom_point() +
+    scale_color_gradient2(mid = "gray80") + coord_equal() +
     facet_wrap(~ equation)
     
 
@@ -234,9 +233,24 @@ ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
 p <- mp("((x + 1.5)^2 + y^2 - 1) ((x - 1.5)^2 + y^2 - 1)")
 ggvariety(p, xlim = c(-3,3)) + coord_equal()
 
-samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
+# notice the migration of chains initialized away from the distribution
+samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE)
 ggplot(samps, aes(x, y, color = iter)) +
   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) +
+  coord_equal() + facet_wrap(~ factor(chain))
+  
+samps <- rvnorm(2500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE)
+ggplot(samps, aes(x, y)) + 
+  stat_density2d(
+    aes(fill = stat(density)), geom = "raster", 
+    contour = FALSE, h = c(.2, .2), n = 251
+  ) +
+  coord_equal() 
+
+ggplot(samps, aes(x, y)) + 
+  stat_density2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
+  # geom_point(size = .1, alpha = .1, color = "white") + 
+  # geom_path(size = .1, alpha = .2, color = "white") +
   coord_equal() + facet_wrap(~ factor(chain))
 
 
@@ -249,8 +263,8 @@ samps_1 <- rvnorm(250, p^1, sd = .1, output = "tibble", chains = 8)
 samps_2 <- rvnorm(250, p^2, sd = .1, output = "tibble", chains = 8)
 samps_3 <- rvnorm(250, p^3, sd = .1, output = "tibble", chains = 8)
 samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
-samps <- bind_rows(mget(apropos("samps_")))
-samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
+samps <- bind_rows(mget(apropos("samps_[1-4]")))
+samps$power <- rep(seq_along(apropos("samps_[1-4]")), each = 2000)
 
 ggplot(samps, aes(x, y, color = g < 0)) +
   geom_point(size = .5) +

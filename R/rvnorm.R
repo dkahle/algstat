@@ -65,47 +65,46 @@
 #' # returning a data frame
 #' (samps <- rvnorm(2000, p, sd = .1, output = "tibble"))
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' 
 #' ggplot(samps, aes(x, y, color = g)) +
 #'   geom_point(size = .5) +
 #'   scale_color_gradient2() +
 #'   coord_equal()
+#'   
+#' ggplot(samps, aes(x, y)) + 
+#'   stat_density2d(
+#'     aes(fill = stat(density)), 
+#'     geom = "raster", contour = FALSE
+#'    ) + 
+#'   coord_equal()
 #'
 #'
-#' # more than one polynomial, # vars >= # eqns, underdetermined system
+#'
+#' # more than one polynomial, # vars > # eqns, underdetermined system
 #' p <- mp(c("x^2 + y^2 + z^2 - 1", "z"))
 #' (samps <- rvnorm(500, p, sd = .1, output = "tibble"))
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #'
-#' ggplot(samps, aes(x, y)) +
-#'   geom_point(size = .5) +
-#'   coord_equal()
+#' ggplot(samps, aes(x, y, color = `g[1]`)) + geom_point() +
+#'   scale_color_gradient2(mid = "gray80") + coord_equal()
 #'
-#' ggplot(samps, aes(x, y, color = `g[1]`)) +
-#'   geom_point(size = .5) +
-#'   scale_color_gradient2() +
-#'   coord_equal()
+#' ggplot(samps, aes(x, y, color = `g[2]`)) + geom_point() +
+#'   scale_color_gradient2(mid = "gray80") + coord_equal()
 #'
-#' ggplot(samps, aes(x, y, color = `g[2]`)) +
-#'   geom_point(size = .5) +
-#'   scale_color_gradient2() +
-#'   coord_equal()
-#'
-#' ggplot(samps, aes(x, z, color = `g[2]`)) +
-#'   geom_point(size = .5) +
-#'   scale_color_gradient2() +
-#'   coord_equal()
+#' ggplot(samps, aes(x, z, color = `g[1]`)) + geom_point() +
+#'   scale_color_gradient2(mid = "gray80") + coord_equal()
 #'
 #'
-#' # overdetermined system, vars < # eqns (experimental)
+#'
+#' # more than one polynomial, # vars < # eqns, overdetermined system
 #' p <- mp(c("3 x", "3 y", "2 x + 2 y", "3 (x^2 + y)", "3 (x^2 - y)"))
 #' (samps <- rvnorm(500, p, sd = .1, output = "tibble"))
 #' 
 #' samps %>% 
 #'   select(x, y, starts_with("g")) %>% 
 #'   pivot_longer(starts_with("g"), "equation", "value") %>% 
-#'   ggplot(aes(x, y, color = value)) +
-#'     geom_point(size = .5) +
-#'     scale_color_gradient2(mid = "gray80") +
-#'     coord_equal() +
+#'   ggplot(aes(x, y, color = value)) + geom_point() +
+#'     scale_color_gradient2(mid = "gray80") + coord_equal() +
 #'     facet_wrap(~ equation)
 #'     
 #'
@@ -157,12 +156,26 @@
 #' p <- mp("(x^2 + y^2)^2 - 2 (x^2 - y^2)")
 #'
 #' # normalized, good
-#' (samps <- rvnorm(2000, p, .025, "tibble"))
-#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' (samps <- rvnorm(2000, p, .05, "tibble"))
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + 
+#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
+#' ggplot(samps, aes(x, y)) + 
+#'   stat_density2d(
+#'     aes(fill = stat(density)), h = c(.25,.25),
+#'     geom = "raster", contour = FALSE, n = 251L
+#'    ) + 
+#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
 #'
 #' # unnormalized, bad
-#' (samps <- rvnorm(2000, p, .025, "tibble", normalized = FALSE))
-#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' (samps <- rvnorm(2000, p, .05, "tibble", normalized = FALSE))
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + 
+#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
+#' ggplot(samps, aes(x, y)) + 
+#'   stat_density2d(
+#'     aes(fill = stat(density)), h = c(.25,.25),
+#'     geom = "raster", contour = FALSE, n = 251L
+#'    ) + 
+#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
 #'
 #'
 #'
@@ -174,15 +187,9 @@
 #' # this is the projection of the sphere into the xy-plane.
 #'
 #' p <- mp("1 - (x^2 + y^2) - s^2")
-#' samps <- rvnorm(1e4, p, sd = .01, "tibble", chains = 8)
+#' samps <- rvnorm(1e4, p, sd = .1, "tibble", chains = 8, refresh = 100)
 #' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #' ggplot(samps, aes(x, y)) + geom_hex(bins = 50) + coord_equal()
-#' ggplot(samps, aes(x, y)) + 
-#'   stat_density2d(
-#'     aes(fill = stat(density)), 
-#'     geom = "raster", contour = FALSE
-#'    ) + 
-#'   coord_equal()
 #'
 #' ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
 #'   geom_point(size = .5) +
@@ -190,11 +197,13 @@
 #'   coord_equal()
 #'
 #' # alternative representation
-#' # x^2 + y^2 - 1 <= 0 iff s^2 (x^2 + y^2 - 1) == -1
-#' # so that s^2 (x^2 + y^2 - 1) + 1 == 0
+#' # x^2 + y^2 - 1 <= 0 iff s^2 (x^2 + y^2 - 1) + 1 == 0
 #' # while this strategy works in theory, it doesn't work
 #' # so well in practice, since s^2 is unbounded.
 #' # it's gradient is also more complicated.
+#' p <- mp("s^2 (x^2 + y^2 - 1) + 1")
+#' samps <- rvnorm(1e4, p, sd = .1, "tibble", chains = 8, w = 10, refresh = 100)
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
 #'
 #'
 #' ## keeping the warmup / the importance of multiple chains
@@ -203,9 +212,17 @@
 #' p <- mp("((x + 1.5)^2 + y^2 - 1) ((x - 1.5)^2 + y^2 - 1)")
 #' ggvariety(p, xlim = c(-3,3)) + coord_equal()
 #'
-#' samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE, w = 5)
+#' # notice the migration of chains initialized away from the distribution
+#' samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE)
 #' ggplot(samps, aes(x, y, color = iter)) +
 #'   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) +
+#'   coord_equal() + facet_wrap(~ factor(chain))
+#'   
+#' samps <- rvnorm(2500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE)#' 
+#' ggplot(samps, aes(x, y)) + 
+#'   stat_density2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
+#'   # geom_point(size = .1, alpha = .1, color = "white") + 
+#'   # geom_path(size = .1, alpha = .2, color = "white") +
 #'   coord_equal() + facet_wrap(~ factor(chain))
 #'
 #'
@@ -218,8 +235,8 @@
 #' samps_2 <- rvnorm(250, p^2, sd = .1, output = "tibble", chains = 8)
 #' samps_3 <- rvnorm(250, p^3, sd = .1, output = "tibble", chains = 8)
 #' samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
-#' samps <- bind_rows(mget(apropos("samps_")))
-#' samps$power <- rep(seq_along(apropos("samps_")), each = 2000)
+#' samps <- bind_rows(mget(apropos("samps_[1-4]")))
+#' samps$power <- rep(seq_along(apropos("samps_[1-4]")), each = 2000)
 #'
 #' ggplot(samps, aes(x, y, color = g < 0)) +
 #'   geom_point(size = .5) +
@@ -444,7 +461,7 @@ model {
 
       # compile code
       if (!verbose) message("Compiling model... ", appendLF = FALSE)
-      model <- rstan::stan_model("model_code" = stan_code, auto_write = TRUE, ...)
+      model <- rstan::stan_model("model_code" = stan_code, ...)
       if (!verbose) message("done.")
       
       
@@ -567,22 +584,23 @@ model {
 
   if (output == "stanfit") return(fit)
   
+  convert_mat_to_tibble_add_chain <- function(mat, chain_no) {
+    tibble::as_tibble(mat) %>% mutate(chain = chain_no)
+  }
     
   if (output == "tibble") {
     
     samps <- fit %>%
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
-      purrr::imap(
-        ~ tibble::as_tibble(.x) %>% mutate(chain = .y)
-      ) %>% 
+      purrr::imap(convert_mat_to_tibble_add_chain) %>% 
       bind_rows() %>% 
       mutate(
         iter = rep((as.integer(!keep_warmup)*warmup+1):(n+warmup), chains),
         chain = as.integer(str_sub(chain, 7L))
       )
     
-    return(structure(samps, "fit" = fit, "stan_code" = stan_code))
+    return(samps)
     
   } 
   
@@ -592,9 +610,7 @@ model {
     samps <- fit %>% 
       rstan::extract(permuted = FALSE, inc_warmup = keep_warmup) %>% 
       purrr::array_branch(2L) %>% 
-      purrr::imap(
-        ~ tibble::as_tibble(.x) %>% mutate(chain = .y)
-      ) %>% 
+      purrr::imap(convert_mat_to_tibble_add_chain) %>% 
       bind_rows() %>% 
       mutate(
         iter = rep((as.integer(!keep_warmup)*warmup+1):(n+warmup), chains),
@@ -604,9 +620,30 @@ model {
       # .[1:n_vars] %>% 
       as.matrix()
     
-    return(structure(samps, "fit" = fit, "stan_code" = stan_code))
+    return(samps)
     
   }
   
 }
+
+
+
+
+
+
+# 
+# 
+# 
+# stanfit_to_tibble <- function(stanfit, inc_warmup) {
+#   
+# }
+# 
+# 
+
+
+
+
+
+
+
 
