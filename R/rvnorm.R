@@ -123,8 +123,8 @@
 #'
 #' options(mc.cores = parallel::detectCores())
 #' p <- mp("x^2 + (4 y)^2 - 1")
-#' (samps <- rvnorm(2500, p, sd = .01, "tibble", verbose = TRUE, chains = 8))
-#' ggplot(samps, aes(x, y)) + geom_hex(bins = 100) + coord_equal()
+#' (samps <- rvnorm(1e4, p, sd = .01, "tibble", verbose = TRUE, chains = 8))
+#' ggplot(samps, aes(x, y)) + geom_bin2d(binwidth = .01*c(1,1)) + coord_equal()
 #' # decrease sd to get more uniform sampling
 #'
 #'
@@ -157,25 +157,13 @@
 #'
 #' # normalized, good
 #' (samps <- rvnorm(2000, p, .05, "tibble"))
-#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + 
-#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
-#' ggplot(samps, aes(x, y)) + 
-#'   stat_density2d(
-#'     aes(fill = stat(density)), h = c(.25,.25),
-#'     geom = "raster", contour = FALSE, n = 251L
-#'    ) + 
-#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' ggplot(samps, aes(x, y)) + geom_bin2d(binwidth = .05*c(1,1)) + coord_equal()
 #'
 #' # unnormalized, bad
 #' (samps <- rvnorm(2000, p, .05, "tibble", normalized = FALSE))
-#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + 
-#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
-#' ggplot(samps, aes(x, y)) + 
-#'   stat_density2d(
-#'     aes(fill = stat(density)), h = c(.25,.25),
-#'     geom = "raster", contour = FALSE, n = 251L
-#'    ) + 
-#'   coord_equal() + lims(x = c(-2,2), y = c(-1,1))
+#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' ggplot(samps, aes(x, y)) + geom_bin2d(binwidth = .05*c(1,1)) + coord_equal()
 #'
 #'
 #'
@@ -187,9 +175,8 @@
 #' # this is the projection of the sphere into the xy-plane.
 #'
 #' p <- mp("1 - (x^2 + y^2) - s^2")
-#' samps <- rvnorm(1e4, p, sd = .1, "tibble", chains = 8, refresh = 100)
-#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
-#' ggplot(samps, aes(x, y)) + geom_hex(bins = 50) + coord_equal()
+#' samps <- rvnorm(1e4, p, sd = .1, "tibble", chains = 8, refresh = 1e3)
+#' ggplot(samps, aes(x, y)) + geom_bin2d(binwidth = .05*c(1,1)) + coord_equal()
 #'
 #' ggplot(sample_n(samps, 2e3), aes(x, y, color = s)) +
 #'   geom_point(size = .5) +
@@ -198,12 +185,10 @@
 #'
 #' # alternative representation
 #' # x^2 + y^2 - 1 <= 0 iff s^2 (x^2 + y^2 - 1) + 1 == 0
-#' # while this strategy works in theory, it doesn't work
-#' # so well in practice, since s^2 is unbounded.
-#' # it's gradient is also more complicated.
+#' # note that it's gradient is more complicated.
 #' p <- mp("s^2 (x^2 + y^2 - 1) + 1")
-#' samps <- rvnorm(1e4, p, sd = .1, "tibble", chains = 8, w = 10, refresh = 100)
-#' ggplot(samps, aes(x, y)) + geom_point(size = .5) + coord_equal()
+#' samps <- rvnorm(1e4, p, sd = .1, "tibble", chains = 8, w = 2, refresh = 1e3)
+#' ggplot(samps, aes(x, y)) + geom_bin2d(binwidth = .05*c(1,1)) + coord_equal()
 #'
 #'
 #' ## keeping the warmup / the importance of multiple chains
@@ -213,16 +198,14 @@
 #' ggvariety(p, xlim = c(-3,3)) + coord_equal()
 #'
 #' # notice the migration of chains initialized away from the distribution
+#' # (it helps to make the graphic large on your screen)
 #' samps <- rvnorm(500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE)
 #' ggplot(samps, aes(x, y, color = iter)) +
 #'   geom_point(size = 1, alpha = .5) + geom_path(alpha = .2) +
 #'   coord_equal() + facet_wrap(~ factor(chain))
 #'   
-#' samps <- rvnorm(2500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE)#' 
-#' ggplot(samps, aes(x, y)) + 
-#'   stat_density2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
-#'   # geom_point(size = .1, alpha = .1, color = "white") + 
-#'   # geom_path(size = .1, alpha = .2, color = "white") +
+#' samps <- rvnorm(2500, p, sd = .05, "tibble", chains = 8, keep_warmup = TRUE)
+#' ggplot(samps, aes(x, y)) + geom_bin2d(binwidth = .05*c(1,1)) + 
 #'   coord_equal() + facet_wrap(~ factor(chain))
 #'
 #'
@@ -233,8 +216,8 @@
 #'
 #' samps_1 <- rvnorm(250, p^1, sd = .1, output = "tibble", chains = 8)
 #' samps_2 <- rvnorm(250, p^2, sd = .1, output = "tibble", chains = 8)
-#' samps_3 <- rvnorm(250, p^3, sd = .1, output = "tibble", chains = 8)
-#' samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
+#' # samps_3 <- rvnorm(250, p^3, sd = .1, output = "tibble", chains = 8)
+#' # samps_4 <- rvnorm(250, p^4, sd = .1, output = "tibble", chains = 8)
 #' samps <- bind_rows(mget(apropos("samps_[1-4]")))
 #' samps$power <- rep(seq_along(apropos("samps_[1-4]")), each = 2000)
 #'
@@ -265,43 +248,32 @@
 #' samps <- rvnorm(5e3, p, sd = .01, "tibble", chains = 8, refresh = 100)
 #' ggplot(samps, aes(x, y, color = factor(chain))) +
 #'   geom_point(size = .5) + coord_equal()
+#' ggplot(samps, aes(x, y)) + geom_bin2d(binwidth = .02*c(1,1)) + coord_equal()
 #'   
 #' ggplot(samps, aes(x, y, color = factor(chain))) +
 #'   geom_point(size = .5) + coord_equal() +
 #'   facet_wrap(~ factor(chain))
 #'
 #' # semi-algebraic set
-#' samps_normd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
+#' samps_normd <- rvnorm(1e4, p + mp("s^2"), sd = .01, "tibble", chains = 8,
 #'   normalized = TRUE, refresh = 100
 #' )
-#' samps_unormd <- rvnorm(5e3, p + mp("s^2"), sd = .01, "tibble", chains = 8,
+#' samps_unormd <- rvnorm(1e4, p + mp("s^2"), sd = .01, "tibble", chains = 8,
 #'   normalized = FALSE, refresh = 100
 #' )
 #'
 #' bind_rows(
-#'   samps_normd %>% mutate(normd = TRUE),
+#'   samps_normd  %>% mutate(normd = TRUE),
 #'   samps_unormd %>% mutate(normd = FALSE)
 #' ) %>%
 #'   ggplot(aes(x, y)) +
-#'     geom_point() +
-#'     facet_wrap(~ normd) +
-#'     coord_equal()
-#'
-#' bind_rows(
-#'   samps_normd %>% mutate(normd = TRUE),
-#'   samps_unormd %>% mutate(normd = FALSE)
-#' ) %>%
-#'   ggplot(aes(x, y)) +
-#'     geom_hex(bins = 50) +
-#'     facet_wrap(~ normd) +
+#'     geom_bin2d(binwidth = .05*c(1,1)) + 
+#'     facet_grid(normd ~ chain) +
 #'     coord_equal()
 #'
 #'
-#' samps_normd %>%
-#'   ggplot(aes(x, y)) +
-#'     geom_hex(bins = 50) +
-#'     facet_wrap(~ factor(chain), labeller = label_both) +
-#'     coord_equal()
+#' ggplot(samps_normd, aes(x, y)) + 
+#'   geom_bin2d(binwidth = .05*c(1,1)) + coord_equal()
 #'
 #' }
 #' 
