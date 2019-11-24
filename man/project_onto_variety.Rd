@@ -16,7 +16,7 @@ project_onto_variety(x0, poly, dt = 0.05, varorder = vars(poly),
 \item{dt}{The t-mesh size for the homotopy.}
 
 \item{varorder}{A character vector specifying the variable order to pass to
-\code{\link[mpoly:as.function]{mpoly::as.function()}}.}
+\code{\link[mpoly:as.function.mpoly]{mpoly::as.function.mpoly()}}.}
 
 \item{n_correct}{The number of Newton correction iterations to use.}
 
@@ -86,8 +86,71 @@ ggvariety(p, c(-2, 2)) + coord_equal() +
 
 
 
-## projecting a dataset
+## projecting a dataset - grid
 ########################################
+
+library("ggplot2")
+library("dplyr")
+
+(p <- lissajous(3, 3, 0, 0))
+ggvariety(p, n = 251) + coord_equal()
+
+set.seed(1)
+(s <- seq(-1, 1, .25))
+n <- length(s)
+grid <- expand.grid(x = s, y = s)
+grid$x <- jitter(grid$x)
+grid$y <- jitter(grid$y)
+
+ggplot(grid, aes(x, y)) + geom_point() + coord_equal()
+
+grid \%>\% as.matrix() \%>\% 
+  apply(1, function(x0) project_onto_variety(x0, p)) \%>\% t() \%>\% 
+  as.data.frame() \%>\% as_tibble() \%>\% 
+  purrr::set_names(c("x_proj", "y_proj")) ->
+  grid_proj
+  
+ggvariety(p, n = 251) + coord_equal() +
+  geom_segment(
+    aes(x, y, xend = x_proj, yend = y_proj), 
+    data = bind_cols(grid, grid_proj), inherit.aes = FALSE
+  ) +
+  geom_point(aes(x, y), data = grid, inherit.aes = FALSE)
+  
+  
+# here's what happens when you use a naive implementation
+f <- as.function(p, varorder = c("x", "y"))
+naive_project_to_variety <- function(x0) {
+  optim(x0, function(.) f(.)^2, method = "BFGS")$par
+}
+
+grid \%>\% 
+  select(x, y) \%>\% as.matrix() \%>\% 
+  apply(1, naive_project_to_variety) \%>\% t() \%>\% 
+  as.data.frame() \%>\% as_tibble() \%>\% 
+  purrr::set_names(c("x_proj", "y_proj")) \%>\% as_tibble() ->
+  grid_proj2
+  
+df <- bind_rows(
+  bind_cols(grid, grid_proj) \%>\% mutate(method = "homotopy"),
+  bind_cols(grid, grid_proj2) \%>\% mutate(method = "naive")
+)
+  
+ggvariety(p, n = 251) +
+  geom_segment(
+    aes(x, y, xend = x_proj, yend = y_proj), 
+    data = df, inherit.aes = FALSE
+  ) +
+  geom_point(aes(x, y), data = grid, inherit.aes = FALSE) +
+  coord_equal() +
+  facet_grid(. ~ method)
+
+
+## projecting a dataset - rvnorm
+########################################
+
+library("ggplot2")
+library("dplyr")
 
 \dontrun{ requires stan
 
@@ -96,9 +159,6 @@ ggvariety(p, n = 251) + coord_equal()
 
 set.seed(1)
 (samps <- rvnorm(1e4, p, sd = .025, output = "tibble"))
-
-library("ggplot2")
-library("dplyr")
 
 ggplot(samps, aes(x, y)) + 
   geom_point(aes(color = chain)) + 
