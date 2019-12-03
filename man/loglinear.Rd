@@ -5,9 +5,18 @@
 \alias{hierarchical}
 \title{Fit a hierarchical log-linear model with algebraic methods}
 \usage{
-loglinear(model, data, init = tab2vec(data), iter = 10000,
-  burn = 1000, thin = 10, engine = c("C++", "R"), method = c("ipf",
-  "mcmc"), moves, ...)
+loglinear(
+  model,
+  data,
+  init = tab2vec(data),
+  iter = 10000,
+  burn = 1000,
+  thin = 10,
+  engine = c("C++", "R"),
+  method = c("ipf", "mcmc"),
+  moves,
+  ...
+)
 }
 \arguments{
 \item{model}{hierarchical log-linear model specification}

@@ -4,10 +4,20 @@
 \alias{rfiber}
 \title{Sample from the fiber of a contingency table}
 \usage{
-rfiber(n, ..., A, b, x, method = c("sis", "walk", "hybrid"),
-  dist = c("uniform", "hypergeometric"), parallel = FALSE,
-  includeRejections = FALSE, thin = 1, format = c("mat", "vec",
-  "tab"), dim)
+rfiber(
+  n,
+  ...,
+  A,
+  b,
+  x,
+  method = c("sis", "walk", "hybrid"),
+  dist = c("uniform", "hypergeometric"),
+  parallel = FALSE,
+  includeRejections = FALSE,
+  thin = 1,
+  format = c("mat", "vec", "tab"),
+  dim
+)
 }
 \arguments{
 \item{n}{the number of observations}

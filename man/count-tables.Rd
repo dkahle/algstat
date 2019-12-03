@@ -5,8 +5,14 @@
 \alias{count_tables}
 \title{Count Similarly Margined Contingency Tables}
 \usage{
-count_tables(table, A = hmat(dim(table), as.list(1:length(dim(table)))),
-  dir = tempdir(), quiet = TRUE, cache = TRUE, ...)
+count_tables(
+  table,
+  A = hmat(dim(table), as.list(1:length(dim(table)))),
+  dir = tempdir(),
+  quiet = TRUE,
+  cache = TRUE,
+  ...
+)
 }
 \arguments{
 \item{table}{the table of interest}

@@ -4,11 +4,27 @@
 \alias{rvnorm}
 \title{The Variety Normal Distribution}
 \usage{
-rvnorm(n, poly, sd, output = "simple", chains = 4L,
-  warmup = floor(n/2), keep_warmup = FALSE, thin = 1L,
-  inject_direct = FALSE, verbose = FALSE,
-  cores = getOption("mc.cores", 1L), normalized = TRUE, w, vars,
-  numerator, denominator, refresh, code_only = FALSE, ...)
+rvnorm(
+  n,
+  poly,
+  sd,
+  output = "simple",
+  chains = 4L,
+  warmup = floor(n/2),
+  keep_warmup = FALSE,
+  thin = 1L,
+  inject_direct = FALSE,
+  verbose = FALSE,
+  cores = getOption("mc.cores", 1L),
+  normalized = TRUE,
+  w,
+  vars,
+  numerator,
+  denominator,
+  refresh,
+  code_only = FALSE,
+  ...
+)
 }
 \arguments{
 \item{n}{The number of draws desired from each chain after warmup.}

@@ -6,8 +6,7 @@
 \alias{cellBounds}
 \title{Compute the lower and upper bounds}
 \usage{
-cell_bounds(A, b, strategy = c("lp", "ip"), start = 1,
-  messaging = FALSE)
+cell_bounds(A, b, strategy = c("lp", "ip"), start = 1, messaging = FALSE)
 
 cellBounds(...)
 }

@@ -4,8 +4,7 @@
 \alias{ggvariety}
 \title{Plot a variety}
 \usage{
-ggvariety(mp, xlim = c(-1, 1), ylim = c(-1, 1), n = 101, nx = n,
-  ny = n, ...)
+ggvariety(mp, xlim = c(-1, 1), ylim = c(-1, 1), n = 101, nx = n, ny = n, ...)
 }
 \arguments{
 \item{mp}{an mpoly object}

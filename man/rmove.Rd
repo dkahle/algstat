@@ -4,9 +4,18 @@
 \alias{rmove}
 \title{Generate random moves on a fiber}
 \usage{
-rmove(n, A, b, x, method = c("sis", "walk", "hybrid"),
-  dist = c("uniform", "hypergeometric"), parallel = FALSE,
-  format = c("mat", "vec", "tab"), dim, ...)
+rmove(
+  n,
+  A,
+  b,
+  x,
+  method = c("sis", "walk", "hybrid"),
+  dist = c("uniform", "hypergeometric"),
+  parallel = FALSE,
+  format = c("mat", "vec", "tab"),
+  dim,
+  ...
+)
 }
 \arguments{
 \item{n}{the number of observations}

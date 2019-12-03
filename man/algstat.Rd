@@ -4,7 +4,6 @@
 \name{algstat}
 \alias{algstat}
 \alias{package-algstat}
-\alias{algstat-package}
 \title{algstat: Algebraic Statistics in R}
 \description{
 algstat is a package for algebraic statistics in R.  Current applications

@@ -5,8 +5,15 @@
 \alias{rawMetropolis}
 \title{The Metropolis Algorithm}
 \usage{
-metropolis(init, moves, iter = 1000L, burn = 0L, thin = 1L,
-  dist = c("hypergeometric", "uniform"), engine = c("C++", "R"))
+metropolis(
+  init,
+  moves,
+  iter = 1000L,
+  burn = 0L,
+  thin = 1L,
+  dist = c("hypergeometric", "uniform"),
+  engine = c("C++", "R")
+)
 
 rawMetropolis(init, moves, iter = 1000, dist = "hypergeometric")
 }
