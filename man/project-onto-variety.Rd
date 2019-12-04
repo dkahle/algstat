@@ -15,14 +15,16 @@ project_onto_variety(
   n_correct = 2,
   al = rnorm(length(x0)),
   message = FALSE,
-  tol = sqrt(.Machine$double.eps)
+  tol = .Machine$double.eps^(1/4)
 )
 
 project_onto_variety_lagrange(
   x0,
   poly,
-  method = "Nelder-Mead",
+  method = "newton",
   maxit = 1000,
+  tol = .Machine$double.eps^(1/4),
+  message = FALSE,
   ...
 )
 
@@ -32,7 +34,7 @@ project_onto_variety_gradient_descent(
   ga = 1e-04,
   max_ga = 0.1,
   method = c("line", "optimal", "fixed"),
-  tol = sqrt(.Machine$double.eps),
+  tol = .Machine$double.eps^(1/4),
   maxit = 1000,
   message = FALSE
 )
@@ -122,7 +124,7 @@ project_onto_variety(x0, p, dt = .25, message = TRUE)
 p <- mp("(x^2 + y^2)^2 - 2 (x^2 - y^2)")
 ggvariety(p, c(-2, 2), n = 201) + coord_equal()
 
-x0 <- c(.05, .10)
+x0 <- c(.025, .30)
 (x0_proj <- project_onto_variety(x0, p))
 
 cbind(t(x0), t(x0_proj)) \%>\%
@@ -145,7 +147,7 @@ library("ggplot2")
 library("dplyr")
 
 (p <- lissajous(5, 5, 0, 0))
-p <- mp("x^2 + y^2 - 1")
+# p <- mp("x^2 + y^2 - 1")
 ggvariety(p, n = 251) + coord_equal()
 
 set.seed(1)
@@ -183,23 +185,15 @@ grid \%>\%
   
 grid \%>\%
   select(x, y) \%>\% as.matrix() \%>\%
-  apply(1, project_onto_variety_gradient_descent, poly = p, method = "line") \%>\% t() \%>\%
+  apply(1, project_onto_variety_lagrange, poly = p) \%>\% t() \%>\%
   as.data.frame() \%>\% as_tibble() \%>\%
   purrr::set_names(c("x_proj", "y_proj")) \%>\% as_tibble() ->
   grid_proj3
-  
-grid \%>\%
-  select(x, y) \%>\% as.matrix() \%>\%
-  apply(1, project_onto_variety_gradient_descent, poly = p, method = "line", max_ga = .02) \%>\% t() \%>\%
-  as.data.frame() \%>\% as_tibble() \%>\%
-  purrr::set_names(c("x_proj", "y_proj")) \%>\% as_tibble() ->
-  grid_proj4
 
 df <- bind_rows(
   bind_cols(grid, grid_proj) \%>\% mutate(method = "gradient descent homotopy"),
   bind_cols(grid, grid_proj2) \%>\% mutate(method = "optimal gradient descent"),
-  bind_cols(grid, grid_proj3) \%>\% mutate(method = "line search gradient descent"),
-  bind_cols(grid, grid_proj4) \%>\% mutate(method = "smaller maximum line search gradient descent")
+  bind_cols(grid, grid_proj3) \%>\% mutate(method = "newton on lagrange")
 )
 
 ggvariety(p, n = 251) +
@@ -209,7 +203,7 @@ ggvariety(p, n = 251) +
   ) +
   geom_point(aes(x, y), data = grid, inherit.aes = FALSE) +
   coord_equal() +
-  facet_wrap(~ method) + xlim(-1, 1) + ylim(-1, 1)
+  facet_wrap(~ method) + xlim(-1.1, 1.1) + ylim(-1.1, 1.1)
 
 
 ## projecting a dataset - rvnorm
@@ -242,7 +236,8 @@ ggplot(subsamps, aes(x, y)) + geom_point() + coord_equal()
 subsamps \%>\%
   select(x, y) \%>\%
   as.matrix() \%>\%
-  apply(1, function(x0) project_onto_variety(x0, p, dt = .025, n_correct = 3)) \%>\% t() \%>\%
+  #apply(1, function(x0) project_onto_variety(x0, p, dt = .025, n_correct = 3)) \%>\% t() \%>\%
+  apply(1, function(x0) project_onto_variety_lagrange(x0, p)) \%>\% t() \%>\%
   as.data.frame() \%>\% as_tibble() \%>\%
   purrr::set_names(c("x_proj", "y_proj")) \%>\%
   bind_cols(subsamps, .) ->

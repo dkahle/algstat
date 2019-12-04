@@ -75,7 +75,7 @@
 #' p <- mp("(x^2 + y^2)^2 - 2 (x^2 - y^2)")
 #' ggvariety(p, c(-2, 2), n = 201) + coord_equal()
 #'
-#' x0 <- c(.05, .10)
+#' x0 <- c(.025, .30)
 #' (x0_proj <- project_onto_variety(x0, p))
 #'
 #' cbind(t(x0), t(x0_proj)) %>%
@@ -98,7 +98,7 @@
 #' library("dplyr")
 #'
 #' (p <- lissajous(5, 5, 0, 0))
-#' p <- mp("x^2 + y^2 - 1")
+#' # p <- mp("x^2 + y^2 - 1")
 #' ggvariety(p, n = 251) + coord_equal()
 #'
 #' set.seed(1)
@@ -136,23 +136,15 @@
 #'   
 #' grid %>%
 #'   select(x, y) %>% as.matrix() %>%
-#'   apply(1, project_onto_variety_gradient_descent, poly = p, method = "line") %>% t() %>%
+#'   apply(1, project_onto_variety_lagrange, poly = p) %>% t() %>%
 #'   as.data.frame() %>% as_tibble() %>%
 #'   purrr::set_names(c("x_proj", "y_proj")) %>% as_tibble() ->
 #'   grid_proj3
-#'   
-#' grid %>%
-#'   select(x, y) %>% as.matrix() %>%
-#'   apply(1, project_onto_variety_gradient_descent, poly = p, method = "line", max_ga = .02) %>% t() %>%
-#'   as.data.frame() %>% as_tibble() %>%
-#'   purrr::set_names(c("x_proj", "y_proj")) %>% as_tibble() ->
-#'   grid_proj4
 #'
 #' df <- bind_rows(
 #'   bind_cols(grid, grid_proj) %>% mutate(method = "gradient descent homotopy"),
 #'   bind_cols(grid, grid_proj2) %>% mutate(method = "optimal gradient descent"),
-#'   bind_cols(grid, grid_proj3) %>% mutate(method = "line search gradient descent"),
-#'   bind_cols(grid, grid_proj4) %>% mutate(method = "smaller maximum line search gradient descent")
+#'   bind_cols(grid, grid_proj3) %>% mutate(method = "newton on lagrange")
 #' )
 #'
 #' ggvariety(p, n = 251) +
@@ -162,7 +154,7 @@
 #'   ) +
 #'   geom_point(aes(x, y), data = grid, inherit.aes = FALSE) +
 #'   coord_equal() +
-#'   facet_wrap(~ method) + xlim(-1, 1) + ylim(-1, 1)
+#'   facet_wrap(~ method) + xlim(-1.1, 1.1) + ylim(-1.1, 1.1)
 #'
 #'
 #' ## projecting a dataset - rvnorm
@@ -195,7 +187,8 @@
 #' subsamps %>%
 #'   select(x, y) %>%
 #'   as.matrix() %>%
-#'   apply(1, function(x0) project_onto_variety(x0, p, dt = .025, n_correct = 3)) %>% t() %>%
+#'   #apply(1, function(x0) project_onto_variety(x0, p, dt = .025, n_correct = 3)) %>% t() %>%
+#'   apply(1, function(x0) project_onto_variety_lagrange(x0, p)) %>% t() %>%
 #'   as.data.frame() %>% as_tibble() %>%
 #'   purrr::set_names(c("x_proj", "y_proj")) %>%
 #'   bind_cols(subsamps, .) ->
@@ -222,7 +215,7 @@
 project_onto_variety <- function(
   x0, poly, dt = .05, varorder = vars(poly), 
   n_correct = 2, al = rnorm(length(x0)), 
-  message = FALSE, tol = sqrt(.Machine$double.eps)
+  message = FALSE, tol = .Machine$double.eps^(1/4)
 ) {
   
   n_vars <- length(varorder)
@@ -311,9 +304,13 @@ project_onto_variety <- function(
 
 #' @rdname project-onto-variety
 #' @export
-project_onto_variety_lagrange <- function(x0, poly, method = "Nelder-Mead", maxit = 1e3, ...) {
+project_onto_variety_lagrange <- function(
+  x0, poly, method = "newton", 
+  maxit = 1e3, tol = .Machine$double.eps^(1/4), 
+  message = FALSE, ...
+) {
   # this only projects R2 points
-  
+
   # formulate lagrangian
   L <- mp(sprintf("(x - %s)^2 + (y - %s)^2", x0[1], x0[2])) + mp("la")*poly
   dL <- deriv(L, var = c("x", "y", "la"))
@@ -329,23 +326,29 @@ project_onto_variety_lagrange <- function(x0, poly, method = "Nelder-Mead", maxi
     
     xn_1 <- c(x0, la0)
     xn <- xn_1 + solve( H(xn_1), -dLf(xn_1) )
-    
+
     count <- 0L
     while(sum((xn - xn_1)^2) > sqrt(.Machine$double.eps) && count <= maxit) {
-      # xn_1 <- c(x0, rnorm(1))
+      xn_1 <- xn
       xn <- xn_1 + solve( H(xn_1), -dLf(xn_1) )
-      # message(paste(round(xn, 5), collapse = " "))
+      if (message) message(paste(round(xn, 5), collapse = " "))
       count <- count + 1L
     }
-    xn[1:2]
+    xn <- xn[1:2]
     
   } else {
  
     la0 <- optimize(function(.) sum(dLf(c(x0,.))^2), lower = 0, upper = 1e3)$minimum
     xn <- optim(c(x0, la0), function(.) sum(dLf(.))^2, method = method, ...)$par[1:2]
-    xn[1:2]
+    xn <- xn[1:2]
     
   }
+  
+  pf  <- as.function(poly, varorder = c("x", "y"), silent = TRUE)
+  resid <- pf(xn)
+  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid))
+  
+  xn
   
 }
 
@@ -357,37 +360,47 @@ project_onto_variety_lagrange <- function(x0, poly, method = "Nelder-Mead", maxi
 
 #' @rdname project-onto-variety
 #' @export
-project_onto_variety_gradient_descent <- function(x0, poly, ga = 1e-4, max_ga = .1, 
-  method = c("line", "optimal", "fixed"), tol = sqrt(.Machine$double.eps), maxit = 1e3,
-  message = FALSE
+project_onto_variety_gradient_descent <- function(
+  x0, poly, ga = 1e-4, max_ga = .1, 
+  method = c("line", "optimal", "fixed"), tol = .Machine$double.eps^(1/4), 
+  maxit = 1e3, message = FALSE
 ) {
 
   # arg check
   method <- match.arg(method)
   
   # create functions
-  pf <- as.function(poly^2, varorder = c("x", "y"), silent = TRUE)
-  dpf <- as.function(deriv(poly^2, var = c("x", "y")), varorder = c("x", "y"), silent = TRUE)
+  pf  <- as.function(poly, varorder = c("x", "y"), silent = TRUE)
+  p2f <- as.function(poly^2, varorder = c("x", "y"), silent = TRUE)
+  dp2 <- deriv(poly^2, var = c("x", "y"))
+  dp2f <- as.function(dp2, varorder = c("x", "y"), silent = TRUE)
+  ddp2 <- lapply(dp2, function(.) deriv(., var = c("x", "y")))
+  ddp2f <- function(v) {
+    sapply(
+      lapply(ddp2, as.function, silent = TRUE),
+      function(f) f(v)
+    )
+  }
   
   
   if (method == "optimal") {
     
     xn_2 <- x0
     
-    ga <- optimize(function(.) pf(xn_2 - .*dpf(xn_2)), lower = 0, upper = max_ga)$minimum
-    xn_1 <- xn_2 - ga*dpf(xn_2)
+    ga <- optimize(function(.) p2f(xn_2 - .*dp2f(xn_2)), lower = 0, upper = max_ga)$minimum
+    xn_1 <- xn_2 - ga*dp2f(xn_2)
     if (message) message(paste(round(xn_1, 5), collapse = " "))
     
-    ga <- optimize(function(.) pf(xn_1 - .*dpf(xn_1)), lower = 0, upper = max_ga)$minimum
-    xn <- xn_1 - ga*dpf(xn_1)
+    ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
+    xn <- xn_1 - ga*dp2f(xn_1)
     if (message) message(paste(round(xn, 5), collapse = " "))
     
     count <- 0
-    while (abs(pf(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+    while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
       xn_2 <- xn_1
       xn_1 <- xn
-      ga   <- abs(sum((xn_1 - xn_2)*(dpf(xn_1) - dpf(xn_2)))) / sum((dpf(xn_1) - dpf(xn_2))^2)
-      xn   <- xn_1 - ga*dpf(xn_1)
+      ga   <- abs(sum((xn_1 - xn_2)*(dp2f(xn_1) - dp2f(xn_2)))) / sum((dp2f(xn_1) - dp2f(xn_2))^2)
+      xn   <- xn_1 - ga*dp2f(xn_1)
       count <- count + 1
       if (message) message(paste(round(xn, 5), collapse = " "))
     }
@@ -396,15 +409,15 @@ project_onto_variety_gradient_descent <- function(x0, poly, ga = 1e-4, max_ga = 
     
     xn_1 <- x0
     
-    ga <- optimize(function(.) pf(xn_1 - .*dpf(xn_1)), lower = 0, upper = max_ga)$minimum
-    xn <- xn_1 - ga*dpf(xn_1)
+    ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
+    xn <- xn_1 - ga*dp2f(xn_1)
     if (message) message(paste(round(xn, 5), collapse = " "))
     
     count <- 0
-    while (abs(pf(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+    while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
       xn_1 <- xn
-      ga <- optimize(function(.) pf(xn_1 - .*dpf(xn_1)), lower = 0, upper = max_ga)$minimum
-      xn   <- xn_1 - ga*dpf(xn_1)
+      ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
+      xn   <- xn_1 - ga*dp2f(xn_1)
       count <- count + 1
       if (message) message(paste(round(xn, 5), collapse = " "))
     }
@@ -413,13 +426,13 @@ project_onto_variety_gradient_descent <- function(x0, poly, ga = 1e-4, max_ga = 
     
     xn_1 <- x0
     
-    xn <- xn_1 - ga*dpf(xn_1)
+    xn <- xn_1 - ga*dp2f(xn_1)
     if (message) message(paste(round(xn, 5), collapse = " "))
     
     count <- 0
-    while (abs(pf(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+    while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
       xn_1 <- xn
-      xn   <- xn_1 - ga*dpf(xn_1)
+      xn   <- xn_1 - ga*dp2f(xn_1)
       count <- count + 1
       if (message) message(paste(round(xn, 5), collapse = " "))
     }
@@ -429,14 +442,14 @@ project_onto_variety_gradient_descent <- function(x0, poly, ga = 1e-4, max_ga = 
   
 
   count <- 0
-  while (abs(pf(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+  while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
     xn_1 <- xn
     if (method == "line") {
-      ga <- optimize(function(.) pf(xn_1 - .*dpf(xn_1)), lower = 0, upper = max_ga)$minimum
+      ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
     } else if (method == "optimal") {
-      ga <- abs(sum((xn - xn_1)*(dpf(xn) - dpf(xn_1)))) / sum((dpf(xn) - dpf(xn_1))^2)
+      ga <- abs(sum((xn - xn_1)*(dp2f(xn) - dp2f(xn_1)))) / sum((dp2f(xn) - dp2f(xn_1))^2)
     }
-    xn   <- xn_1 - ga*dpf(xn_1)
+    xn   <- xn_1 - ga*dp2f(xn_1)
     count <- count + 1
     if (message) message(paste(round(xn, 5), collapse = " "))
   }
