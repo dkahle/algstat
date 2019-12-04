@@ -57,7 +57,7 @@
 #'   purrr::set_names(c("x", "y", "x_proj", "y_proj")) -> df
 #'
 #' ggvariety(p) + coord_equal() +
-#'   ggplot2::geom_segment(
+#'   geom_segment(
 #'     aes(x, y, xend = x_proj, yend = y_proj),
 #'     data = df, inherit.aes = FALSE
 #'   )
@@ -88,7 +88,7 @@
 #'   purrr::set_names(c("x", "y", "x_proj", "y_proj")) -> df
 #'
 #' ggvariety(p, c(-2, 2)) + coord_equal() +
-#'   ggplot2::geom_segment(
+#'   geom_segment(
 #'     aes(x, y, xend = x_proj, yend = y_proj),
 #'     data = df, inherit.aes = FALSE
 #'   )
