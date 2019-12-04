@@ -22,7 +22,9 @@
 #'   \code{"line"} (line search) or \code{"fixed"}.
 #' @param maxit Number of maximum iterations in solving Newton's method.
 #' @param ga Learning rate for gradient descent.
-#' @param maxga Maximum learning rate for gradient descent line search.
+#' @param max_ga Maximum learning rate for gradient descent line search.
+#' @param message If \code{TRUE}, the user is issued messages on the algorithm's
+#'   progress.
 #' @param ... Additional arguments to pass to [optim()] when \code{method} is
 #'   not \code{"newton"}.
 #' @return A numeric vector the same length as \code{x0}.
@@ -33,6 +35,9 @@
 #' @name project-onto-variety
 #' @examples
 #'
+#'
+#' library("ggplot2")
+#' 
 #'
 #' ## basic usage
 #' ########################################
@@ -48,7 +53,7 @@
 #' sqrt(2)/2
 #'
 #' cbind(t(x0), t(x0_proj)) %>%
-#'   as.data.frame() %>% as_tibble() %>%
+#'   as.data.frame() %>% tibble::as_tibble() %>%
 #'   purrr::set_names(c("x", "y", "x_proj", "y_proj")) -> df
 #'
 #' ggvariety(p) + coord_equal() +
@@ -79,7 +84,7 @@
 #' (x0_proj <- project_onto_variety(x0, p))
 #'
 #' cbind(t(x0), t(x0_proj)) %>%
-#'   as.data.frame() %>% as_tibble() %>%
+#'   as.data.frame() %>% tibble::as_tibble() %>%
 #'   purrr::set_names(c("x", "y", "x_proj", "y_proj")) -> df
 #'
 #' ggvariety(p, c(-2, 2)) + coord_equal() +
@@ -112,7 +117,7 @@
 #'
 #' grid %>% as.matrix() %>%
 #'   apply(1, function(x0) project_onto_variety(x0, p)) %>% t() %>%
-#'   as.data.frame() %>% as_tibble() %>%
+#'   as.data.frame() %>% tibble::as_tibble() %>%
 #'   purrr::set_names(c("x_proj", "y_proj")) ->
 #'   grid_proj
 #'
@@ -130,15 +135,15 @@
 #' grid %>%
 #'   select(x, y) %>% as.matrix() %>%
 #'   apply(1, project_onto_variety_gradient_descent, poly = p, method = "optimal") %>% t() %>%
-#'   as.data.frame() %>% as_tibble() %>%
-#'   purrr::set_names(c("x_proj", "y_proj")) %>% as_tibble() ->
+#'   as.data.frame() %>% tibble::as_tibble() %>%
+#'   purrr::set_names(c("x_proj", "y_proj")) %>% tibble::as_tibble() ->
 #'   grid_proj2
-#'   
+#'
 #' grid %>%
 #'   select(x, y) %>% as.matrix() %>%
 #'   apply(1, project_onto_variety_lagrange, poly = p) %>% t() %>%
-#'   as.data.frame() %>% as_tibble() %>%
-#'   purrr::set_names(c("x_proj", "y_proj")) %>% as_tibble() ->
+#'   as.data.frame() %>% tibble::as_tibble() %>%
+#'   purrr::set_names(c("x_proj", "y_proj")) %>% tibble::as_tibble() ->
 #'   grid_proj3
 #'
 #' df <- bind_rows(
@@ -189,7 +194,7 @@
 #'   as.matrix() %>%
 #'   #apply(1, function(x0) project_onto_variety(x0, p, dt = .025, n_correct = 3)) %>% t() %>%
 #'   apply(1, function(x0) project_onto_variety_lagrange(x0, p)) %>% t() %>%
-#'   as.data.frame() %>% as_tibble() %>%
+#'   as.data.frame() %>% tibble::as_tibble() %>%
 #'   purrr::set_names(c("x_proj", "y_proj")) %>%
 #'   bind_cols(subsamps, .) ->
 #'   subsamps

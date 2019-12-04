@@ -54,6 +54,9 @@ project_onto_variety_gradient_descent(
 \item{al}{A numeric vector of length 2; the patch to do projective
 calculations over.}
 
+\item{message}{If \code{TRUE}, the user is issued messages on the algorithm's
+progress.}
+
 \item{tol}{A tolerance; a warning is issued if the magnitude of the residual
 is larger than \code{tol}.}
 
@@ -72,7 +75,7 @@ not \code{"newton"}.}
 
 \item{ga}{Learning rate for gradient descent.}
 
-\item{maxga}{Maximum learning rate for gradient descent line search.}
+\item{max_ga}{Maximum learning rate for gradient descent line search.}
 }
 \value{
 A numeric vector the same length as \code{x0}.
@@ -81,6 +84,9 @@ A numeric vector the same length as \code{x0}.
 A R-based implementation of the gradient descent homotopies
 }
 \examples{
+
+
+library("ggplot2")
 
 
 ## basic usage
@@ -97,7 +103,7 @@ as.function(p)(x0_proj)
 sqrt(2)/2
 
 cbind(t(x0), t(x0_proj)) \%>\%
-  as.data.frame() \%>\% as_tibble() \%>\%
+  as.data.frame() \%>\% tibble::as_tibble() \%>\%
   purrr::set_names(c("x", "y", "x_proj", "y_proj")) -> df
 
 ggvariety(p) + coord_equal() +
@@ -128,7 +134,7 @@ x0 <- c(.025, .30)
 (x0_proj <- project_onto_variety(x0, p))
 
 cbind(t(x0), t(x0_proj)) \%>\%
-  as.data.frame() \%>\% as_tibble() \%>\%
+  as.data.frame() \%>\% tibble::as_tibble() \%>\%
   purrr::set_names(c("x", "y", "x_proj", "y_proj")) -> df
 
 ggvariety(p, c(-2, 2)) + coord_equal() +
@@ -161,7 +167,7 @@ ggplot(grid, aes(x, y)) + geom_point() + coord_equal()
 
 grid \%>\% as.matrix() \%>\%
   apply(1, function(x0) project_onto_variety(x0, p)) \%>\% t() \%>\%
-  as.data.frame() \%>\% as_tibble() \%>\%
+  as.data.frame() \%>\% tibble::as_tibble() \%>\%
   purrr::set_names(c("x_proj", "y_proj")) ->
   grid_proj
 
@@ -179,15 +185,15 @@ ggvariety(p, n = 251) + coord_equal() +
 grid \%>\%
   select(x, y) \%>\% as.matrix() \%>\%
   apply(1, project_onto_variety_gradient_descent, poly = p, method = "optimal") \%>\% t() \%>\%
-  as.data.frame() \%>\% as_tibble() \%>\%
-  purrr::set_names(c("x_proj", "y_proj")) \%>\% as_tibble() ->
+  as.data.frame() \%>\% tibble::as_tibble() \%>\%
+  purrr::set_names(c("x_proj", "y_proj")) \%>\% tibble::as_tibble() ->
   grid_proj2
-  
+
 grid \%>\%
   select(x, y) \%>\% as.matrix() \%>\%
   apply(1, project_onto_variety_lagrange, poly = p) \%>\% t() \%>\%
-  as.data.frame() \%>\% as_tibble() \%>\%
-  purrr::set_names(c("x_proj", "y_proj")) \%>\% as_tibble() ->
+  as.data.frame() \%>\% tibble::as_tibble() \%>\%
+  purrr::set_names(c("x_proj", "y_proj")) \%>\% tibble::as_tibble() ->
   grid_proj3
 
 df <- bind_rows(
@@ -238,7 +244,7 @@ subsamps \%>\%
   as.matrix() \%>\%
   #apply(1, function(x0) project_onto_variety(x0, p, dt = .025, n_correct = 3)) \%>\% t() \%>\%
   apply(1, function(x0) project_onto_variety_lagrange(x0, p)) \%>\% t() \%>\%
-  as.data.frame() \%>\% as_tibble() \%>\%
+  as.data.frame() \%>\% tibble::as_tibble() \%>\%
   purrr::set_names(c("x_proj", "y_proj")) \%>\%
   bind_cols(subsamps, .) ->
   subsamps
