@@ -8,50 +8,43 @@
 #' subject), and a long data frame with a variable containing the counts in the
 #' contingency table.
 #'
-#' @param data a data frame or array
-#' @param out the output format, see examples
-#' @param var the name of the frequency variable in the dataset, if not freq
+#' @param data a data frame or array.
+#' @param out the output format, see examples.
+#' @param var the name of the frequency variable in the dataset, if not
+#'   \code{"freq"}.
 #' @param ... ...
 #' @return a matrix containing the Markov basis as its columns (for easy
 #'   addition to tables)
-#' @export teshape
+#' @seealso [stats::xtabs()]
+#' @export
 #' @examples
 #'
+#' # converting a talbe to a data frame
+#' (tab <- structure(
+#'   array(1:8, c(2,2,2)),
+#'   .Dimnames = list(
+#'     A = c("a1", "a2"),
+#'     B = c("b1", "b2"),
+#'     C = c("c1", "c2")
+#'   )
+#' ))
 #'
-#' data(Titanic)
-#'
-#' # array to others
-#' teshape(Titanic, "freq")
-#' teshape(Titanic, "tab") # what it was
-#' teshape(Titanic, "raw")
-#'
-#'
-#' # freq to others
-#' TitanicFreq <- teshape(Titanic, "freq")
-#' teshape(TitanicFreq, "freq") # what it was
-#' teshape(TitanicFreq, "tab")  # == Titanic
-#' teshape(TitanicFreq, "raw")
-#'
-#' # raw to others
-#' TitanicRaw <- teshape(Titanic, "raw")
-#' teshape(TitanicRaw, "freq")
-#' teshape(TitanicRaw, "tab")
-#' teshape(TitanicRaw, "raw")
+#' teshape(tab, "freq")
+#' teshape(tab, "raw") # nrow = sum(1:8)
 #'
 #'
+#' # converting a summarized data frame into a table or raw data frame
+#' (data <- teshape(tab, "freq"))
+#' teshape(data, "tab")
+#' stats::xtabs(freq ~ ., data = data)
+#' teshape(data, "tab") == stats::xtabs(freq ~ ., data = data)
+#' teshape(data, "raw")
 #'
-#' # using "count" instead of "freq"
-#' TitanicFreq <- teshape(Titanic, "freq")
-#' TitanicFreq$count <- TitanicFreq$freq
-#' TitanicFreq$freq  <- NULL
-#' teshape(TitanicFreq, "tab")
 #'
-#'
-#' # a non-"freq" named frequency variable
-#' TitanicFreq <- teshape(Titanic, "freq")
-#' TitanicFreq$n <- TitanicFreq$freq
-#' TitanicFreq$freq  <- NULL
-#' teshape(TitanicFreq, "tab", "n")
+#' # converting a raw data frame into a table or summarized data frame
+#' (data <- teshape(tab, "raw"))
+#' teshape(data, "tab")
+#' teshape(data, "freq")
 #'
 #' 
 teshape <- function(data, out = c("freq", "tab", "raw"), var){
@@ -73,18 +66,16 @@ teshape <- function(data, out = c("freq", "tab", "raw"), var){
   
   
   
-  if(input == out){
-  	message("it's already in that format...")
-  	return(data) 
-  }
+  if (input == out) return(data)
+  
   
   
   
   ## if the input is a table...
   if(input == "tab"){
-    df <- melt(data)
-    p <- ncol(df) - 1
-    names(df) <- c(names(df)[-(p+1)], "freq")
+    df <- do.call(expand.grid, dimnames(data))
+    p <- ncol(df)
+    df$freq <- as.vector(data)
     if(out == "freq") return(df)
     
     # continuing if out == "raw"

@@ -7,11 +7,12 @@
 teshape(data, out = c("freq", "tab", "raw"), var)
 }
 \arguments{
-\item{data}{a data frame or array}
+\item{data}{a data frame or array.}
 
-\item{out}{the output format, see examples}
+\item{out}{the output format, see examples.}
 
-\item{var}{the name of the frequency variable in the dataset, if not freq}
+\item{var}{the name of the frequency variable in the dataset, if not
+\code{"freq"}.}
 
 \item{...}{...}
 }
@@ -31,41 +32,35 @@ contingency table.
 }
 \examples{
 
+# converting a talbe to a data frame
+(tab <- structure(
+  array(1:8, c(2,2,2)),
+  .Dimnames = list(
+    A = c("a1", "a2"),
+    B = c("b1", "b2"),
+    C = c("c1", "c2")
+  )
+))
 
-data(Titanic)
-
-# array to others
-teshape(Titanic, "freq")
-teshape(Titanic, "tab") # what it was
-teshape(Titanic, "raw")
-
-
-# freq to others
-TitanicFreq <- teshape(Titanic, "freq")
-teshape(TitanicFreq, "freq") # what it was
-teshape(TitanicFreq, "tab")  # == Titanic
-teshape(TitanicFreq, "raw")
-
-# raw to others
-TitanicRaw <- teshape(Titanic, "raw")
-teshape(TitanicRaw, "freq")
-teshape(TitanicRaw, "tab")
-teshape(TitanicRaw, "raw")
+teshape(tab, "freq")
+teshape(tab, "raw") # nrow = sum(1:8)
 
 
-
-# using "count" instead of "freq"
-TitanicFreq <- teshape(Titanic, "freq")
-TitanicFreq$count <- TitanicFreq$freq
-TitanicFreq$freq  <- NULL
-teshape(TitanicFreq, "tab")
-
-
-# a non-"freq" named frequency variable
-TitanicFreq <- teshape(Titanic, "freq")
-TitanicFreq$n <- TitanicFreq$freq
-TitanicFreq$freq  <- NULL
-teshape(TitanicFreq, "tab", "n")
+# converting a summarized data frame into a table or raw data frame
+(data <- teshape(tab, "freq"))
+teshape(data, "tab")
+stats::xtabs(freq ~ ., data = data)
+teshape(data, "tab") == stats::xtabs(freq ~ ., data = data)
+teshape(data, "raw")
 
 
+# converting a raw data frame into a table or summarized data frame
+(data <- teshape(tab, "raw"))
+teshape(data, "tab")
+teshape(data, "freq")
+
+
+}
+\seealso{
+\code{\link[stats:xtabs]{stats::xtabs()}}
 }

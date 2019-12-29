@@ -21,7 +21,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
 #' @importFrom tidyr gather
-#' @importFrom stats deriv dmultinom loglin runif sd optim optimize rnorm
+#' @importFrom stats deriv dmultinom loglin runif sd optim optimize rnorm xtabs
 #' @importFrom utils combn download.file
 #' @useDynLib algstat
 #' @docType package
