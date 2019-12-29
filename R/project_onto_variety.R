@@ -31,13 +31,15 @@
 #' @references Griffin, Z. and J. Hauenstein (2015). Real solutions to systems
 #'   of polynomial equations and parameter continuation. \emph{Advances in
 #'   Geometry} 15(2), pp.173--187.
+#' @references Bates, D., J. Hauenstein, A. Sommese, and C. Wampler (2013).
+#'   Numerically Solving Polynomial Systems with Bertini. SIAM. pp.34--35.
 #' @author David Kahle
 #' @name project-onto-variety
 #' @examples
 #'
 #'
 #' library("ggplot2")
-#' 
+#'
 #'
 #' ## basic usage
 #' ########################################
@@ -45,10 +47,7 @@
 #' x0 <- c(1,1)
 #' p <- mp("x^2 + y^2 - 1")
 #' (x0_proj <- project_onto_variety(x0, p))
-#' (x0_proj <- project_onto_variety_lagrange(x0, p))
-#' (x0_proj <- project_onto_variety_gradient_descent(x0, p))
-#' (x0_proj <- project_onto_variety_gradient_descent(x0, p, method = "line"))
-#'
+#' 
 #' as.function(p)(x0_proj)
 #' sqrt(2)/2
 #'
@@ -61,7 +60,19 @@
 #'     aes(x, y, xend = x_proj, yend = y_proj),
 #'     data = df, inherit.aes = FALSE
 #'   )
+#'   
 #'
+#' # alternatives   
+#' project_onto_variety_lagrange(x0, p)
+#' project_onto_variety_gradient_descent(x0, p)
+#' project_onto_variety_gradient_descent(x0, p, method = "line")
+#'
+#'
+#' # number of variables > 2
+#' x0 <- c(1,1,1)
+#' p <- mp("x^2 + y^2 + z^2 - 1")
+#' (x0_proj <- project_onto_variety(x0, p))
+#' as.function(p)(x0_proj)
 #'
 #'
 #' ## options
@@ -149,7 +160,7 @@
 #' df <- bind_rows(
 #'   bind_cols(grid, grid_proj) %>% mutate(method = "gradient descent homotopy"),
 #'   bind_cols(grid, grid_proj2) %>% mutate(method = "optimal gradient descent"),
-#'   bind_cols(grid, grid_proj3) %>% mutate(method = "newton on lagrange")
+#'   bind_cols(grid, grid_proj3) %>% mutate(method = "newton on lagrangian")
 #' )
 #'
 #' ggvariety(p, n = 251) +
@@ -244,7 +255,7 @@ project_onto_variety <- function(
   
   Ha <- function(v, t) {
     # v = (x, y, la0, la1)
-    x <- v[1:2]; la <- v[3:4]
+    x <- v[1:n_vars]; la <- v[-(1:n_vars)]
     c(
       gfunc(x) - t*gfunc(x0),
       as.numeric(cbind((x-x0), dgfunc(x)) %*% la),
@@ -270,7 +281,9 @@ project_onto_variety <- function(
   }
   # JHa(vn, .99)
   
-  Ht <- function(v, t) c(-gfunc(x0), 0, 0, 0)
+  # partial derivative of H w.r.t t:
+  Ht <- function(v, t) c(-gfunc(x0), rep(0, n_vars + 2 - 1))
+  # Ht(c(1,1), 1)
   
   
   for (i in 2:length(ts)) {

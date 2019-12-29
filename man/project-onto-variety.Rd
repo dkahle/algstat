@@ -95,9 +95,6 @@ library("ggplot2")
 x0 <- c(1,1)
 p <- mp("x^2 + y^2 - 1")
 (x0_proj <- project_onto_variety(x0, p))
-(x0_proj <- project_onto_variety_lagrange(x0, p))
-(x0_proj <- project_onto_variety_gradient_descent(x0, p))
-(x0_proj <- project_onto_variety_gradient_descent(x0, p, method = "line"))
 
 as.function(p)(x0_proj)
 sqrt(2)/2
@@ -111,7 +108,19 @@ ggvariety(p) + coord_equal() +
     aes(x, y, xend = x_proj, yend = y_proj),
     data = df, inherit.aes = FALSE
   )
+  
 
+# alternatives   
+project_onto_variety_lagrange(x0, p)
+project_onto_variety_gradient_descent(x0, p)
+project_onto_variety_gradient_descent(x0, p, method = "line")
+
+
+# number of variables > 2
+x0 <- c(1,1,1)
+p <- mp("x^2 + y^2 + z^2 - 1")
+(x0_proj <- project_onto_variety(x0, p))
+as.function(p)(x0_proj)
 
 
 ## options
@@ -199,7 +208,7 @@ grid \%>\%
 df <- bind_rows(
   bind_cols(grid, grid_proj) \%>\% mutate(method = "gradient descent homotopy"),
   bind_cols(grid, grid_proj2) \%>\% mutate(method = "optimal gradient descent"),
-  bind_cols(grid, grid_proj3) \%>\% mutate(method = "newton on lagrange")
+  bind_cols(grid, grid_proj3) \%>\% mutate(method = "newton on lagrangian")
 )
 
 ggvariety(p, n = 251) +
@@ -268,6 +277,9 @@ ggplot(subsamps, aes(x_proj, y_proj)) + geom_point() + coord_equal()
 Griffin, Z. and J. Hauenstein (2015). Real solutions to systems
 of polynomial equations and parameter continuation. \emph{Advances in
 Geometry} 15(2), pp.173--187.
+
+Bates, D., J. Hauenstein, A. Sommese, and C. Wampler (2013).
+Numerically Solving Polynomial Systems with Bertini. SIAM. pp.34--35.
 }
 \author{
 David Kahle
