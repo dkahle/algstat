@@ -22,7 +22,15 @@
 #' coef(mod) / y_coef
 #' 
 #' lm(y ~ x, data = df)
-#'
+#' 
+#' 
+#' # example 2
+#' df <- rvnorm(100, mp("x^2 + y^2 - 1"), sd = .1)
+#' plot(df, asp = 1)
+#' df <- as.data.frame(df)
+#' mod <- alm(~ poly(x, 2, raw = TRUE) + poly(y, 2, raw = TRUE), data = df)
+#' mod
+#' 
 #' 
   
   
