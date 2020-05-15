@@ -4,7 +4,9 @@
 \name{political_goals}
 \alias{political_goals}
 \title{Relative Rankings of Importance of Four Political Goals}
-\format{An atomic named vector of length 4! = 24}
+\format{
+An atomic named vector of length 4! = 24
+}
 \usage{
 data(political_goals)
 }

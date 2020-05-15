@@ -4,7 +4,9 @@
 \name{drugs}
 \alias{drugs}
 \title{Use of Alcohol, Cigarettes, and Marijuana by High School Students}
-\format{A 2x2x2 (contingency) table}
+\format{
+A 2x2x2 (contingency) table
+}
 \usage{
 data(drugs)
 }

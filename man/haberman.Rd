@@ -4,7 +4,9 @@
 \name{haberman}
 \alias{haberman}
 \title{Haberman's Positive Margin no Three-way Interaction MLE}
-\format{A 2x2x2 (contingency) table}
+\format{
+A 2x2x2 (contingency) table
+}
 \usage{
 data(haberman)
 }

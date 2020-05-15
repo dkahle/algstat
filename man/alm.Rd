@@ -5,12 +5,12 @@
 \alias{print.alm}
 \title{Algebraic least squares regression}
 \usage{
-alm(form, data, ...)
+alm(formula, data, ...)
 
 \method{print}{alm}(x, ...)
 }
 \arguments{
-\item{form}{A formula specifying the basis monomials, passed to
+\item{formula}{A formula specifying the basis monomials, passed to
 \link[stats:model.matrix]{stats::model.matrix}}
 
 \item{data}{The dataset on which to apply the method, passed to
@@ -27,7 +27,7 @@ Algebraic least squares regression
 \examples{
 
 
-## fitting a linear form
+## fitting a linear formula
 ########################################
 
 n <- 101
@@ -43,7 +43,7 @@ coef(mod) / y_coef
 lm(y ~ x, data = df)
 
 
-## fitting a quadratic form
+## fitting a quadratic formula
 ########################################
 
 df <- rvnorm(100, mp("x^2 + (2 y)^2 - 1"), sd = .05, output = "tibble")

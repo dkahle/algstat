@@ -4,7 +4,9 @@
 \name{city}
 \alias{city}
 \title{Living Location Preference Dataset}
-\format{A 6x3 matrix}
+\format{
+A 6x3 matrix
+}
 \usage{
 data(city)
 }

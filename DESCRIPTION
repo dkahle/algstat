@@ -40,6 +40,6 @@ Suggests:
     vcd,
     microbenchmark
 License: GPL-2
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

@@ -4,7 +4,9 @@
 \name{cookie}
 \alias{cookie}
 \title{Girl Scout Cookie Preferences}
-\format{A list with elements "freq", "raw", "sorted", and "cookies"}
+\format{
+A list with elements "freq", "raw", "sorted", and "cookies"
+}
 \usage{
 data(cookie)
 }

@@ -4,7 +4,9 @@
 \name{abortion}
 \alias{abortion}
 \title{Haberman's Abortion, Education, and Religion Data}
-\format{A 3x3x3 (contingency) table}
+\format{
+A 3x3x3 (contingency) table
+}
 \usage{
 data(abortion)
 }

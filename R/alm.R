@@ -2,7 +2,7 @@
 #'
 #' Algebraic least squares regression
 #'
-#' @param form A formula specifying the basis monomials, passed to
+#' @param formula A formula specifying the basis monomials, passed to
 #'   [stats::model.matrix]
 #' @param data The dataset on which to apply the method, passed to
 #'   [stats::model.matrix]
@@ -12,7 +12,7 @@
 #' @examples
 #'
 #'
-#' ## fitting a linear form
+#' ## fitting a linear formula
 #' ########################################
 #' 
 #' n <- 101
@@ -28,7 +28,7 @@
 #' lm(y ~ x, data = df)
 #' 
 #' 
-#' ## fitting a quadratic form
+#' ## fitting a quadratic formula
 #' ########################################
 #' 
 #' df <- rvnorm(100, mp("x^2 + (2 y)^2 - 1"), sd = .05, output = "tibble")
@@ -67,9 +67,9 @@
   
 #' @export
 #' @rdname alm
-alm <- function(form, data, ...){
+alm <- function(formula, data, ...){
     
-  mat <- model.matrix(form, data)
+  mat <- model.matrix(formula, data)
   e <- eigen(crossprod(mat), symmetric = TRUE)
   
   ests <- structure(

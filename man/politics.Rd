@@ -4,7 +4,9 @@
 \name{politics}
 \alias{politics}
 \title{Politics by Personality}
-\format{A 2x2 (contingency) table}
+\format{
+A 2x2 (contingency) table
+}
 \usage{
 data(politics)
 }

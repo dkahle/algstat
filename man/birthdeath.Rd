@@ -4,7 +4,9 @@
 \name{birthdeath}
 \alias{birthdeath}
 \title{Andrews/Herzberg Birthday and Deathday Dataset}
-\format{A 12x12 (contingency) table}
+\format{
+A 12x12 (contingency) table
+}
 \usage{
 data(birthdeath)
 }
