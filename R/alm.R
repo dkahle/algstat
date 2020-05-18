@@ -22,9 +22,9 @@
 #' plot(df)
 #' 
 #' (mod <- alm(~ x + y, data = df))
-#' (y_coef <- coef(mod)[["y"]])
-#' coef(mod) / y_coef
+#' coef(mod) /  coef(mod)[["y"]]
 #' 
+#' # compare to lm
 #' lm(y ~ x, data = df)
 #' 
 #' 

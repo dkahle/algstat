@@ -37,9 +37,9 @@ df$y <- 3 - 2*df$x + rnorm(n, 0, sd = .15)
 plot(df)
 
 (mod <- alm(~ x + y, data = df))
-(y_coef <- coef(mod)[["y"]])
-coef(mod) / y_coef
+coef(mod) /  coef(mod)[["y"]]
 
+# compare to lm
 lm(y ~ x, data = df)
 
 
