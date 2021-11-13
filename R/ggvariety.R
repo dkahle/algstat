@@ -47,7 +47,7 @@
 #' 
 #' ggvariety(c("x^2 + y^2 - 1", "(x^2 + y^2)^3 - 4 x^2 y^2")) +
 #'   coord_equal() + theme_void() +
-#'   scale_color_manual(values = c("red", "blue"), guide = FALSE)
+#'   scale_color_manual(values = c("red", "blue"), guide = "none")
 #'
 #'
 #'
