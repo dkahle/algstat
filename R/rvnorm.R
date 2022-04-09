@@ -15,7 +15,7 @@
 #' @param n The number of draws desired from each chain after warmup.
 #' @param poly An mpoly object.
 #' @param sd The "standard deviation" component of the normal kernel.
-#' @param output \code{"simple"}, \code{"more"}, \code{"stanfit"}.
+#' @param output \code{"simple"}, \code{"tibble"}, \code{"stanfit"}.
 #' @param chains The number of chains to run for the random number generation,
 #'   see [stan()].
 #' @param cores The number of CPU cores to distribute the chains across, see
@@ -77,6 +77,17 @@
 #'     geom = "raster", contour = FALSE
 #'    ) + 
 #'   coord_equal()
+#'   
+#' library("ggdensity")
+#' ggvariety(p) + coord_equal()
+#' ggplot(samps, aes(x, y)) + 
+#'   geom_hdr() +
+#'   coord_equal()
+#'   
+#' ggplot(samps, aes(x, y)) + 
+#'   geom_contour()
+#' ggvariety(p) +  
+#'   geom_hdr(aes(x, y), data = samps, inherit.aes = FALSE)
 #'
 #'
 #'

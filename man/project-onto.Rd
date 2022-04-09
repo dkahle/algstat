@@ -34,5 +34,5 @@ x \%>\% project_onto_perp(A)
 
 }
 \seealso{
-\link[base:qr.fitted]{base::qr.fitted}
+\link[base:qr]{base::qr.fitted}
 }

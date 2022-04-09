@@ -33,7 +33,7 @@ rvnorm(
 
 \item{sd}{The "standard deviation" component of the normal kernel.}
 
-\item{output}{\code{"simple"}, \code{"more"}, \code{"stanfit"}.}
+\item{output}{\code{"simple"}, \code{"tibble"}, \code{"stanfit"}.}
 
 \item{chains}{The number of chains to run for the random number generation,
 see \code{\link[=stan]{stan()}}.}
@@ -124,6 +124,17 @@ ggplot(samps, aes(x, y)) +
     geom = "raster", contour = FALSE
    ) + 
   coord_equal()
+  
+library("ggdensity")
+ggvariety(p) + coord_equal()
+ggplot(samps, aes(x, y)) + 
+  geom_hdr() +
+  coord_equal()
+  
+ggplot(samps, aes(x, y)) + 
+  geom_contour()
+ggvariety(p) +  
+  geom_hdr(aes(x, y), data = samps, inherit.aes = FALSE)
 
 
 

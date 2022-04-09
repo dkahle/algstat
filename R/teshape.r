@@ -12,7 +12,6 @@
 #' @param out the output format, see examples.
 #' @param var the name of the frequency variable in the dataset, if not
 #'   \code{"freq"}.
-#' @param ... ...
 #' @return a matrix containing the Markov basis as its columns (for easy
 #'   addition to tables)
 #' @seealso [stats::xtabs()]

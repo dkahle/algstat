@@ -13,8 +13,6 @@ teshape(data, out = c("freq", "tab", "raw"), var)
 
 \item{var}{the name of the frequency variable in the dataset, if not
 \code{"freq"}.}
-
-\item{...}{...}
 }
 \value{
 a matrix containing the Markov basis as its columns (for easy
