@@ -49,6 +49,14 @@ hmat <- function(varlvls, facets){
   nCells   <- length(colNames)
   
   
+  # if empty list of facets
+  if (length(facets) == 0) {
+    rowName = strrep("+", length(varlvls))
+    A <- matrix(rep(1L, prod(varlvls)), nrow = 1, dimnames = list(rowName, colNames))
+    return(A)
+  }
+  
+  
   # make rownames
   configsPerFacet <- vapply(facets, function(facet) prod(varlvls[facet]), numeric(1))
   totalRows       <- sum(configsPerFacet)
