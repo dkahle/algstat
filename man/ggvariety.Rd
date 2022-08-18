@@ -38,6 +38,15 @@ ggvariety("y - x^2")
 ggvariety("x^2 + y^2 - 1")
 ggvariety(c("x^2 + y^2 - 1", "y - x"))
 
+# x = cos(m t + p)
+# y = sin(n t + q)
+(p <- lissajous(3, 2,  -pi/2, 0))
+(p <- lissajous(4, 3,  -pi/2, 0))
+(p <- lissajous(5, 4,  -pi/2, 0))
+(p <- lissajous(3, 3,  0, 0))
+(p <- lissajous(5, 5,  0, 0))
+(p <- lissajous(7, 7,  0, 0))
+ggvariety(p, n = 201) + coord_equal()
 
 
 ## setting limits
@@ -45,6 +54,7 @@ ggvariety(c("x^2 + y^2 - 1", "y - x"))
 
 ggvariety("y - x^2")
 ggvariety("y - x^2", xlim = c(-2,2), ylim = c(-2,2))
+
 
 
 ## ggplot2 styling
