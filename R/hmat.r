@@ -25,6 +25,10 @@
 #' hmat(c(2, 2), 1:2)
 #'
 #'
+#' # facets = list() returns the matrix that computes the sample size of the table
+#' ( A <- hmat(varlvls, list()) )
+#'
+#'
 #' # LAS example 1.2.11, p.16
 #' varlvls <- c(2,2,2,2)
 #' facets <- list(c(1,2), c(1,4), c(2,3))
@@ -50,8 +54,8 @@ hmat <- function(varlvls, facets){
   
   
   # if empty list of facets
-  if (length(facets) == 0) {
-    rowName = strrep("+", length(varlvls))
+  if (numFacets == 0L) {
+    rowName <- strrep("+", length(varlvls))
     A <- matrix(rep(1L, prod(varlvls)), nrow = 1, dimnames = list(rowName, colNames))
     return(A)
   }
