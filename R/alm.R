@@ -51,9 +51,6 @@
 #' y <- df$y
 #' solve(crossprod(X), t(X) %*% y)
 #' 
-#' Ax = b
-#' QRx = b
-#' Rx = Qt b
 #'
 #'
 #' ## fitting a quadratic formula

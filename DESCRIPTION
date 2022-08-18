@@ -34,11 +34,11 @@ Imports:
     tibble,
     tidyr,
     glue,
-    rstan,
-    gmp
+    rstan
 Suggests:
     vcd,
-    microbenchmark
+    microbenchmark,
+    gmp
 License: GPL-2
 RoxygenNote: 7.2.0
 Roxygen: list(markdown = TRUE)

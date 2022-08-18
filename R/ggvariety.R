@@ -31,7 +31,7 @@
 #' (p <- lissajous(3, 3,  0, 0))
 #' (p <- lissajous(5, 5,  0, 0))
 #' (p <- lissajous(7, 7,  0, 0))
-#' ggvariety(p, n = 201) + coord_equal()
+#' ggvariety(p, n = 201)
 #' 
 #' 
 #' ## setting limits
