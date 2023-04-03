@@ -15,7 +15,10 @@ project_onto_variety(
   n_correct = 2,
   al = rnorm(length(x0)),
   message = FALSE,
-  tol = .Machine$double.eps^(1/4)
+  tol = .Machine$double.eps^(1/4),
+  gfunc,
+  dgfunc,
+  ddgfunc
 )
 
 project_onto_variety_lagrange(
@@ -59,6 +62,10 @@ progress.}
 
 \item{tol}{A tolerance; a warning is issued if the magnitude of the residual
 is larger than \code{tol}.}
+
+\item{gfunc, dgfunc, ddgfunc}{The polynomial \link{poly}, its gradient, and its
+Hessian as functions. Only used in \code{\link[=project_onto_variety]{project_onto_variety()}}, and computed
+internally if not provided.}
 
 \item{method}{Used in \code{\link[=project_onto_variety_lagrange]{project_onto_variety_lagrange()}} and
 \code{\link[=project_onto_variety_gradient_descent]{project_onto_variety_gradient_descent()}}. In the former, if
@@ -108,9 +115,9 @@ ggvariety(p) + coord_equal() +
     aes(x, y, xend = x_proj, yend = y_proj),
     data = df, inherit.aes = FALSE
   )
-  
 
-# alternatives   
+
+# alternatives
 project_onto_variety_lagrange(x0, p)
 project_onto_variety_gradient_descent(x0, p)
 project_onto_variety_gradient_descent(x0, p, method = "line")
@@ -131,6 +138,19 @@ p <- mp("x^2 + y^2 - 1")
 project_onto_variety(x0, p, message = TRUE)
 project_onto_variety(x0, p, dt = .25, message = TRUE)
 
+
+# precomputing the function, gradient, and hessian
+varorder <- c("x", "y")
+gfunc <- as.function(p, varorder = varorder)
+
+dg <- deriv(p, var = varorder)
+dgfunc <- as.function(dg, varorder = varorder)
+
+ddg <- lapply(dg, deriv, var = varorder)
+ddgfunc_list <- lapply(ddg, as.function, varorder = varorder, silent = TRUE)
+ddgfunc <- function(x) sapply(ddgfunc_list, function(f) f(x))
+
+project_onto_variety(x0, p, gfunc = gfunc, dgfunc = dgfunc, ddgfunc = ddgfunc) 
 
 
 ## more complex example
@@ -174,11 +194,9 @@ grid$y <- jitter(grid$y)
 
 ggplot(grid, aes(x, y)) + geom_point() + coord_equal()
 
-grid \%>\% as.matrix() \%>\%
-  apply(1, function(x0) project_onto_variety(x0, p)) \%>\% t() \%>\%
-  as.data.frame() \%>\% tibble::as_tibble() \%>\%
-  purrr::set_names(c("x_proj", "y_proj")) ->
-  grid_proj
+grid_proj <- project_onto_variety(grid, p)
+head(grid_proj)
+names(grid_proj) <- c("x_proj", "y_proj")
 
 ggvariety(p, n = 251) + coord_equal() +
   geom_segment(
@@ -190,25 +208,16 @@ ggvariety(p, n = 251) + coord_equal() +
 
 # here's what happens when you use a naive implementation -
 # gradient descent on g^2 with line search
+grid_proj_gd <- project_onto_variety_gradient_descent(grid, p, method = "optimal")
+names(grid_proj_gd) <- c("x_proj", "y_proj")
 
-grid \%>\%
-  select(x, y) \%>\% as.matrix() \%>\%
-  apply(1, project_onto_variety_gradient_descent, poly = p, method = "optimal") \%>\% t() \%>\%
-  as.data.frame() \%>\% tibble::as_tibble() \%>\%
-  purrr::set_names(c("x_proj", "y_proj")) \%>\% tibble::as_tibble() ->
-  grid_proj2
-
-grid \%>\%
-  select(x, y) \%>\% as.matrix() \%>\%
-  apply(1, project_onto_variety_lagrange, poly = p) \%>\% t() \%>\%
-  as.data.frame() \%>\% tibble::as_tibble() \%>\%
-  purrr::set_names(c("x_proj", "y_proj")) \%>\% tibble::as_tibble() ->
-  grid_proj3
+grid_proj_lagrange <- project_onto_variety_lagrange(grid, p)
+names(grid_proj_lagrange) <- c("x_proj", "y_proj")
 
 df <- bind_rows(
   bind_cols(grid, grid_proj) \%>\% mutate(method = "gradient descent homotopy"),
-  bind_cols(grid, grid_proj2) \%>\% mutate(method = "optimal gradient descent"),
-  bind_cols(grid, grid_proj3) \%>\% mutate(method = "newton on lagrangian")
+  bind_cols(grid, grid_proj_gd) \%>\% mutate(method = "optimal gradient descent"),
+  bind_cols(grid, grid_proj_lagrange) \%>\% mutate(method = "newton on lagrangian")
 )
 
 ggvariety(p, n = 251) +

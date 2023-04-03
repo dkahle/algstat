@@ -130,11 +130,6 @@ ggvariety(p) + coord_equal()
 ggplot(samps, aes(x, y)) + 
   geom_hdr() +
   coord_equal()
-  
-ggplot(samps, aes(x, y)) + 
-  geom_contour()
-ggvariety(p) +  
-  geom_hdr(aes(x, y), data = samps, inherit.aes = FALSE)
 
 
 

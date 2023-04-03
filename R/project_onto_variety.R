@@ -27,6 +27,9 @@
 #'   progress.
 #' @param ... Additional arguments to pass to [optim()] when \code{method} is
 #'   not \code{"newton"}.
+#' @param gfunc,dgfunc,ddgfunc The polynomial [poly], its gradient, and its
+#'   Hessian as functions. Only used in [project_onto_variety()], and computed
+#'   internally if not provided.
 #' @return A numeric vector the same length as \code{x0}.
 #' @references Griffin, Z. and J. Hauenstein (2015). Real solutions to systems
 #'   of polynomial equations and parameter continuation. \emph{Advances in
@@ -47,7 +50,7 @@
 #' x0 <- c(1,1)
 #' p <- mp("x^2 + y^2 - 1")
 #' (x0_proj <- project_onto_variety(x0, p))
-#' 
+#'
 #' as.function(p)(x0_proj)
 #' sqrt(2)/2
 #'
@@ -60,9 +63,9 @@
 #'     aes(x, y, xend = x_proj, yend = y_proj),
 #'     data = df, inherit.aes = FALSE
 #'   )
-#'   
 #'
-#' # alternatives   
+#'
+#' # alternatives
 #' project_onto_variety_lagrange(x0, p)
 #' project_onto_variety_gradient_descent(x0, p)
 #' project_onto_variety_gradient_descent(x0, p, method = "line")
@@ -83,6 +86,19 @@
 #' project_onto_variety(x0, p, message = TRUE)
 #' project_onto_variety(x0, p, dt = .25, message = TRUE)
 #'
+#'
+#' # precomputing the function, gradient, and hessian
+#' varorder <- c("x", "y")
+#' gfunc <- as.function(p, varorder = varorder)
+#' 
+#' dg <- deriv(p, var = varorder)
+#' dgfunc <- as.function(dg, varorder = varorder)
+#' 
+#' ddg <- lapply(dg, deriv, var = varorder)
+#' ddgfunc_list <- lapply(ddg, as.function, varorder = varorder, silent = TRUE)
+#' ddgfunc <- function(x) sapply(ddgfunc_list, function(f) f(x))
+#' 
+#' project_onto_variety(x0, p, gfunc = gfunc, dgfunc = dgfunc, ddgfunc = ddgfunc) 
 #'
 #'
 #' ## more complex example
@@ -126,11 +142,9 @@
 #'
 #' ggplot(grid, aes(x, y)) + geom_point() + coord_equal()
 #'
-#' grid %>% as.matrix() %>%
-#'   apply(1, function(x0) project_onto_variety(x0, p)) %>% t() %>%
-#'   as.data.frame() %>% tibble::as_tibble() %>%
-#'   purrr::set_names(c("x_proj", "y_proj")) ->
-#'   grid_proj
+#' grid_proj <- project_onto_variety(grid, p)
+#' head(grid_proj)
+#' names(grid_proj) <- c("x_proj", "y_proj")
 #'
 #' ggvariety(p, n = 251) + coord_equal() +
 #'   geom_segment(
@@ -142,25 +156,16 @@
 #'
 #' # here's what happens when you use a naive implementation -
 #' # gradient descent on g^2 with line search
+#' grid_proj_gd <- project_onto_variety_gradient_descent(grid, p, method = "optimal")
+#' names(grid_proj_gd) <- c("x_proj", "y_proj")
 #'
-#' grid %>%
-#'   select(x, y) %>% as.matrix() %>%
-#'   apply(1, project_onto_variety_gradient_descent, poly = p, method = "optimal") %>% t() %>%
-#'   as.data.frame() %>% tibble::as_tibble() %>%
-#'   purrr::set_names(c("x_proj", "y_proj")) %>% tibble::as_tibble() ->
-#'   grid_proj2
-#'
-#' grid %>%
-#'   select(x, y) %>% as.matrix() %>%
-#'   apply(1, project_onto_variety_lagrange, poly = p) %>% t() %>%
-#'   as.data.frame() %>% tibble::as_tibble() %>%
-#'   purrr::set_names(c("x_proj", "y_proj")) %>% tibble::as_tibble() ->
-#'   grid_proj3
+#' grid_proj_lagrange <- project_onto_variety_lagrange(grid, p)
+#' names(grid_proj_lagrange) <- c("x_proj", "y_proj")
 #'
 #' df <- bind_rows(
 #'   bind_cols(grid, grid_proj) %>% mutate(method = "gradient descent homotopy"),
-#'   bind_cols(grid, grid_proj2) %>% mutate(method = "optimal gradient descent"),
-#'   bind_cols(grid, grid_proj3) %>% mutate(method = "newton on lagrangian")
+#'   bind_cols(grid, grid_proj_gd) %>% mutate(method = "optimal gradient descent"),
+#'   bind_cols(grid, grid_proj_lagrange) %>% mutate(method = "newton on lagrangian")
 #' )
 #'
 #' ggvariety(p, n = 251) +
@@ -231,27 +236,57 @@
 project_onto_variety <- function(
   x0, poly, dt = .05, varorder = vars(poly), 
   n_correct = 2, al = rnorm(length(x0)), 
-  message = FALSE, tol = .Machine$double.eps^(1/4)
+  message = FALSE, tol = .Machine$double.eps^(1/4),
+  gfunc, dgfunc, ddgfunc
 ) {
   
+  if (missing(x0)) stop("`x0` must be supplied.")
+  if (missing(poly)) stop("`poly` must be supplied.")
+  
+  
+  # compute gfunc, dgfunc, and ddgfunc if not user specified
+  if (missing(gfunc) || missing(dgfunc) || missing(ddgfunc)) {
+    
+    if (!missing(gfunc) || !missing(dgfunc) || !missing(ddgfunc)) {
+      "If any of `gfunc`, `dgfunc`, or `ddgfunc` is not provided, they are all computed internally." 
+    }
+    
+    # polynomial as a function
+    g <- poly
+    gfunc <- as.function(g, varorder = varorder, silent = TRUE)
+    
+    # jacobian
+    dg <- deriv(g, var = varorder)
+    dgfunc <- as.function(dg, varorder = varorder, silent = TRUE)
+    
+    # hessian
+    ddg <- lapply(dg, deriv, var = varorder)
+    ddgfunc_list <- lapply(ddg, as.function, varorder = varorder, silent = TRUE)
+    ddgfunc <- function(x) sapply(ddgfunc_list, function(f) f(x))
+    
+  }
+  
+  
+  # if x0 is a matrix, apply to rows and return. this is a hack for now,
+  # but it's pretty useful
+  if (is.matrix(x0) || is.data.frame(x0)) {
+    out <- apply(
+      x0, 1, project_onto_variety, 
+      poly = poly, dt = dt, varorder = varorder, n_correct = n_correct,
+      al = al, message = message, tol = tol,
+      gfunc = gfunc, dgfunc = dgfunc, ddgfunc = ddgfunc
+    )
+    out <- t(out)
+    if (is.data.frame(x0)) out <- as.data.frame(out)
+    if (inherits(x0, "tbl_df")) class(out) <- c("tbl_df", "tbl", "data.frame")
+    return(out)
+  }
+  
+  # begin main computation for one vector x0
   n_vars <- length(varorder)
   
   ts <- seq(1, 0, -dt)
   vn <- c(x0, al[1], 0)
-  
-  # polynomial as a function
-  g <- poly
-  gfunc <- as.function(g, varorder = varorder, silent = TRUE)
-  
-  # jacobian
-  dg <- deriv(g, var = varorder)
-  dgfunc <- as.function(dg, varorder = varorder, silent = TRUE)
-  
-  # hessian
-  ddg <- lapply(dg, deriv, var = varorder)
-  ddgfunc_list <- lapply(ddg, as.function, varorder = varorder, silent = TRUE)
-  ddgfunc <- function(x) sapply(ddgfunc_list, function(f) f(x))
-  
   
   Ha <- function(v, t) {
     # v = (x, y, la0, la1)
@@ -328,6 +363,21 @@ project_onto_variety_lagrange <- function(
   message = FALSE, ...
 ) {
   # this only projects R2 points
+  
+  # if x0 is a matrix, apply to rows and return. this is a hack for now,
+  # but it's pretty useful
+  if (is.matrix(x0) || is.data.frame(x0)) {
+    out <- apply(
+      x0, 1, project_onto_variety_lagrange, 
+      poly = poly, method = method, maxit = maxit, tol = tol, 
+      message = message, ...
+    )
+    out <- t(out)
+    if (is.data.frame(x0)) out <- as.data.frame(out)
+    if (inherits(x0, "tbl_df")) class(out) <- c("tbl_df", "tbl", "data.frame")
+    return(out)
+  }
+  
 
   # formulate lagrangian
   L <- mp(sprintf("(x - %s)^2 + (y - %s)^2", x0[1], x0[2])) + mp("la")*poly
@@ -383,6 +433,20 @@ project_onto_variety_gradient_descent <- function(
   method = c("line", "optimal", "fixed"), tol = .Machine$double.eps^(1/4), 
   maxit = 1e3, message = FALSE
 ) {
+  
+  # if x0 is a matrix, apply to rows and return. this is a hack for now,
+  # but it's pretty useful
+  if (is.matrix(x0) || is.data.frame(x0)) {
+    out <- apply(
+      x0, 1, project_onto_variety_gradient_descent, 
+      poly = poly, ga = ga, max_ga = max_ga, method = method, tol = tol, 
+      maxit = maxit, message = message
+    )
+    out <- t(out)
+    if (is.data.frame(x0)) out <- as.data.frame(out)
+    if (inherits(x0, "tbl_df")) class(out) <- c("tbl_df", "tbl", "data.frame")
+    return(out)
+  }
 
   # arg check
   method <- match.arg(method)
