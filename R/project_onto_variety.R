@@ -1,6 +1,7 @@
 #' Projection onto a variety
 #'
-#' A R-based implementation of the gradient descent homotopies
+#' A R-based implementation of the gradient descent homotopies. The lagrange
+#' version uses Newton's method on the Lagrangian system.
 #'
 #'
 #' @param x0 Atomic vector, the point to be projected.
@@ -11,8 +12,9 @@
 #' @param n_correct The number of Newton correction iterations to use.
 #' @param al A numeric vector of length 2; the patch to do projective
 #'   calculations over.
-#' @param tol A tolerance; a warning is issued if the magnitude of the residual
-#'   is larger than \code{tol}.
+#' @param tol A tolerance on the residual; a warning is issued if the magnitude
+#'   of the residual is larger than \code{tol}.
+#' @param tol_x A tolerance on subsequent step sizes.
 #' @param method Used in [project_onto_variety_lagrange()] and
 #'   [project_onto_variety_gradient_descent()]. In the former, if
 #'   \code{"newton"}, a simple R implementation of Newton's method to solve the
@@ -66,7 +68,9 @@
 #'
 #'
 #' # alternatives
+#' 1 / sqrt(2)
 #' project_onto_variety_lagrange(x0, p)
+#' project_onto_variety_newton(x0, p)
 #' project_onto_variety_gradient_descent(x0, p)
 #' project_onto_variety_gradient_descent(x0, p, method = "line")
 #'
@@ -74,8 +78,12 @@
 #' # number of variables > 2
 #' x0 <- c(1,1,1)
 #' p <- mp("x^2 + y^2 + z^2 - 1")
-#' (x0_proj <- project_onto_variety(x0, p))
-#' as.function(p)(x0_proj)
+#' 1 / sqrt(3)
+#' project_onto_variety(x0, p)
+#' project_onto_variety_lagrange(x0, p)
+#' project_onto_variety_newton(x0, p)
+#' project_onto_variety_gradient_descent(x0, p)
+#' project_onto_variety_gradient_descent(x0, p, method = "line")
 #'
 #'
 #' ## options
@@ -90,15 +98,15 @@
 #' # precomputing the function, gradient, and hessian
 #' varorder <- c("x", "y")
 #' gfunc <- as.function(p, varorder = varorder)
-#' 
+#'
 #' dg <- deriv(p, var = varorder)
 #' dgfunc <- as.function(dg, varorder = varorder)
-#' 
+#'
 #' ddg <- lapply(dg, deriv, var = varorder)
 #' ddgfunc_list <- lapply(ddg, as.function, varorder = varorder, silent = TRUE)
 #' ddgfunc <- function(x) sapply(ddgfunc_list, function(f) f(x))
-#' 
-#' project_onto_variety(x0, p, gfunc = gfunc, dgfunc = dgfunc, ddgfunc = ddgfunc) 
+#'
+#' project_onto_variety(x0, p, gfunc = gfunc, dgfunc = dgfunc, ddgfunc = ddgfunc)
 #'
 #'
 #' ## more complex example
@@ -130,6 +138,7 @@
 #' library("dplyr")
 #'
 #' (p <- lissajous(5, 5, 0, 0))
+#' # (p <- lissajous(9, 9, 0, 0))
 #' # p <- mp("x^2 + y^2 - 1")
 #' ggvariety(p, n = 251) + coord_equal()
 #'
@@ -162,9 +171,13 @@
 #' grid_proj_lagrange <- project_onto_variety_lagrange(grid, p)
 #' names(grid_proj_lagrange) <- c("x_proj", "y_proj")
 #'
+#' grid_proj_newton <- project_onto_variety_newton(grid, p)
+#' names(grid_proj_newton) <- c("x_proj", "y_proj")
+#'
 #' df <- bind_rows(
 #'   bind_cols(grid, grid_proj) %>% mutate(method = "gradient descent homotopy"),
 #'   bind_cols(grid, grid_proj_gd) %>% mutate(method = "optimal gradient descent"),
+#'   bind_cols(grid, grid_proj_newton) %>% mutate(method = "newton"),
 #'   bind_cols(grid, grid_proj_lagrange) %>% mutate(method = "newton on lagrangian")
 #' )
 #'
@@ -234,9 +247,9 @@
 #' @rdname project-onto-variety
 #' @export
 project_onto_variety <- function(
-  x0, poly, dt = .05, varorder = vars(poly), 
+  x0, poly, dt = .05, varorder = sort(vars(poly)), 
   n_correct = 2, al = rnorm(length(x0)), 
-  message = FALSE, tol = .Machine$double.eps^(1/4),
+  message = FALSE, tol = .Machine$double.eps^(1/2), 
   gfunc, dgfunc, ddgfunc
 ) {
   
@@ -339,7 +352,7 @@ project_onto_variety <- function(
   }
   
   resid <- gfunc(vn[1:n_vars])
-  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid))
+  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid), call. = FALSE)
   
   vn[1:n_vars]
 }
@@ -358,8 +371,8 @@ project_onto_variety <- function(
 #' @rdname project-onto-variety
 #' @export
 project_onto_variety_lagrange <- function(
-  x0, poly, method = "newton", 
-  maxit = 1e3, tol = .Machine$double.eps^(1/4), 
+  x0, poly, varorder = vars(poly), method = "newton", 
+  maxit = 1e3, tol = .Machine$double.eps^(1/2), tol_x = .Machine$double.eps^(1/2),
   message = FALSE, ...
 ) {
   # this only projects R2 points
@@ -369,7 +382,8 @@ project_onto_variety_lagrange <- function(
   if (is.matrix(x0) || is.data.frame(x0)) {
     out <- apply(
       x0, 1, project_onto_variety_lagrange, 
-      poly = poly, method = method, maxit = maxit, tol = tol, 
+      poly = poly, varorder = varorder, method = method, maxit = maxit, 
+      tol = tol, tol_x = tol_x, 
       message = message, ...
     )
     out <- t(out)
@@ -377,17 +391,17 @@ project_onto_variety_lagrange <- function(
     if (inherits(x0, "tbl_df")) class(out) <- c("tbl_df", "tbl", "data.frame")
     return(out)
   }
-  
 
   # formulate lagrangian
-  L <- mp(sprintf("(x - %s)^2 + (y - %s)^2", x0[1], x0[2])) + mp("la")*poly
-  dL <- deriv(L, var = c("x", "y", "la"))
-  dLf <- as.function(dL, varorder = c("x", "y", "la"), silent = TRUE)
+  form <- paste0("(", varorder, " - ", x0, ")^2", collapse = " + ")
+  L <- mp(form) + mp("la")*poly
+  dL <- deriv(L, var = c(varorder, "la"))
+  dLf <- as.function(dL, varorder = c(varorder, "la"), silent = TRUE)
   
   if (method == "newton") {
     
-    ddL <- lapply(dL, deriv, var = c("x", "y", "la"))
-    ddLf <- lapply(ddL, as.function, varorder = c("x", "y", "la"), silent = TRUE)
+    ddL <- lapply(dL, deriv, var = c(varorder, "la"))
+    ddLf <- lapply(ddL, as.function, varorder = c(varorder, "la"), silent = TRUE)
     H <- function(v) do.call(rbind, lapply(ddLf, function(f) f(v)))
     
     la0 <- optimize(function(.) sum(dLf(c(x0,.))^2), lower = 0, upper = 1e3)$minimum
@@ -396,25 +410,25 @@ project_onto_variety_lagrange <- function(
     xn <- xn_1 + solve( H(xn_1), -dLf(xn_1) )
 
     count <- 0L
-    while(sum((xn - xn_1)^2) > sqrt(.Machine$double.eps) && count <= maxit) {
+    while(sum(abs(dLf(xn))) > tol && sum(abs(xn - xn_1)) > tol_x && count <= maxit) {
       xn_1 <- xn
       xn <- xn_1 + solve( H(xn_1), -dLf(xn_1) )
       if (message) message(paste(round(xn, 5), collapse = " "))
       count <- count + 1L
     }
-    xn <- xn[1:2]
+    xn <- xn[seq_along(varorder)]
     
   } else {
  
     la0 <- optimize(function(.) sum(dLf(c(x0,.))^2), lower = 0, upper = 1e3)$minimum
     xn <- optim(c(x0, la0), function(.) sum(dLf(.))^2, method = method, ...)$par[1:2]
-    xn <- xn[1:2]
+    xn <- xn[seq_along(varorder)]
     
   }
   
-  pf  <- as.function(poly, varorder = c("x", "y"), silent = TRUE)
+  pf  <- as.function(poly, varorder = varorder, silent = TRUE)
   resid <- pf(xn)
-  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid))
+  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid), call. = FALSE)
   
   xn
   
@@ -429,8 +443,9 @@ project_onto_variety_lagrange <- function(
 #' @rdname project-onto-variety
 #' @export
 project_onto_variety_gradient_descent <- function(
-  x0, poly, ga = 1e-4, max_ga = .1, 
-  method = c("line", "optimal", "fixed"), tol = .Machine$double.eps^(1/4), 
+  x0, poly, varorder = vars(poly), ga = .01, max_ga = .1, 
+  method = c("line", "optimal", "fixed"), 
+  tol = .Machine$double.eps^(1/2), tol_x = .Machine$double.eps^(1/2),
   maxit = 1e3, message = FALSE
 ) {
   
@@ -439,7 +454,8 @@ project_onto_variety_gradient_descent <- function(
   if (is.matrix(x0) || is.data.frame(x0)) {
     out <- apply(
       x0, 1, project_onto_variety_gradient_descent, 
-      poly = poly, ga = ga, max_ga = max_ga, method = method, tol = tol, 
+      poly = poly, varorder = varorder, ga = ga, max_ga = max_ga, method = method, 
+      tol = tol, tol_x = tol_x, 
       maxit = maxit, message = message
     )
     out <- t(out)
@@ -452,11 +468,11 @@ project_onto_variety_gradient_descent <- function(
   method <- match.arg(method)
   
   # create functions
-  pf  <- as.function(poly, varorder = c("x", "y"), silent = TRUE)
-  p2f <- as.function(poly^2, varorder = c("x", "y"), silent = TRUE)
-  dp2 <- deriv(poly^2, var = c("x", "y"))
-  dp2f <- as.function(dp2, varorder = c("x", "y"), silent = TRUE)
-  ddp2 <- lapply(dp2, function(.) deriv(., var = c("x", "y")))
+  pf  <- as.function(poly, varorder = varorder, silent = TRUE)
+  p2f <- as.function(poly^2, varorder = varorder, silent = TRUE)
+  dp2 <- deriv(poly^2, var = varorder)
+  dp2f <- as.function(dp2, varorder = varorder, silent = TRUE)
+  ddp2 <- lapply(dp2, function(.) deriv(., var = varorder))
   ddp2f <- function(v) {
     sapply(
       lapply(ddp2, as.function, silent = TRUE),
@@ -469,20 +485,24 @@ project_onto_variety_gradient_descent <- function(
     
     xn_2 <- x0
     
-    ga <- optimize(function(.) p2f(xn_2 - .*dp2f(xn_2)), lower = 0, upper = max_ga)$minimum
-    xn_1 <- xn_2 - ga*dp2f(xn_2)
+    direction_2 <- dp2f(xn_2)
+    ga <- optimize(function(.) p2f(xn_2 - .*direction_2), lower = 0, upper = max_ga)$minimum
+    xn_1 <- xn_2 - ga*direction_2
     if (message) message(paste(round(xn_1, 5), collapse = " "))
     
-    ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
-    xn <- xn_1 - ga*dp2f(xn_1)
+    direction_1 <- dp2f(xn_1)
+    ga <- optimize(function(.) p2f(xn_1 - .*direction_1), lower = 0, upper = max_ga)$minimum
+    xn <- xn_1 - ga*direction_1
     if (message) message(paste(round(xn, 5), collapse = " "))
     
     count <- 0
-    while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+    while (abs(p2f(xn)) > tol && sum(abs(xn-xn_1)) > tol_x && count <= maxit) {
       xn_2 <- xn_1
       xn_1 <- xn
-      ga   <- abs(sum((xn_1 - xn_2)*(dp2f(xn_1) - dp2f(xn_2)))) / sum((dp2f(xn_1) - dp2f(xn_2))^2)
-      xn   <- xn_1 - ga*dp2f(xn_1)
+      direction_2 <- dp2f(xn_2)
+      direction_1 <- dp2f(xn_1)
+      ga   <- abs(sum((xn_1 - xn_2)*(direction_1 - direction_2))) / sum((direction_1 - direction_2)^2)
+      xn   <- xn_1 - ga*direction_1
       count <- count + 1
       if (message) message(paste(round(xn, 5), collapse = " "))
     }
@@ -491,15 +511,17 @@ project_onto_variety_gradient_descent <- function(
     
     xn_1 <- x0
     
-    ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
+    direction <- dp2f(xn_1)
+    ga <- optimize(function(.) p2f(xn_1 - .*direction), lower = 0, upper = max_ga)$minimum
     xn <- xn_1 - ga*dp2f(xn_1)
     if (message) message(paste(round(xn, 5), collapse = " "))
     
     count <- 0
-    while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+    while (abs(p2f(xn)) > tol && sum(abs(xn-xn_1)) > tol_x && count <= maxit) {
       xn_1 <- xn
-      ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
-      xn   <- xn_1 - ga*dp2f(xn_1)
+      direction <- dp2f(xn_1)
+      ga <- optimize(function(.) p2f(xn_1 - .*direction), lower = 0, upper = max_ga)$minimum
+      xn   <- xn_1 - ga*direction
       count <- count + 1
       if (message) message(paste(round(xn, 5), collapse = " "))
     }
@@ -508,36 +530,95 @@ project_onto_variety_gradient_descent <- function(
     
     xn_1 <- x0
     
-    xn <- xn_1 - ga*dp2f(xn_1)
+    direction <- dp2f(xn_1)
+    xn <- xn_1 - ga*direction
     if (message) message(paste(round(xn, 5), collapse = " "))
     
     count <- 0
-    while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+    while (abs(p2f(xn)) > tol && sum(abs(xn-xn_1)) > tol_x && count <= maxit) {
       xn_1 <- xn
-      xn   <- xn_1 - ga*dp2f(xn_1)
+      direction <- dp2f(xn_1)
+      xn   <- xn_1 - ga*direction
       count <- count + 1
       if (message) message(paste(round(xn, 5), collapse = " "))
     }
     
   }
-  
-  
 
+  resid <- pf(xn)
+  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid), call. = FALSE)
+  
+  xn
+}
+
+
+
+
+
+
+
+
+#' @rdname project-onto-variety
+#' @export
+project_onto_variety_newton <- function(
+    x0, poly, varorder = vars(poly), ga = 1e-4, max_ga = 2, 
+    method = c("line", "fixed"), 
+    tol = .Machine$double.eps^(1/2), tol_x = .Machine$double.eps^(1/2),
+    maxit = 1e3, message = FALSE
+) {
+  
+  # if x0 is a matrix, apply to rows and return. this is a hack for now,
+  # but it's pretty useful
+  if (is.matrix(x0) || is.data.frame(x0)) {
+    out <- apply(
+      x0, 1, project_onto_variety_newton, 
+      poly = poly, varorder = varorder, ga = ga, max_ga = max_ga, 
+      method = method, tol = tol, tol_x = tol_x, 
+      maxit = maxit, message = message
+    )
+    out <- t(out)
+    if (is.data.frame(x0)) out <- as.data.frame(out)
+    if (inherits(x0, "tbl_df")) class(out) <- c("tbl_df", "tbl", "data.frame")
+    return(out)
+  }
+  
+  # arg check
+  method <- match.arg(method)
+  
+  # create functions
+  pf  <- as.function(poly, varorder = varorder, silent = TRUE)
+  p2f <- as.function(poly^2, varorder = varorder, silent = TRUE)
+  dp2 <- deriv(poly^2, var = varorder)
+  dp2f <- as.function(dp2, varorder = varorder, silent = TRUE)
+  ddp2 <- lapply(dp2, function(.) deriv(., var = varorder))
+  ddp2f <- function(v) {
+    sapply(
+      lapply(ddp2, as.function, silent = TRUE),
+      function(f) f(v)
+    )
+  }
+  
+  # iterate 
+  xn_1 <- x0
+  
+  direction <- solve(ddp2f(xn_1), -dp2f(xn_1))
+  if (method == "line") ga <- optimize(function(.) p2f(xn_1 + .*direction), lower = 0, upper = max_ga)$minimum
+  xn <- xn_1 + ga*direction
+  if (message) message(paste(round(xn, 5), collapse = " "))
+  
   count <- 0
-  while (abs(p2f(xn)) > tol && sum((xn-xn_1)^2) > tol && count <= maxit) {
+  while (abs(p2f(xn)) > tol && sum(abs(xn-xn_1)) > tol_x && count <= maxit) {
     xn_1 <- xn
-    if (method == "line") {
-      ga <- optimize(function(.) p2f(xn_1 - .*dp2f(xn_1)), lower = 0, upper = max_ga)$minimum
-    } else if (method == "optimal") {
-      ga <- abs(sum((xn - xn_1)*(dp2f(xn) - dp2f(xn_1)))) / sum((dp2f(xn) - dp2f(xn_1))^2)
-    }
-    xn   <- xn_1 - ga*dp2f(xn_1)
+    direction <- solve(ddp2f(xn_1), -dp2f(xn_1))
+    if (method == "line") ga <- optimize(function(.) p2f(xn_1 + .*direction), lower = 0, upper = max_ga)$minimum
+    xn   <- xn_1 + ga*direction
     count <- count + 1
     if (message) message(paste(round(xn, 5), collapse = " "))
   }
+   
   
   resid <- pf(xn)
-  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid))
+  if (abs(resid) >= tol) warning(sprintf("Tolerance not met (residual = %f).", resid), call. = FALSE)
   
   xn
 }

@@ -5,17 +5,18 @@
 \alias{project_onto_variety}
 \alias{project_onto_variety_lagrange}
 \alias{project_onto_variety_gradient_descent}
+\alias{project_onto_variety_newton}
 \title{Projection onto a variety}
 \usage{
 project_onto_variety(
   x0,
   poly,
   dt = 0.05,
-  varorder = vars(poly),
+  varorder = sort(vars(poly)),
   n_correct = 2,
   al = rnorm(length(x0)),
   message = FALSE,
-  tol = .Machine$double.eps^(1/4),
+  tol = .Machine$double.eps^(1/2),
   gfunc,
   dgfunc,
   ddgfunc
@@ -24,9 +25,11 @@ project_onto_variety(
 project_onto_variety_lagrange(
   x0,
   poly,
+  varorder = vars(poly),
   method = "newton",
   maxit = 1000,
-  tol = .Machine$double.eps^(1/4),
+  tol = .Machine$double.eps^(1/2),
+  tol_x = .Machine$double.eps^(1/2),
   message = FALSE,
   ...
 )
@@ -34,10 +37,25 @@ project_onto_variety_lagrange(
 project_onto_variety_gradient_descent(
   x0,
   poly,
-  ga = 1e-04,
+  varorder = vars(poly),
+  ga = 0.01,
   max_ga = 0.1,
   method = c("line", "optimal", "fixed"),
-  tol = .Machine$double.eps^(1/4),
+  tol = .Machine$double.eps^(1/2),
+  tol_x = .Machine$double.eps^(1/2),
+  maxit = 1000,
+  message = FALSE
+)
+
+project_onto_variety_newton(
+  x0,
+  poly,
+  varorder = vars(poly),
+  ga = 1e-04,
+  max_ga = 2,
+  method = c("line", "fixed"),
+  tol = .Machine$double.eps^(1/2),
+  tol_x = .Machine$double.eps^(1/2),
   maxit = 1000,
   message = FALSE
 )
@@ -60,8 +78,8 @@ calculations over.}
 \item{message}{If \code{TRUE}, the user is issued messages on the algorithm's
 progress.}
 
-\item{tol}{A tolerance; a warning is issued if the magnitude of the residual
-is larger than \code{tol}.}
+\item{tol}{A tolerance on the residual; a warning is issued if the magnitude
+of the residual is larger than \code{tol}.}
 
 \item{gfunc, dgfunc, ddgfunc}{The polynomial \link{poly}, its gradient, and its
 Hessian as functions. Only used in \code{\link[=project_onto_variety]{project_onto_variety()}}, and computed
@@ -77,6 +95,8 @@ the Lagrangian. In the latter, the method of selecting the learning rate,
 
 \item{maxit}{Number of maximum iterations in solving Newton's method.}
 
+\item{tol_x}{A tolerance on subsequent step sizes.}
+
 \item{...}{Additional arguments to pass to \code{\link[=optim]{optim()}} when \code{method} is
 not \code{"newton"}.}
 
@@ -88,7 +108,8 @@ not \code{"newton"}.}
 A numeric vector the same length as \code{x0}.
 }
 \description{
-A R-based implementation of the gradient descent homotopies
+A R-based implementation of the gradient descent homotopies. The lagrange
+version uses Newton's method on the Lagrangian system.
 }
 \examples{
 
@@ -118,7 +139,9 @@ ggvariety(p) + coord_equal() +
 
 
 # alternatives
+1 / sqrt(2)
 project_onto_variety_lagrange(x0, p)
+project_onto_variety_newton(x0, p)
 project_onto_variety_gradient_descent(x0, p)
 project_onto_variety_gradient_descent(x0, p, method = "line")
 
@@ -126,8 +149,12 @@ project_onto_variety_gradient_descent(x0, p, method = "line")
 # number of variables > 2
 x0 <- c(1,1,1)
 p <- mp("x^2 + y^2 + z^2 - 1")
-(x0_proj <- project_onto_variety(x0, p))
-as.function(p)(x0_proj)
+1 / sqrt(3)
+project_onto_variety(x0, p)
+project_onto_variety_lagrange(x0, p)
+project_onto_variety_newton(x0, p)
+project_onto_variety_gradient_descent(x0, p)
+project_onto_variety_gradient_descent(x0, p, method = "line")
 
 
 ## options
@@ -150,7 +177,7 @@ ddg <- lapply(dg, deriv, var = varorder)
 ddgfunc_list <- lapply(ddg, as.function, varorder = varorder, silent = TRUE)
 ddgfunc <- function(x) sapply(ddgfunc_list, function(f) f(x))
 
-project_onto_variety(x0, p, gfunc = gfunc, dgfunc = dgfunc, ddgfunc = ddgfunc) 
+project_onto_variety(x0, p, gfunc = gfunc, dgfunc = dgfunc, ddgfunc = ddgfunc)
 
 
 ## more complex example
@@ -182,6 +209,7 @@ library("ggplot2")
 library("dplyr")
 
 (p <- lissajous(5, 5, 0, 0))
+# (p <- lissajous(9, 9, 0, 0))
 # p <- mp("x^2 + y^2 - 1")
 ggvariety(p, n = 251) + coord_equal()
 
@@ -214,9 +242,13 @@ names(grid_proj_gd) <- c("x_proj", "y_proj")
 grid_proj_lagrange <- project_onto_variety_lagrange(grid, p)
 names(grid_proj_lagrange) <- c("x_proj", "y_proj")
 
+grid_proj_newton <- project_onto_variety_newton(grid, p)
+names(grid_proj_newton) <- c("x_proj", "y_proj")
+
 df <- bind_rows(
   bind_cols(grid, grid_proj) \%>\% mutate(method = "gradient descent homotopy"),
   bind_cols(grid, grid_proj_gd) \%>\% mutate(method = "optimal gradient descent"),
+  bind_cols(grid, grid_proj_newton) \%>\% mutate(method = "newton"),
   bind_cols(grid, grid_proj_lagrange) \%>\% mutate(method = "newton on lagrangian")
 )
 
