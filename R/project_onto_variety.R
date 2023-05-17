@@ -32,6 +32,8 @@
 #' @param gfunc,dgfunc,ddgfunc The polynomial [poly], its gradient, and its
 #'   Hessian as functions. Only used in [project_onto_variety()], and computed
 #'   internally if not provided.
+#' @param bias A multiple to add to the identity to make the Jacobian
+#'   invertible.
 #' @return A numeric vector the same length as \code{x0}.
 #' @references Griffin, Z. and J. Hauenstein (2015). Real solutions to systems
 #'   of polynomial equations and parameter continuation. \emph{Advances in
@@ -250,7 +252,7 @@ project_onto_variety <- function(
   x0, poly, dt = .05, varorder = sort(vars(poly)), 
   n_correct = 2, al = rnorm(length(x0)), 
   message = FALSE, tol = .Machine$double.eps^(1/2), 
-  gfunc, dgfunc, ddgfunc
+  gfunc, dgfunc, ddgfunc, bias = 0
 ) {
   
   if (missing(x0)) stop("`x0` must be supplied.")
@@ -344,7 +346,7 @@ project_onto_variety <- function(
     # correct
     for (. in 1:n_correct) {
       # vnp1 <- as.numeric( vn - solve(JHa(vn, t = ts[i])) %*% Ha(vn, t = ts[i]) )
-      vnp1 <- vn - solve(JHa(vn, t = ts[i]), Ha(vn, t = ts[i]))
+      vnp1 <- vn - solve(JHa(vn, t = ts[i]) + bias*diag(n_vars+2), Ha(vn, t = ts[i]))
       vn <- vnp1
       if (message) message("  ", paste(round(vn, 5), collapse = " "))
     }

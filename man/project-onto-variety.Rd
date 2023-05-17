@@ -19,7 +19,8 @@ project_onto_variety(
   tol = .Machine$double.eps^(1/2),
   gfunc,
   dgfunc,
-  ddgfunc
+  ddgfunc,
+  bias = 0
 )
 
 project_onto_variety_lagrange(
@@ -68,7 +69,7 @@ project_onto_variety_newton(
 \item{dt}{The t-mesh size for the homotopy.}
 
 \item{varorder}{A character vector specifying the variable order to pass to
-\code{\link[mpoly:as-function]{mpoly::as.function.mpoly()}}.}
+\code{\link[mpoly:as.function.mpoly]{mpoly::as.function.mpoly()}}.}
 
 \item{n_correct}{The number of Newton correction iterations to use.}
 
@@ -84,6 +85,9 @@ of the residual is larger than \code{tol}.}
 \item{gfunc, dgfunc, ddgfunc}{The polynomial \link{poly}, its gradient, and its
 Hessian as functions. Only used in \code{\link[=project_onto_variety]{project_onto_variety()}}, and computed
 internally if not provided.}
+
+\item{bias}{A multiple to add to the identity to make the Jacobian
+invertible.}
 
 \item{method}{Used in \code{\link[=project_onto_variety_lagrange]{project_onto_variety_lagrange()}} and
 \code{\link[=project_onto_variety_gradient_descent]{project_onto_variety_gradient_descent()}}. In the former, if
